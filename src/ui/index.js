@@ -1,3 +1,4 @@
+// src/ui/index.js
 import addOnUISdk from "https://new.express.adobe.com/static/add-on-sdk/sdk.js";
 
 addOnUISdk.ready.then(async () => {
@@ -20,8 +21,23 @@ addOnUISdk.ready.then(async () => {
     const scanDesignButton = document.getElementById("scanDesign");
     const resultBox = document.getElementById("resultBox");
     scanDesignButton.addEventListener("click", async event => {
-        const resultHtml = await sandboxProxy.scanDesign();
-        resultBox.innerHTML = resultHtml;
+        try {
+            const response = await fetch("http://localhost:3000/analyze", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    prompt: "Watches in China" // TODO: add dynamically
+                })
+            });
+
+            const data = await response.json();
+
+            resultBox.innerHTML = `<b>Gemini says:</b><br>${data.result}`;
+        } catch (error) {
+            resultBox.innerHTML = `<span style="color:red;">Error: ${error.message}</span>`;
+        }
     });
 
     createRectangleButton.disabled = false;

@@ -1,3 +1,4 @@
+// src/sandbox/code.js
 import addOnSandboxSdk from "add-on-sdk-document-sandbox";
 import { editor } from "express-document-sdk";
 
@@ -26,15 +27,6 @@ function start() {
             insertionParent.children.append(textNode);
             console.log("Text: ", textNode.fullContent.text);
         },
-        scanDesign: () => {
-            return `
-                <div style="font-family: sans-serif;">
-                    <b>1 potential issue found:</b><br/>
-                    ⚠️ Use of yellow background may be interpreted as a mourning color in Vietnam.<br/>
-                    <i>Suggestion:</i> Replace with warm beige or soft green.
-                </div>
-            `;
-        }
     };
 
     runtime.exposeApi(sandboxApi);
