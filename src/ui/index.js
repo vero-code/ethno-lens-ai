@@ -3,12 +3,8 @@ import addOnUISdk from "https://new.express.adobe.com/static/add-on-sdk/sdk.js";
 addOnUISdk.ready.then(async () => {
     console.log("addOnUISdk is ready for use.");
 
-    // Get the UI runtime.
     const { runtime } = addOnUISdk.instance;
 
-    // Get the proxy object, which is required
-    // to call the APIs defined in the Document Sandbox runtime
-    // i.e., in the `code.js` file of this add-on.
     const sandboxProxy = await runtime.apiProxy("documentSandbox");
 
     const createRectangleButton = document.getElementById("createRectangle");
@@ -21,10 +17,14 @@ addOnUISdk.ready.then(async () => {
         await sandboxProxy.addText();
     });
 
-    // Enable the button only when:
-    // 1. `addOnUISdk` is ready,
-    // 2. `sandboxProxy` is available, and
-    // 3. `click` event listener is registered.
+    const scanDesignButton = document.getElementById("scanDesign");
+    const resultBox = document.getElementById("resultBox");
+    scanDesignButton.addEventListener("click", async event => {
+        const resultHtml = await sandboxProxy.scanDesign();
+        resultBox.innerHTML = resultHtml;
+    });
+
     createRectangleButton.disabled = false;
     addTextButton.disabled = false;
+    scanDesignButton.disabled = false;
 });
