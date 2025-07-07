@@ -27,6 +27,31 @@ function start() {
             insertionParent.children.append(textNode);
             console.log("Text: ", textNode.fullContent.text);
         },
+        getDesignDescription: () => {
+            if (!editor.context.hasSelection || editor.context.selection.length === 0) {
+                return "No elements selected on the canvas.";
+            }
+
+            const selectedNode = editor.context.selection[0];
+            const type = selectedNode?.type;
+            console.log("Type:", type);
+
+            if(type === "Text") {
+                // for texts
+                const content = selectedNode.fullContent?.text || "(empty)";
+                console.log("Text content:", content);
+            } else if (type === "MediaContainer") {
+                // for images
+                console.log("Image element detected.");
+            } else {
+                // for shapes
+                const fill = selectedNode.fill;
+                const color = fill.color;
+                console.log("Color:", color);
+            }
+
+            return "";
+        },
     };
 
     runtime.exposeApi(sandboxApi);

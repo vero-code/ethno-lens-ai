@@ -22,14 +22,20 @@ addOnUISdk.ready.then(async () => {
     const resultBox = document.getElementById("resultBox");
     scanDesignButton.addEventListener("click", async event => {
         try {
+            const prompt = await sandboxProxy.getDesignDescription();
+            console.log("Generated prompt:", prompt);
+
+            if (prompt.includes("No elements selected")) {
+                resultBox.innerHTML = `<span style="color:orange;">Please select a design element on the canvas first.</span>`;
+                return;
+            }
+
             const response = await fetch("http://localhost:3000/analyze", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    prompt: "Watches in China" // TODO: add dynamically
-                })
+                body: JSON.stringify({ prompt })
             });
 
             const data = await response.json();

@@ -19,6 +19,7 @@
         "@types/adobe__ccweb-add-on-sdk": "^1.3.0"
     },
     "dependencies": {
+        "@adobe/ccweb-add-on-sdk-types": "^1.18.0",
         "@google/generative-ai": "^0.24.1",
         "body-parser": "^2.2.0",
         "cors": "^2.8.5",
