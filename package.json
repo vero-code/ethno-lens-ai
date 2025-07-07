@@ -17,5 +17,12 @@
     "devDependencies": {
         "@adobe/ccweb-add-on-scripts": "^3.0.0",
         "@types/adobe__ccweb-add-on-sdk": "^1.3.0"
+    },
+    "dependencies": {
+        "@google/generative-ai": "^0.24.1",
+        "body-parser": "^2.2.0",
+        "cors": "^2.8.5",
+        "dotenv": "^17.0.1",
+        "express": "^5.1.0"
     }
 }

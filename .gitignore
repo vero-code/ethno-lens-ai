@@ -19,3 +19,5 @@ Thumbs.db
 
 # Certificate-related
 .devcert/
+
+.env
