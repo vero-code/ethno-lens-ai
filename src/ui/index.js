@@ -45,7 +45,7 @@ addOnUISdk.ready.then(async () => {
 
             const data = await response.json();
 
-            resultBox.innerHTML = `<b>Gemini says:</b><br>${data.result}`;
+            resultBox.innerHTML = `<b>AI Response</b><br>${marked.parse(data.result)}`;
         } catch (error) {
             resultBox.innerHTML = `<span style="color:red;">Error: ${error.message}</span>`;
         }
