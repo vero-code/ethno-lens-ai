@@ -23,6 +23,8 @@ An AI assistant that analyzes designs and warns about potential cultural, ethica
 
 - ⚙️ **Easy to extend** — Designed to grow with new element types and features.
 
+- 🏢 **Business type context** — Adding a "Business Type" field improves AI accuracy by providing cultural context for specific industries.
+
 ## Tools
 
 This project has been created with _@adobe/create-ccweb-add-on_.

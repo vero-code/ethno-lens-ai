@@ -18,6 +18,7 @@ addOnUISdk.ready.then(async () => {
         try {
             const description = await sandboxProxy.getDesignDescription();
             const country = document.getElementById("countrySelect").value;
+            const businessType = document.getElementById("businessType").value;
 
             if (!country) {
                 spinner.style.display = "none";
@@ -25,10 +26,17 @@ addOnUISdk.ready.then(async () => {
                 return;
             }
 
+            if (!businessType) {
+                spinner.style.display = "none";
+                resultBox.innerHTML = `<span style="color:orange;">Please select a business type before scanning.</span>`;
+                return;
+            }
+
             const startPrompt = `Analyze the provided visual design. The design includes ${description} and is intended for ${country}.`;
+            const businessContext = ` The business type is "${businessType}".`;
             const endPrompt = ` Identify any culturally insensitive or inappropriate elements and suggest changes to promote inclusive visual solutions that are suitable for a diverse international audience, with a focus on cultural appropriateness for ${country}. In the first sentence, give a short answer whether this element should be used in the selected country.`;
 
-            const fullPrompt = startPrompt + endPrompt;
+            const fullPrompt = startPrompt + endPrompt + businessContext;
 
             if (fullPrompt.includes("No elements selected")) {
                 spinner.style.display = "none";
