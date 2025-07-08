@@ -34,23 +34,30 @@ function start() {
 
             const selectedNode = editor.context.selection[0];
             const type = selectedNode?.type;
-            console.log("Type:", type);
+            let description = `Selected element type: ${type}. `;
 
             if(type === "Text") {
                 // for texts
                 const content = selectedNode.fullContent?.text || "(empty)";
-                console.log("Text content:", content);
+                description += `Text content: "${content}"`;
             } else if (type === "MediaContainer") {
                 // for images
-                console.log("Image element detected.");
+                description += "It is an image or media element.";
             } else {
                 // for shapes
                 const fill = selectedNode.fill;
-                const color = fill.color;
-                console.log("Color:", color);
+                if (fill && fill.color) {
+                    const { red, green, blue } = fill.color;
+                    const r = Math.round(red * 255);
+                    const g = Math.round(green * 255);
+                    const b = Math.round(blue * 255);
+                    description += `Fill color: RGB(${r}, ${g}, ${b}).`;
+                } else {
+                    description += "No fill color detected.";
+                }
             }
 
-            return "";
+            return description;
         },
     };
 
