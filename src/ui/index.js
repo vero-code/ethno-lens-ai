@@ -8,19 +8,13 @@ addOnUISdk.ready.then(async () => {
 
     const sandboxProxy = await runtime.apiProxy("documentSandbox");
 
-    const createRectangleButton = document.getElementById("createRectangle");
-    createRectangleButton.addEventListener("click", async event => {
-        await sandboxProxy.createRectangle();
-    });
-
-    const addTextButton = document.getElementById("addText");
-    addTextButton.addEventListener("click", async event => {
-        await sandboxProxy.addText();
-    });
-
     const scanDesignButton = document.getElementById("scanDesign");
     const resultBox = document.getElementById("resultBox");
+    const spinner = document.getElementById("spinner");
     scanDesignButton.addEventListener("click", async event => {
+        spinner.style.display = "block";
+        resultBox.innerHTML = "";
+
         try {
             const description = await sandboxProxy.getDesignDescription();
             const country = document.getElementById("countrySelect").value;
@@ -31,6 +25,7 @@ addOnUISdk.ready.then(async () => {
             const fullPrompt = startPrompt + endPrompt;
 
             if (fullPrompt.includes("No elements selected")) {
+                spinner.style.display = "none";
                 resultBox.innerHTML = `<span style="color:orange;">Please select a design element on the canvas first.</span>`;
                 return;
             }
@@ -44,14 +39,13 @@ addOnUISdk.ready.then(async () => {
             });
 
             const data = await response.json();
-
+            spinner.style.display = "none";
             resultBox.innerHTML = `<b>AI Response</b><br>${marked.parse(data.result)}`;
         } catch (error) {
+            spinner.style.display = "none";
             resultBox.innerHTML = `<span style="color:red;">Error: ${error.message}</span>`;
         }
     });
 
-    createRectangleButton.disabled = false;
-    addTextButton.disabled = false;
     scanDesignButton.disabled = false;
 });
