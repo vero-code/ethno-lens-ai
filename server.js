@@ -15,15 +15,7 @@ app.use(bodyParser.json());
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-const systemPrompt = `
-        You are a cultural design advisor helping graphic designers identify potential cultural sensitivities 
-        or issues in visual designs across different countries.
-        
-        Please analyze the following design concept. Answer very briefly.
-        
-        Are there any cultural, ethical, or symbolic concerns associated with this concept in the given cultural context? 
-        If yes, explain why and suggest appropriate alternatives. Be precise but concise.
-    `;
+const personaPrompt = `You are a Senior Cultural Inclusivity & Design Ethics Specialist at a global creative agency. Your expertise lies in ensuring visual materials are impeccably inclusive and free from cultural insensitivity. You proactively identify inappropriate elements and propose constructive solutions for global brand perception.`;
 
 app.post("/analyze", async (req, res) => {
     const { prompt } = req.body;
@@ -32,7 +24,8 @@ app.post("/analyze", async (req, res) => {
         return res.status(400).json({ error: "Prompt is required" });
     }
 
-    const fullPrompt = `${systemPrompt}\n\nDesign: "${prompt}"`;
+    const fullPrompt = `${personaPrompt}\n\n ${prompt}`;
+    console.log(fullPrompt);
 
     try {
         const result = await model.generateContent(fullPrompt);

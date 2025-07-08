@@ -34,14 +34,13 @@ function start() {
 
             const selectedNode = editor.context.selection[0];
             const type = selectedNode?.type;
-            let description = `Selected element type: ${type}. `;
+            const lowerCaseType = selectedNode?.type?.toLowerCase();
+            let description = `${lowerCaseType}`;
 
             if(type === "Text") {
-                // for texts
                 const content = selectedNode.fullContent?.text || "(empty)";
-                description += `Text content: "${content}"`;
+                description += ` content: "${content}"`;
             } else if (type === "MediaContainer") {
-                // for images
                 description += "It is an image or media element.";
             } else {
                 // for shapes
@@ -51,9 +50,9 @@ function start() {
                     const r = Math.round(red * 255);
                     const g = Math.round(green * 255);
                     const b = Math.round(blue * 255);
-                    description += `Fill color: RGB(${r}, ${g}, ${b}).`;
+                    description += ` with color RGB(${r}, ${g}, ${b})`;
                 } else {
-                    description += "No fill color detected.";
+                    description += " with no fill color";
                 }
             }
 

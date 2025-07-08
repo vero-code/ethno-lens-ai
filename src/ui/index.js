@@ -22,10 +22,15 @@ addOnUISdk.ready.then(async () => {
     const resultBox = document.getElementById("resultBox");
     scanDesignButton.addEventListener("click", async event => {
         try {
-            const prompt = await sandboxProxy.getDesignDescription();
-            console.log("Generated prompt:", prompt);
+            const description = await sandboxProxy.getDesignDescription();
+            const country = document.getElementById("countrySelect").value;
 
-            if (prompt.includes("No elements selected")) {
+            const startPrompt = `Analyze the provided visual design. The design includes ${description} and is intended for ${country}.`;
+            const endPrompt = ` Identify any culturally insensitive or inappropriate elements and suggest changes to promote inclusive visual solutions that are suitable for a diverse international audience, with a focus on cultural appropriateness for ${country}. In the first sentence, give a short answer whether this element should be used in the selected country.`;
+
+            const fullPrompt = startPrompt + endPrompt;
+
+            if (fullPrompt.includes("No elements selected")) {
                 resultBox.innerHTML = `<span style="color:orange;">Please select a design element on the canvas first.</span>`;
                 return;
             }
@@ -35,7 +40,7 @@ addOnUISdk.ready.then(async () => {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ prompt })
+                body: JSON.stringify({ prompt: fullPrompt })
             });
 
             const data = await response.json();
