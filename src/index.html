@@ -18,10 +18,7 @@
 
             <label for="countrySelect">Select country:</label>
             <select id="countrySelect">
-                <option value="Vietnam">Vietnam</option>
-                <option value="China">China</option>
-                <option value="India">India</option>
-                <option value="USA">USA</option>
+                <option value="">Loading countries...</option>
             </select>
 
             <button id="scanDesign" disabled>Scan Design</button>
@@ -33,6 +30,7 @@
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+        <script type="module" src="ui/loadCountries.js"></script>
         <script type="module" src="ui/index.js"></script>
     </body>
 </html>
