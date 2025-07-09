@@ -17,12 +17,29 @@ addOnUISdk.ready.then(async () => {
     const chatResponse = document.getElementById("chatResponse");
     const chatError = document.getElementById("chatError");
 
+    const imageUploadInput = document.getElementById("imageUpload");
+    const analyzeImageButton = document.getElementById("analyzeImage");
+    const imageResultBox = document.getElementById("imageResultBox");
+    const imageErrorBox = document.getElementById("imageError");
+
     let lastPromptContext = "";
+
+    const renderMarkdown = (targetElement, markdownText, prefix = "") => {
+        targetElement.innerHTML = "";
+        if (markdownText && typeof markdownText === 'string' && markdownText.trim() !== '') {
+            targetElement.innerHTML = prefix + marked.parse(markdownText);
+        } else {
+            targetElement.innerHTML = prefix + `<span style="color:gray;">AI returned an empty or invalid response.</span>`;
+            console.warn("Attempted to render empty or invalid Markdown:", markdownText);
+        }
+    };
 
     scanDesignButton.addEventListener("click", async event => {
         spinner.style.display = "block";
         resultBox.innerHTML = "";
         chatResponse.innerHTML = "";
+        imageResultBox.innerHTML = "";
+        imageErrorBox.innerHTML = "";
 
         try {
             const description = await sandboxProxy.getDesignDescription();
@@ -63,7 +80,8 @@ addOnUISdk.ready.then(async () => {
 
             const data = await response.json();
             spinner.style.display = "none";
-            resultBox.innerHTML = `<b>AI Response</b><br>${marked.parse(data.result)}`;
+
+            renderMarkdown(resultBox, data.result, "<b>AI Response</b><br>");
 
             lastPromptContext = fullPrompt;
         } catch (error) {
@@ -109,6 +127,45 @@ addOnUISdk.ready.then(async () => {
         } catch (err) {
             spinner.style.display = "none";
             chatError.innerHTML = `Error: ${err.message}`;
+        }
+    });
+
+    chatInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") chatSend.click();
+    });
+
+    analyzeImageButton.addEventListener("click", async () => {
+        spinner.style.display = "block";
+        imageResultBox.innerHTML = "";
+        imageErrorBox.innerHTML = "";
+        chatResponse.innerHTML = "";
+        resultBox.innerHTML = "";
+
+        const file = imageUploadInput.files[0];
+
+        if (!file) {
+            spinner.style.display = "none";
+            imageErrorBox.innerHTML = `<span style="color:orange;">Please select an image file to upload.</span>`;
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("image", file);
+
+        try {
+            const response = await fetch("http://localhost:3000/analyze-image", {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+            spinner.style.display = "none";
+
+            renderMarkdown(imageResultBox, data.result, "<b>AI Image Analysis</b><br>");
+
+        } catch (err) {
+            spinner.style.display = "none";
+            imageErrorBox.innerHTML = `<span style="color:red;">Error analyzing image: ${err.message}</span>`;
         }
     });
 

@@ -25,6 +25,10 @@ An AI assistant that analyzes designs and warns about potential cultural, ethica
 
 - 🏢 **Business type context** — Adding a "Business Type" field improves AI accuracy by providing cultural context for specific industries.
 
+- 💬 **Follow-up chat with AI** — Ask clarification questions right after the analysis to refine your design choices.
+
+- 🖼️ **Image analysis** — Upload images directly for comprehensive cultural and ethical assessment.
+
 ## Tools
 
 This project has been created with _@adobe/create-ccweb-add-on_.

@@ -43,6 +43,16 @@
                 <div id="chatResponse" class="chatResponse"></div>
                 <div id="chatError" style="color: red; margin-top: 6px;"></div>
             </div>
+
+            <div id="imageAnalysis">
+                <h3>Upload an image for cultural analysis</h3>
+                <input type="file" id="imageUpload" accept="image/*" />
+                <button id="analyzeImage">Analyze Image</button>
+                <div id="imageError" style="color: red; margin-top: 5px;"></div>
+                <div id="imageResultBox" class="resultBox" style="margin-top: 10px;">
+                    No image analyzed yet.
+                </div>
+            </div>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
