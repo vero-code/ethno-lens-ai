@@ -32,6 +32,17 @@
                 No issues detected yet.
             </div>
             <div id="spinner" class="spinner" style="display: none;"></div>
+
+            <div id="followUpChat" style="margin-top: 20px;">
+                <label for="chatInput">Continue the conversation with AI:</label>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="chatInput" placeholder="Ask a follow-up question..." style="flex: 1;" />
+                    <button id="chatSend">Send</button>
+                </div>
+                <small style="color: gray;">e.g. "What color would work better?"</small>
+                <div id="chatResponse" class="chatResponse"></div>
+                <div id="chatError" style="color: red; margin-top: 6px;"></div>
+            </div>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
