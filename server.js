@@ -42,20 +42,15 @@ app.post("/analyze", async (req, res) => {
 });
 
 app.post("/analyze-image", upload.single("image"), async (req, res) => {
-    console.log("-> /analyze-image: Request received.");
-
     if (!req.file) {
-        console.log("-> /analyze-image: No file uploaded.");
         return res.status(400).json({ error: "No image uploaded" });
     }
 
-    console.log("-> /analyze-image: File received. Name:", req.file.originalname, "MIME:", req.file.mimetype, "Size:", req.file.size);
-
     const base64Image = req.file.buffer.toString("base64");
-    console.log("-> /analyze-image: Image converted to Base64.");
+    const promptText = `${personaPrompt}\n\nThe user uploaded an image. Analyze it for potential cultural, symbolic or ethical issues that might arise in different countries or business contexts.`;
 
     const parts = [
-        `${personaPrompt}\n\nThe user uploaded an image. Analyze it for potential cultural, symbolic or ethical issues that might arise in different countries or business contexts.`,
+        promptText,
         {
             inlineData: {
                 mimeType: req.file.mimetype,
@@ -64,11 +59,11 @@ app.post("/analyze-image", upload.single("image"), async (req, res) => {
         }
     ];
 
+    console.log(promptText);
+
     try {
-        console.log("-> /analyze-image: Sending request to Gemini for image analysis.");
         const result = await model.generateContent(parts);
         const text = result.response.text();
-        console.log("<- /analyze-image: Received response from Gemini. Sending to client.");
         res.json({ result: text });
     } catch (err) {
         console.error("Gemini image error:", err);

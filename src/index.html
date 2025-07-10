@@ -9,42 +9,58 @@
         <meta name="keywords" content="Adobe, Express, Add-On, JavaScript, Document Sandbox Runtime" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Ethno Lens AI</title>
-        <link rel="stylesheet" href="styles.css" />
+        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="css/styles.css" />
+        <link rel="stylesheet" href="css/spectrum-custom.css" />
     </head>
     <body>
         <div class="container">
             <h1>Ethno Lens AI</h1>
             <p>Scan your design for possible cultural or symbolic issues across regions.</p>
 
-            <label for="countrySelect">Select country:</label>
-            <select id="countrySelect">
-                <option value="">Loading countries...</option>
-            </select>
-
-            <label for="businessType">Business type:</label>
-            <select id="businessType">
-                <option value="">Loading business types...</option>
-            </select>
-
-            <button id="scanDesign" disabled>Scan Design</button>
-
-            <div id="resultBox" class="resultBox">
-                No issues detected yet.
+            <div class="spectrum-Tabs spectrum-Tabs--horizontal" role="tablist" id="mainTabs">
+                <button class="spectrum-Tabs-item spectrum-Tabs-item--selected" role="tab" aria-selected="true" id="tab-scan-design" aria-controls="panel-scan-design">
+                    <span class="spectrum-Tabs-itemLabel">Design</span>
+                </button>
+                <button class="spectrum-Tabs-item" role="tab" aria-selected="false" id="tab-analyze-image" aria-controls="panel-analyze-image">
+                    <span class="spectrum-Tabs-itemLabel">Image</span>
+                </button>
+                <div class="spectrum-Tabs-selectionIndicator" id="selectionIndicator"></div>
             </div>
-            <div id="spinner" class="spinner" style="display: none;"></div>
 
-            <div id="followUpChat" style="margin-top: 20px;">
-                <label for="chatInput">Continue the conversation with AI:</label>
-                <div style="display: flex; gap: 8px;">
-                    <input type="text" id="chatInput" placeholder="Ask a follow-up question..." style="flex: 1;" />
-                    <button id="chatSend">Send</button>
+            <div id="panel-scan-design" class="spectrum-Tabs-panel" role="tabpanel" aria-labelledby="tab-scan-design">
+                <!-- Dropdown lists -->
+                <label for="countrySelect">Select country:</label>
+                <select id="countrySelect">
+                    <option value="">Loading countries...</option>
+                </select>
+
+                <label for="businessType">Business type:</label>
+                <select id="businessType">
+                    <option value="">Loading business types...</option>
+                </select>
+
+                <button id="scanDesign" disabled>Scan Design</button>
+
+                <div id="resultBox" class="resultBox">
+                    No issues detected yet.
                 </div>
-                <small style="color: gray;">e.g. "What color would work better?"</small>
-                <div id="chatResponse" class="chatResponse"></div>
-                <div id="chatError" style="color: red; margin-top: 6px;"></div>
+                <div id="spinner" class="spinner" style="display: none;"></div>
+
+                <!-- followUpChat -->
+                <div id="followUpChat" style="margin-top: 0px;">
+                    <label for="chatInput">Continue the conversation with AI:</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="chatInput" placeholder="Ask a follow-up question..." style="flex: 1;" />
+                        <button id="chatSend">Send</button>
+                    </div>
+                    <small style="color: gray;">e.g. "What color would work better?" </small>
+                    <div id="chatResponse" class="chatResponse"></div>
+                    <div id="chatError" style="color: red; margin-top: 6px;"></div>
+                </div>
             </div>
 
-            <div id="imageAnalysis">
+            <div id="panel-analyze-image" class="spectrum-Tabs-panel" role="tabpanel" aria-labelledby="tab-analyze-image" hidden>
                 <h3>Upload an image for cultural analysis</h3>
                 <input type="file" id="imageUpload" accept="image/*" />
                 <button id="analyzeImage">Analyze Image</button>
