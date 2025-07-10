@@ -65,10 +65,9 @@ addOnUISdk.ready.then(async () => {
     const imageUploadInput = document.getElementById("imageUpload");
     const analyzeImageButton = document.getElementById("analyzeImage");
     const imagePreview = document.getElementById("imagePreview");
-    const removePreviewBtn = document.getElementById("removePreview");
-    const imageContent = document.getElementById("imageContent");
     const imageResultBox = document.getElementById("imageResultBox");
     const imageError = document.getElementById("imageError");
+    const resetImageButton = document.getElementById("resetImage");
 
     let lastPromptContext = "";
 
@@ -95,12 +94,21 @@ addOnUISdk.ready.then(async () => {
         resetDesignButton.disabled = true;
     };
 
+    const resetImagePanel = () => {
+        imageUploadInput.value = "";
+        imagePreview.src = "";
+        imagePreview.style.display = "none";
+        imageResultBox.innerHTML = `No image analyzed yet.`;
+        imageError.style.display = "none";
+        analyzeImageButton.disabled = true;
+        resetImageButton.disabled = true;
+        spinner.style.display = "none";
+    };
+
     scanDesignButton.addEventListener("click", async event => {
         spinner.style.display = "block";
         resultBox.innerHTML = "";
         chatResponse.innerHTML = "";
-        imageContent.innerHTML = "";
-        imageError.style.display = "none";
         resetDesignButton.disabled = false;
 
         try {
@@ -205,10 +213,11 @@ addOnUISdk.ready.then(async () => {
 
     analyzeImageButton.addEventListener("click", async () => {
         spinner.style.display = "block";
-        imageContent.innerHTML = "";
+        imageResultBox.innerHTML = "";
         imageError.style.display = "none";
         chatResponse.innerHTML = "";
         resultBox.innerHTML = "";
+        resetImageButton.disabled = false;
 
         const file = imageUploadInput.files[0];
 
@@ -247,32 +256,24 @@ addOnUISdk.ready.then(async () => {
             reader.onload = function (e) {
                 imagePreview.src = e.target.result;
                 imagePreview.style.display = "block";
-                removePreviewBtn.style.display = "inline-block";
                 analyzeImageButton.disabled = false;
+                resetImageButton.disabled = false;
                 imageError.style.display = "none";
-                imageContent.innerHTML = "The image is ready for analysis.";
+                imageResultBox.innerHTML = `The image is ready for analysis.`;
             };
             reader.readAsDataURL(file);
         } else {
             imagePreview.src = "";
             imagePreview.style.display = "none";
-            removePreviewBtn.style.display = "none";
             analyzeImageButton.disabled = true;
+            resetImageButton.disabled = true;
             imageError.innerHTML = "Please select a valid image file.";
             imageError.style.display = "block";
-            imageContent.innerHTML = "The image has not yet been analyzed.";
+            imageResultBox.innerHTML = `No image analyzed yet.`;
         }
     });
 
-    removePreviewBtn.addEventListener("click", () => {
-        imageUploadInput.value = "";
-        imagePreview.src = "";
-        imagePreview.style.display = "none";
-        removePreviewBtn.style.display = "none";
-        analyzeImageButton.disabled = true;
-        imageError.style.display = "none";
-        imageContent.innerHTML = "The image has not yet been analyzed.";
+    resetImageButton.addEventListener("click", () => {
+        resetImagePanel();
     });
-
-    analyzeImageButton.disabled = true;
 });
