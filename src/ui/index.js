@@ -63,8 +63,11 @@ addOnUISdk.ready.then(async () => {
 
     const imageUploadInput = document.getElementById("imageUpload");
     const analyzeImageButton = document.getElementById("analyzeImage");
+    const imagePreview = document.getElementById("imagePreview");
+    const removePreviewBtn = document.getElementById("removePreview");
+    const imageContent = document.getElementById("imageContent");
     const imageResultBox = document.getElementById("imageResultBox");
-    const imageErrorBox = document.getElementById("imageError");
+    const imageError = document.getElementById("imageError");
 
     let lastPromptContext = "";
 
@@ -82,8 +85,8 @@ addOnUISdk.ready.then(async () => {
         spinner.style.display = "block";
         resultBox.innerHTML = "";
         chatResponse.innerHTML = "";
-        imageResultBox.innerHTML = "";
-        imageErrorBox.innerHTML = "";
+        imageContent.innerHTML = "";
+        imageError.style.display = "none";
 
         try {
             const description = await sandboxProxy.getDesignDescription();
@@ -134,6 +137,8 @@ addOnUISdk.ready.then(async () => {
         }
     });
 
+    scanDesignButton.disabled = false;
+
     chatSend.addEventListener("click", async () => {
         const followUp = chatInput.value.trim();
         chatError.innerHTML = "";
@@ -180,8 +185,8 @@ addOnUISdk.ready.then(async () => {
 
     analyzeImageButton.addEventListener("click", async () => {
         spinner.style.display = "block";
-        imageResultBox.innerHTML = "";
-        imageErrorBox.innerHTML = "";
+        imageContent.innerHTML = "";
+        imageError.style.display = "none";
         chatResponse.innerHTML = "";
         resultBox.innerHTML = "";
 
@@ -189,7 +194,8 @@ addOnUISdk.ready.then(async () => {
 
         if (!file) {
             spinner.style.display = "none";
-            imageErrorBox.innerHTML = `<span style="color:orange;">Please select an image file to upload.</span>`;
+            imageError.innerHTML = `<span style="color:orange;">Please select an image file to upload.</span>`;
+            imageError.style.display = "block";
             return;
         }
 
@@ -209,9 +215,44 @@ addOnUISdk.ready.then(async () => {
 
         } catch (err) {
             spinner.style.display = "none";
-            imageErrorBox.innerHTML = `<span style="color:red;">Error analyzing image: ${err.message}</span>`;
+            imageError.innerHTML = `<span style="color:red;">Error analyzing image: ${err.message}</span>`;
+            imageError.style.display = "block";
         }
     });
 
-    scanDesignButton.disabled = false;
+    imageUploadInput.addEventListener("change", () => {
+        const file = imageUploadInput.files[0];
+        if (file && file.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = "block";
+                removePreviewBtn.style.display = "inline-block";
+                analyzeImageButton.disabled = false;
+                imageError.style.display = "none";
+                imageContent.innerHTML = "The image is ready for analysis.";
+            };
+            reader.readAsDataURL(file);
+        } else {
+            imagePreview.src = "";
+            imagePreview.style.display = "none";
+            removePreviewBtn.style.display = "none";
+            analyzeImageButton.disabled = true;
+            imageError.innerHTML = "Please select a valid image file.";
+            imageError.style.display = "block";
+            imageContent.innerHTML = "The image has not yet been analyzed.";
+        }
+    });
+
+    removePreviewBtn.addEventListener("click", () => {
+        imageUploadInput.value = "";
+        imagePreview.src = "";
+        imagePreview.style.display = "none";
+        removePreviewBtn.style.display = "none";
+        analyzeImageButton.disabled = true;
+        imageError.style.display = "none";
+        imageContent.innerHTML = "The image has not yet been analyzed.";
+    });
+
+    analyzeImageButton.disabled = true;
 });
