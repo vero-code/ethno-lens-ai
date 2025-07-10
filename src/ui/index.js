@@ -55,6 +55,7 @@ addOnUISdk.ready.then(async () => {
     const spinner = document.getElementById("spinner");
     const countrySelect = document.getElementById("countrySelect");
     const businessSelect = document.getElementById("businessType");
+    const resetDesignButton = document.getElementById("resetDesign");
 
     const chatInput = document.getElementById("chatInput");
     const chatSend = document.getElementById("chatSend");
@@ -81,12 +82,26 @@ addOnUISdk.ready.then(async () => {
         }
     };
 
+    const resetDesignPanel = () => {
+        countrySelect.value = "";
+        businessSelect.value = "";
+        resultBox.innerHTML = "No issues detected yet.";
+        chatInput.value = "";
+        chatResponse.innerHTML = "";
+        chatError.style.display = "none";
+        spinner.style.display = "none";
+        lastPromptContext = "";
+        scanDesignButton.disabled = false;
+        resetDesignButton.disabled = true;
+    };
+
     scanDesignButton.addEventListener("click", async event => {
         spinner.style.display = "block";
         resultBox.innerHTML = "";
         chatResponse.innerHTML = "";
         imageContent.innerHTML = "";
         imageError.style.display = "none";
+        resetDesignButton.disabled = false;
 
         try {
             const description = await sandboxProxy.getDesignDescription();
@@ -137,7 +152,12 @@ addOnUISdk.ready.then(async () => {
         }
     });
 
+    resetDesignButton.addEventListener("click", () => {
+        resetDesignPanel();
+    });
+
     scanDesignButton.disabled = false;
+    resetDesignButton.disabled = true;
 
     chatSend.addEventListener("click", async () => {
         const followUp = chatInput.value.trim();
