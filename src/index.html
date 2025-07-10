@@ -44,9 +44,9 @@
                 <button id="resetDesign" disabled>Reset</button>
 
                 <div id="resultBox" class="resultBox">
-                    No issues detected yet.
+                    <div id="scanDesignSpinner" class="spinner" style="display: none;"></div>
+                    <span id="scanDesignContent">No issues detected yet.</span>
                 </div>
-                <div id="spinner" class="spinner" style="display: none;"></div>
 
                 <!-- followUpChat -->
                 <div id="followUpChat" style="margin-top: 0px;">
@@ -56,7 +56,10 @@
                         <button id="chatSend">Send</button>
                     </div>
                     <small style="color: gray;">e.g. "What color would work better?" </small>
-                    <div id="chatResponse" class="chatResponse"></div>
+                    <div id="chatResponse" class="chatResponse">
+                        <div id="chatSpinner" class="spinner" style="display: none;"></div>
+                        <span id="chatResponseContent"></span> </div>
+                    </div>
                     <div id="chatError" style="color: red; margin-top: 6px;"></div>
                 </div>
             </div>
@@ -78,7 +81,8 @@
 
                 <div id="imageError" class="spectrum-Form-field-validationMessage spectrum-Form-field-validationMessage--error" style="margin-top: 5px; display: none;"></div>
                 <div id="imageResultBox" class="resultBox" style="margin-top: 10px;">
-                    No image analyzed yet.
+                    <div id="imageSpinner" class="spinner" style="display: none;"></div>
+                    <span id="imageResultContent">No image analyzed yet.</span> </div>
                 </div>
             </div>
         </div>

@@ -52,7 +52,8 @@ addOnUISdk.ready.then(async () => {
 
     const scanDesignButton = document.getElementById("scanDesign");
     const resultBox = document.getElementById("resultBox");
-    const spinner = document.getElementById("spinner");
+    const scanDesignContent = document.getElementById("scanDesignContent");
+    const scanDesignSpinner = document.getElementById("scanDesignSpinner");
     const countrySelect = document.getElementById("countrySelect");
     const businessSelect = document.getElementById("businessType");
     const resetDesignButton = document.getElementById("resetDesign");
@@ -60,14 +61,18 @@ addOnUISdk.ready.then(async () => {
     const chatInput = document.getElementById("chatInput");
     const chatSend = document.getElementById("chatSend");
     const chatResponse = document.getElementById("chatResponse");
+    const chatResponseContent = document.getElementById("chatResponseContent");
     const chatError = document.getElementById("chatError");
+    const chatSpinner = document.getElementById("chatSpinner");
 
     const imageUploadInput = document.getElementById("imageUpload");
     const analyzeImageButton = document.getElementById("analyzeImage");
     const imagePreview = document.getElementById("imagePreview");
     const imageResultBox = document.getElementById("imageResultBox");
+    const imageResultContent = document.getElementById("imageResultContent");
     const imageError = document.getElementById("imageError");
     const resetImageButton = document.getElementById("resetImage");
+    const imageSpinner = document.getElementById("imageSpinner");
 
     let lastPromptContext = "";
 
@@ -84,11 +89,12 @@ addOnUISdk.ready.then(async () => {
     const resetDesignPanel = () => {
         countrySelect.value = "";
         businessSelect.value = "";
-        resultBox.innerHTML = "No issues detected yet.";
+        scanDesignContent.innerHTML = "No issues detected yet.";
+        scanDesignSpinner.style.display = "none";
         chatInput.value = "";
-        chatResponse.innerHTML = "";
+        chatResponseContent.innerHTML = "";
+        chatSpinner.style.display = "none";
         chatError.style.display = "none";
-        spinner.style.display = "none";
         lastPromptContext = "";
         scanDesignButton.disabled = false;
         resetDesignButton.disabled = true;
@@ -98,17 +104,17 @@ addOnUISdk.ready.then(async () => {
         imageUploadInput.value = "";
         imagePreview.src = "";
         imagePreview.style.display = "none";
-        imageResultBox.innerHTML = `No image analyzed yet.`;
+        imageResultContent.innerHTML = `No image analyzed yet.`;
+        imageSpinner.style.display = "none";
         imageError.style.display = "none";
         analyzeImageButton.disabled = true;
         resetImageButton.disabled = true;
-        spinner.style.display = "none";
     };
 
     scanDesignButton.addEventListener("click", async event => {
-        spinner.style.display = "block";
-        resultBox.innerHTML = "";
-        chatResponse.innerHTML = "";
+        scanDesignSpinner.style.display = "block";
+        scanDesignContent.innerHTML = "";
+        chatResponseContent.innerHTML = "";
         resetDesignButton.disabled = false;
 
         try {
@@ -117,14 +123,14 @@ addOnUISdk.ready.then(async () => {
             const businessType = businessSelect.value;
 
             if (!country) {
-                spinner.style.display = "none";
-                resultBox.innerHTML = `<span style="color:orange;">Please select a country before scanning.</span>`;
+                scanDesignSpinner.style.display = "none";
+                scanDesignContent.innerHTML = `<span style="color:orange;">Please select a country before scanning.</span>`;
                 return;
             }
 
             if (!businessType) {
-                spinner.style.display = "none";
-                resultBox.innerHTML = `<span style="color:orange;">Please select a business type before scanning.</span>`;
+                scanDesignSpinner.style.display = "none";
+                scanDesignContent.innerHTML = `<span style="color:orange;">Please select a business type before scanning.</span>`;
                 return;
             }
 
@@ -135,8 +141,8 @@ addOnUISdk.ready.then(async () => {
             const fullPrompt = startPrompt + businessContext + endPrompt;
 
             if (fullPrompt.includes("No elements selected")) {
-                spinner.style.display = "none";
-                resultBox.innerHTML = `<span style="color:orange;">Please select a design element on the canvas first.</span>`;
+                scanDesignSpinner.style.display = "none";
+                scanDesignContent.innerHTML = `<span style="color:orange;">Please select a design element on the canvas first.</span>`;
                 return;
             }
 
@@ -149,14 +155,14 @@ addOnUISdk.ready.then(async () => {
             });
 
             const data = await response.json();
-            spinner.style.display = "none";
+            scanDesignSpinner.style.display = "none";
 
-            renderMarkdown(resultBox, data.result, "<b>AI Response</b><br>");
+            renderMarkdown(scanDesignContent, data.result, "<b>AI Response</b><br>");
 
             lastPromptContext = fullPrompt;
         } catch (error) {
-            spinner.style.display = "none";
-            resultBox.innerHTML = `<span style="color:red;">Error: ${error.message}</span>`;
+            scanDesignSpinner.style.display = "none";
+            scanDesignContent.innerHTML = `<span style="color:red;">Error: ${error.message}</span>`;
         }
     });
 
@@ -170,7 +176,7 @@ addOnUISdk.ready.then(async () => {
     chatSend.addEventListener("click", async () => {
         const followUp = chatInput.value.trim();
         chatError.innerHTML = "";
-        chatResponse.innerHTML = "";
+        chatResponseContent.innerHTML = "";
 
         if (!followUp) {
             chatError.innerHTML = "Please enter a message before sending.";
@@ -182,8 +188,7 @@ addOnUISdk.ready.then(async () => {
             return;
         }
 
-        chatResponse.innerHTML = "Thinking...";
-        spinner.style.display = "block";
+        chatSpinner.style.display = "block";
 
         const fullFollowUpPrompt = `${lastPromptContext}\n\nThe user now asks: "${followUp}"`;
         console.log("fullFollowUpPrompt -> ", fullFollowUpPrompt);
@@ -198,11 +203,11 @@ addOnUISdk.ready.then(async () => {
             });
 
             const data = await response.json();
-            spinner.style.display = "none";
-            chatResponse.innerHTML = `<b>AI:</b><br>${marked.parse(data.result)}`;
+            chatSpinner.style.display = "none";
+            renderMarkdown(chatResponseContent, data.result, `<b>AI:</b><br>`);
             chatInput.value = "";
         } catch (err) {
-            spinner.style.display = "none";
+            chatSpinner.style.display = "none";
             chatError.innerHTML = `Error: ${err.message}`;
         }
     });
@@ -212,17 +217,17 @@ addOnUISdk.ready.then(async () => {
     });
 
     analyzeImageButton.addEventListener("click", async () => {
-        spinner.style.display = "block";
-        imageResultBox.innerHTML = "";
+        imageSpinner.style.display = "block";
+        imageResultContent.innerHTML = "";
         imageError.style.display = "none";
-        chatResponse.innerHTML = "";
-        resultBox.innerHTML = "";
+        chatResponseContent.innerHTML = "";
+        scanDesignContent.innerHTML = "No issues detected yet.";;
         resetImageButton.disabled = false;
 
         const file = imageUploadInput.files[0];
 
         if (!file) {
-            spinner.style.display = "none";
+            imageSpinner.style.display = "none";
             imageError.innerHTML = `<span style="color:orange;">Please select an image file to upload.</span>`;
             imageError.style.display = "block";
             return;
@@ -238,12 +243,12 @@ addOnUISdk.ready.then(async () => {
             });
 
             const data = await response.json();
-            spinner.style.display = "none";
+            imageSpinner.style.display = "none";
 
-            renderMarkdown(imageResultBox, data.result, "<b>AI Image Analysis</b><br>");
+            renderMarkdown(imageResultContent, data.result, "<b>AI Image Analysis</b><br>");
 
         } catch (err) {
-            spinner.style.display = "none";
+            imageSpinner.style.display = "none";
             imageError.innerHTML = `<span style="color:red;">Error analyzing image: ${err.message}</span>`;
             imageError.style.display = "block";
         }
@@ -259,7 +264,7 @@ addOnUISdk.ready.then(async () => {
                 analyzeImageButton.disabled = false;
                 resetImageButton.disabled = false;
                 imageError.style.display = "none";
-                imageResultBox.innerHTML = `The image is ready for analysis.`;
+                imageResultContent.innerHTML = `The image is ready for analysis.`;
             };
             reader.readAsDataURL(file);
         } else {
@@ -269,7 +274,7 @@ addOnUISdk.ready.then(async () => {
             resetImageButton.disabled = true;
             imageError.innerHTML = "Please select a valid image file.";
             imageError.style.display = "block";
-            imageResultBox.innerHTML = `No image analyzed yet.`;
+            imageResultContent.innerHTML = `No image analyzed yet.`;
         }
     });
 
