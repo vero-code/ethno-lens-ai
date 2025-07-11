@@ -46,8 +46,14 @@ app.post("/analyze-image", upload.single("image"), async (req, res) => {
         return res.status(400).json({ error: "No image uploaded" });
     }
 
+    const { country, businessType } = req.body;
+
+    if (!country || !businessType) {
+        return res.status(400).json({ error: "Country and business type are required." });
+    }
+
     const base64Image = req.file.buffer.toString("base64");
-    const promptText = `${personaPrompt}\n\nThe user uploaded an image. Analyze it for potential cultural, symbolic or ethical issues that might arise in different countries or business contexts.`;
+    const promptText = `${personaPrompt}\n\nAnalyze the provided image for potential cultural, symbolic or ethical issues. This image is intended for ${country} with a business type of "${businessType}". Identify any culturally insensitive or inappropriate elements and suggest changes to promote inclusive visual solutions suitable for a diverse international audience, with a focus on cultural appropriateness for ${country}. In the first sentence, give a short answer whether this element should be used in the selected country.`;
 
     const parts = [
         promptText,
