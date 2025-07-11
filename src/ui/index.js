@@ -1,47 +1,8 @@
 // src/ui/index.js
 import addOnUISdk from "https://new.express.adobe.com/static/add-on-sdk/sdk.js";
-
-const tabButtons = document.querySelectorAll('.spectrum-Tabs-item');
-const tabPanels = document.querySelectorAll('.spectrum-Tabs-panel');
-const selectionIndicator = document.getElementById('selectionIndicator');
-
-function setSelectionIndicatorPosition(activeTab) {
-    if (activeTab && selectionIndicator) {
-        const tabRect = activeTab.getBoundingClientRect();
-        const tabsContainer = activeTab.closest('.spectrum-Tabs');
-        const containerRect = tabsContainer.getBoundingClientRect();
-
-        selectionIndicator.style.width = `${tabRect.width}px`;
-        selectionIndicator.style.transform = `translateX(${tabRect.left - containerRect.left}px)`;
-    }
-}
-
-function initializeTabs() {
-    tabButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const targetPanelId = button.getAttribute('aria-controls');
-
-            tabButtons.forEach(btn => {
-                btn.classList.remove('spectrum-Tabs-item--selected');
-                btn.setAttribute('aria-selected', 'false');
-            });
-            tabPanels.forEach(panel => {
-                panel.setAttribute('hidden', '');
-            });
-
-            button.classList.add('spectrum-Tabs-item--selected');
-            button.setAttribute('aria-selected', 'true');
-            document.getElementById(targetPanelId).removeAttribute('hidden');
-
-            setSelectionIndicatorPosition(button);
-        });
-    });
-
-    const initialActiveTab = document.querySelector('.spectrum-Tabs-item--selected');
-    if (initialActiveTab) {
-        setSelectionIndicatorPosition(initialActiveTab);
-    }
-}
+import { initializeTabs } from './tabs.js';
+import { renderMarkdown, enableResetOnInput } from './utils.js';
+import { analyzeDesign, analyzeImage } from "./api.js";
 
 addOnUISdk.ready.then(async () => {
     console.log("addOnUISdk is ready for use.");
@@ -72,16 +33,6 @@ addOnUISdk.ready.then(async () => {
     const imageSpinner = document.getElementById("imageSpinner");
 
     let lastPromptContext = "";
-
-    const renderMarkdown = (targetElement, markdownText, prefix = "") => {
-        targetElement.innerHTML = "";
-        if (markdownText && typeof markdownText === 'string' && markdownText.trim() !== '') {
-            targetElement.innerHTML = prefix + marked.parse(markdownText);
-        } else {
-            targetElement.innerHTML = prefix + `<span style="color:gray;">AI returned an empty or invalid response.</span>`;
-            console.warn("Attempted to render empty or invalid Markdown:", markdownText);
-        }
-    };
 
     const setDesignPanelButtonsExceptResetState = (disabled) => {
         scanDesignButton.disabled = disabled;
@@ -123,10 +74,6 @@ addOnUISdk.ready.then(async () => {
         imageUploadInput.disabled = false;
     };
 
-    const enableResetOnInput = (button) => {
-        button.disabled = false;
-    };
-
     countrySelect.addEventListener("change", () => enableResetOnInput(resetDesignButton));
     businessSelect.addEventListener("change", () => enableResetOnInput(resetDesignButton));
     chatInput.addEventListener("input", () => {
@@ -142,6 +89,7 @@ addOnUISdk.ready.then(async () => {
         resetDesignButton.disabled = true;
         scanDesignSpinner.style.display = "block";
         scanDesignContent.innerHTML = "";
+        chatError.innerHTML = "";
         chatResponseContent.innerHTML = "AI conversation not started yet.";
 
         try {
@@ -191,15 +139,7 @@ addOnUISdk.ready.then(async () => {
                 return;
             }
 
-            const response = await fetch("http://localhost:3000/analyze", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ prompt: fullPrompt })
-            });
-
-            const data = await response.json();
+            const data = await analyzeDesign(fullPrompt);
             scanDesignSpinner.style.display = "none";
             setDesignPanelButtonsExceptResetState(false);
             resetDesignButton.disabled = false;
@@ -248,26 +188,13 @@ addOnUISdk.ready.then(async () => {
         console.log("fullFollowUpPrompt -> ", fullFollowUpPrompt);
 
         try {
-            const response = await fetch("http://localhost:3000/analyze", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ prompt: fullFollowUpPrompt })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || `Server error: ${response.status} ${response.statusText}`);
-            }
-
-            const data = await response.json();
+            const data = await analyzeDesign(fullFollowUpPrompt);
             chatSpinner.style.display = "none";
 
             setDesignPanelButtonsExceptResetState(false);
             resetDesignButton.disabled = false;
 
-            renderMarkdown(chatResponseContent, data.result, `<b>AI:</b><br>`);
+            renderMarkdown(chatResponseContent, data.result, `<b>AI responds:</b><br>`);
             chatInput.value = "";
             chatError.style.display = "none";
         } catch (err) {
@@ -307,12 +234,7 @@ addOnUISdk.ready.then(async () => {
         formData.append("image", file);
 
         try {
-            const response = await fetch("http://localhost:3000/analyze-image", {
-                method: "POST",
-                body: formData
-            });
-
-            const data = await response.json();
+            const data = await analyzeImage(formData);
             imageSpinner.style.display = "none";
             setImagePanelButtonsExceptResetState(false);
             resetImageButton.disabled = false;
