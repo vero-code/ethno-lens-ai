@@ -51,7 +51,6 @@ addOnUISdk.ready.then(async () => {
     const sandboxProxy = await runtime.apiProxy("documentSandbox");
 
     const scanDesignButton = document.getElementById("scanDesign");
-    const resultBox = document.getElementById("resultBox");
     const scanDesignContent = document.getElementById("scanDesignContent");
     const scanDesignSpinner = document.getElementById("scanDesignSpinner");
     const countrySelect = document.getElementById("countrySelect");
@@ -60,7 +59,6 @@ addOnUISdk.ready.then(async () => {
 
     const chatInput = document.getElementById("chatInput");
     const chatSend = document.getElementById("chatSend");
-    const chatResponse = document.getElementById("chatResponse");
     const chatResponseContent = document.getElementById("chatResponseContent");
     const chatError = document.getElementById("chatError");
     const chatSpinner = document.getElementById("chatSpinner");
@@ -68,7 +66,6 @@ addOnUISdk.ready.then(async () => {
     const imageUploadInput = document.getElementById("imageUpload");
     const analyzeImageButton = document.getElementById("analyzeImage");
     const imagePreview = document.getElementById("imagePreview");
-    const imageResultBox = document.getElementById("imageResultBox");
     const imageResultContent = document.getElementById("imageResultContent");
     const imageError = document.getElementById("imageError");
     const resetImageButton = document.getElementById("resetImage");
@@ -86,18 +83,31 @@ addOnUISdk.ready.then(async () => {
         }
     };
 
+    const setDesignPanelButtonsExceptResetState = (disabled) => {
+        scanDesignButton.disabled = disabled;
+        countrySelect.disabled = disabled;
+        businessSelect.disabled = disabled;
+        chatInput.disabled = disabled;
+        chatSend.disabled = disabled;
+    };
+
+    const setImagePanelButtonsExceptResetState = (disabled) => {
+        imageUploadInput.disabled = disabled;
+        analyzeImageButton.disabled = disabled;
+    };
+
     const resetDesignPanel = () => {
         countrySelect.value = "";
         businessSelect.value = "";
         scanDesignContent.innerHTML = "No issues detected yet.";
         scanDesignSpinner.style.display = "none";
         chatInput.value = "";
-        chatResponseContent.innerHTML = "";
+        chatResponseContent.innerHTML = "AI conversation not started yet.";
         chatSpinner.style.display = "none";
         chatError.style.display = "none";
         lastPromptContext = "";
-        scanDesignButton.disabled = false;
         resetDesignButton.disabled = true;
+        setDesignPanelButtonsExceptResetState(false);
     };
 
     const resetImagePanel = () => {
@@ -107,15 +117,32 @@ addOnUISdk.ready.then(async () => {
         imageResultContent.innerHTML = `No image analyzed yet.`;
         imageSpinner.style.display = "none";
         imageError.style.display = "none";
-        analyzeImageButton.disabled = true;
         resetImageButton.disabled = true;
+        setImagePanelButtonsExceptResetState(false);
+        analyzeImageButton.disabled = true;
+        imageUploadInput.disabled = false;
     };
 
+    const enableResetOnInput = (button) => {
+        button.disabled = false;
+    };
+
+    countrySelect.addEventListener("change", () => enableResetOnInput(resetDesignButton));
+    businessSelect.addEventListener("change", () => enableResetOnInput(resetDesignButton));
+    chatInput.addEventListener("input", () => {
+        if (chatInput.value.trim() !== "") {
+            enableResetOnInput(resetDesignButton);
+        } else if (lastPromptContext === "" && scanDesignContent.innerHTML === "No issues detected yet.") {
+            resetDesignButton.disabled = true;
+        }
+    });
+
     scanDesignButton.addEventListener("click", async event => {
+        setDesignPanelButtonsExceptResetState(true);
+        resetDesignButton.disabled = true;
         scanDesignSpinner.style.display = "block";
         scanDesignContent.innerHTML = "";
-        chatResponseContent.innerHTML = "";
-        resetDesignButton.disabled = false;
+        chatResponseContent.innerHTML = "AI conversation not started yet.";
 
         try {
             const description = await sandboxProxy.getDesignDescription();
@@ -125,12 +152,24 @@ addOnUISdk.ready.then(async () => {
             if (!country) {
                 scanDesignSpinner.style.display = "none";
                 scanDesignContent.innerHTML = `<span style="color:orange;">Please select a country before scanning.</span>`;
+                setDesignPanelButtonsExceptResetState(false);
+                if (countrySelect.value === "" && businessSelect.value === "" && chatInput.value.trim() === "") {
+                    resetDesignButton.disabled = true;
+                } else {
+                    resetDesignButton.disabled = false;
+                }
                 return;
             }
 
             if (!businessType) {
                 scanDesignSpinner.style.display = "none";
                 scanDesignContent.innerHTML = `<span style="color:orange;">Please select a business type before scanning.</span>`;
+                setDesignPanelButtonsExceptResetState(false);
+                if (countrySelect.value === "" && businessSelect.value === "" && chatInput.value.trim() === "") {
+                    resetDesignButton.disabled = true;
+                } else {
+                    resetDesignButton.disabled = false;
+                }
                 return;
             }
 
@@ -143,6 +182,12 @@ addOnUISdk.ready.then(async () => {
             if (fullPrompt.includes("No elements selected")) {
                 scanDesignSpinner.style.display = "none";
                 scanDesignContent.innerHTML = `<span style="color:orange;">Please select a design element on the canvas first.</span>`;
+                setDesignPanelButtonsExceptResetState(false);
+                if (countrySelect.value === "" && businessSelect.value === "" && chatInput.value.trim() === "") {
+                    resetDesignButton.disabled = true;
+                } else {
+                    resetDesignButton.disabled = false;
+                }
                 return;
             }
 
@@ -156,6 +201,8 @@ addOnUISdk.ready.then(async () => {
 
             const data = await response.json();
             scanDesignSpinner.style.display = "none";
+            setDesignPanelButtonsExceptResetState(false);
+            resetDesignButton.disabled = false;
 
             renderMarkdown(scanDesignContent, data.result, "<b>AI Response</b><br>");
 
@@ -163,6 +210,8 @@ addOnUISdk.ready.then(async () => {
         } catch (error) {
             scanDesignSpinner.style.display = "none";
             scanDesignContent.innerHTML = `<span style="color:red;">Error: ${error.message}</span>`;
+            setDesignPanelButtonsExceptResetState(false);
+            resetDesignButton.disabled = false;
         }
     });
 
@@ -170,24 +219,29 @@ addOnUISdk.ready.then(async () => {
         resetDesignPanel();
     });
 
-    scanDesignButton.disabled = false;
-    resetDesignButton.disabled = true;
+    resetDesignPanel();
 
     chatSend.addEventListener("click", async () => {
-        const followUp = chatInput.value.trim();
         chatError.innerHTML = "";
+        chatError.style.display = "none";
         chatResponseContent.innerHTML = "";
+
+        const followUp = chatInput.value.trim();
 
         if (!followUp) {
             chatError.innerHTML = "Please enter a message before sending.";
+            chatError.style.display = "block";
             return;
         }
 
         if (!lastPromptContext) {
             chatError.innerHTML = "Please scan a design before asking follow-up questions.";
+            chatError.style.display = "block";
             return;
         }
 
+        setDesignPanelButtonsExceptResetState(true);
+        resetDesignButton.disabled = true;
         chatSpinner.style.display = "block";
 
         const fullFollowUpPrompt = `${lastPromptContext}\n\nThe user now asks: "${followUp}"`;
@@ -202,13 +256,27 @@ addOnUISdk.ready.then(async () => {
                 body: JSON.stringify({ prompt: fullFollowUpPrompt })
             });
 
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `Server error: ${response.status} ${response.statusText}`);
+            }
+
             const data = await response.json();
             chatSpinner.style.display = "none";
+
+            setDesignPanelButtonsExceptResetState(false);
+            resetDesignButton.disabled = false;
+
             renderMarkdown(chatResponseContent, data.result, `<b>AI:</b><br>`);
             chatInput.value = "";
+            chatError.style.display = "none";
         } catch (err) {
             chatSpinner.style.display = "none";
             chatError.innerHTML = `Error: ${err.message}`;
+            chatError.style.display = "block";
+
+            setDesignPanelButtonsExceptResetState(false);
+            resetDesignButton.disabled = false;
         }
     });
 
@@ -217,12 +285,11 @@ addOnUISdk.ready.then(async () => {
     });
 
     analyzeImageButton.addEventListener("click", async () => {
+        setImagePanelButtonsExceptResetState(true);
+        resetImageButton.disabled = true;
         imageSpinner.style.display = "block";
         imageResultContent.innerHTML = "";
         imageError.style.display = "none";
-        chatResponseContent.innerHTML = "";
-        scanDesignContent.innerHTML = "No issues detected yet.";;
-        resetImageButton.disabled = false;
 
         const file = imageUploadInput.files[0];
 
@@ -230,6 +297,9 @@ addOnUISdk.ready.then(async () => {
             imageSpinner.style.display = "none";
             imageError.innerHTML = `<span style="color:orange;">Please select an image file to upload.</span>`;
             imageError.style.display = "block";
+            setImagePanelButtonsExceptResetState(false);
+            analyzeImageButton.disabled = true;
+            resetImageButton.disabled = true;
             return;
         }
 
@@ -244,6 +314,8 @@ addOnUISdk.ready.then(async () => {
 
             const data = await response.json();
             imageSpinner.style.display = "none";
+            setImagePanelButtonsExceptResetState(false);
+            resetImageButton.disabled = false;
 
             renderMarkdown(imageResultContent, data.result, "<b>AI Image Analysis</b><br>");
 
@@ -251,6 +323,8 @@ addOnUISdk.ready.then(async () => {
             imageSpinner.style.display = "none";
             imageError.innerHTML = `<span style="color:red;">Error analyzing image: ${err.message}</span>`;
             imageError.style.display = "block";
+            setImagePanelButtonsExceptResetState(false);
+            resetImageButton.disabled = false;
         }
     });
 
@@ -281,4 +355,6 @@ addOnUISdk.ready.then(async () => {
     resetImageButton.addEventListener("click", () => {
         resetImagePanel();
     });
+
+    resetImagePanel();
 });
