@@ -32,6 +32,9 @@ addOnUISdk.ready.then(async () => {
     const resetImageButton = document.getElementById("resetImage");
     const imageSpinner = document.getElementById("imageSpinner");
 
+    const imageCountrySelect = document.getElementById("imageCountrySelect");
+    const imageBusinessType = document.getElementById("imageBusinessType");
+
     let lastPromptContext = "";
 
     const setDesignPanelButtonsExceptResetState = (disabled) => {
@@ -45,6 +48,8 @@ addOnUISdk.ready.then(async () => {
     const setImagePanelButtonsExceptResetState = (disabled) => {
         imageUploadInput.disabled = disabled;
         analyzeImageButton.disabled = disabled;
+        imageCountrySelect.disabled = disabled;
+        imageBusinessType.disabled = disabled;
     };
 
     const resetDesignPanel = () => {
@@ -68,6 +73,8 @@ addOnUISdk.ready.then(async () => {
         imageResultContent.innerHTML = `No image analyzed yet.`;
         imageSpinner.style.display = "none";
         imageError.style.display = "none";
+        imageCountrySelect.value = "";
+        imageBusinessType.value = "";
         resetImageButton.disabled = true;
         setImagePanelButtonsExceptResetState(false);
         analyzeImageButton.disabled = true;
@@ -83,6 +90,9 @@ addOnUISdk.ready.then(async () => {
             resetDesignButton.disabled = true;
         }
     });
+
+    imageCountrySelect.addEventListener("change", () => enableResetOnInput(resetImageButton));
+    imageBusinessType.addEventListener("change", () => enableResetOnInput(resetImageButton));
 
     scanDesignButton.addEventListener("click", async event => {
         setDesignPanelButtonsExceptResetState(true);
@@ -219,6 +229,8 @@ addOnUISdk.ready.then(async () => {
         imageError.style.display = "none";
 
         const file = imageUploadInput.files[0];
+        const country = imageCountrySelect.value;
+        const businessType = imageBusinessType.value;
 
         if (!file) {
             imageSpinner.style.display = "none";
@@ -230,8 +242,28 @@ addOnUISdk.ready.then(async () => {
             return;
         }
 
+        if (!country) {
+            imageSpinner.style.display = "none";
+            imageError.innerHTML = `<span style="color:orange;">Please select a country.</span>`;
+            imageError.style.display = "block";
+            setImagePanelButtonsExceptResetState(false);
+            resetImageButton.disabled = false;
+            return;
+        }
+
+        if (!businessType) {
+            imageSpinner.style.display = "none";
+            imageError.innerHTML = `<span style="color:orange;">Please select a business type.</span>`;
+            imageError.style.display = "block";
+            setImagePanelButtonsExceptResetState(false);
+            resetImageButton.disabled = false;
+            return;
+        }
+
         const formData = new FormData();
         formData.append("image", file);
+        formData.append("country", country);
+        formData.append("businessType", businessType);
 
         try {
             const data = await analyzeImage(formData);

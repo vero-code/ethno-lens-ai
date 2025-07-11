@@ -68,6 +68,16 @@
                 <h3>Upload an image for cultural analysis</h3>
                 <input type="file" id="imageUpload" accept="image/*" />
 
+                <label for="imageCountrySelect">Select country:</label>
+                <select id="imageCountrySelect">
+                    <option value="">Loading countries...</option>
+                </select>
+
+                <label for="imageBusinessType">Business type:</label>
+                <select id="imageBusinessType">
+                    <option value="">Loading business types...</option>
+                </select>
+
                 <div style="margin-top: 15px; display: flex; gap: 8px;">
                     <button id="analyzeImage" disabled>
                         <span>Analyze Image</span>

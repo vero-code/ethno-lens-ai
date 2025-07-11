@@ -1,4 +1,9 @@
+// src/ui/loadBusinessTypes.js
+
 const businessSelect = document.getElementById("businessType");
+const imageBusinessType = document.getElementById("imageBusinessType");
+
+const allBusinessSelects = [businessSelect, imageBusinessType].filter(el => el);
 
 const businessTypes = [
     "Cosmetics",
@@ -28,11 +33,13 @@ const businessTypes = [
     "Environmental / Sustainability"
 ];
 
-businessSelect.innerHTML = `<option value="">-- Select business type --</option>`;
+allBusinessSelects.forEach(selectElement => {
+    selectElement.innerHTML = `<option value="">-- Select business type --</option>`;
 
-businessTypes.forEach(type => {
-    const option = document.createElement("option");
-    option.value = type.toLowerCase().replace(/[^a-z0-9]/g, "-");
-    option.textContent = type;
-    businessSelect.appendChild(option);
+    businessTypes.forEach(type => {
+        const option = document.createElement("option");
+        option.value = type.toLowerCase().replace(/[^a-z0-9]/g, "-");
+        option.textContent = type;
+        selectElement.appendChild(option);
+    });
 });

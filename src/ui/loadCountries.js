@@ -1,7 +1,17 @@
-const select = document.getElementById("countrySelect");
+// src/ui/loadCountries.js
+
+const countrySelect = document.getElementById("countrySelect");
+const imageCountrySelect = document.getElementById("imageCountrySelect");
+
+const allCountrySelects = [countrySelect, imageCountrySelect].filter(el => el);
 
 fetch("https://restcountries.com/v3.1/all?fields=name")
-    .then(res => res.json())
+    .then(res => {
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+    })
     .then(data => {
 
         if (!Array.isArray(data)) throw new Error("Invalid response format");
@@ -11,15 +21,20 @@ fetch("https://restcountries.com/v3.1/all?fields=name")
             .filter(Boolean)
             .sort((a, b) => a.localeCompare(b));
 
-        select.innerHTML = `<option value="">-- Select a country --</option>`;
-        countries.forEach(name => {
-            const option = document.createElement("option");
-            option.value = name;
-            option.textContent = name;
-            select.appendChild(option);
+        allCountrySelects.forEach(selectElement => {
+            selectElement.innerHTML = `<option value="">-- Select a country --</option>`;
+            countries.forEach(name => {
+                const option = document.createElement("option");
+                option.value = name;
+                option.textContent = name;
+                selectElement.appendChild(option);
+            });
         });
     })
     .catch(err => {
-        select.innerHTML = `<option>Error loading countries</option>`;
         console.error("Failed to load countries", err);
+        allCountrySelects.forEach(selectElement => {
+            selectElement.innerHTML = `<option>Error loading countries</option>`;
+            selectElement.disabled = true;
+        });
     });
