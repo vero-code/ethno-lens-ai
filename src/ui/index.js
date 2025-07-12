@@ -11,6 +11,7 @@ addOnUISdk.ready.then(async () => {
     const { runtime } = addOnUISdk.instance;
     const sandboxProxy = await runtime.apiProxy("documentSandbox");
 
+    // Design - Scan
     const scanDesignButton = document.getElementById("scanDesign");
     const scanDesignContent = document.getElementById("scanDesignContent");
     const scanDesignSpinner = document.getElementById("scanDesignSpinner");
@@ -18,12 +19,14 @@ addOnUISdk.ready.then(async () => {
     const businessSelect = document.getElementById("businessType");
     const resetDesignButton = document.getElementById("resetDesign");
 
+    // Design - Chat
     const chatInput = document.getElementById("chatInput");
     const chatSend = document.getElementById("chatSend");
     const chatResponseContent = document.getElementById("chatResponseContent");
     const chatError = document.getElementById("chatError");
     const chatSpinner = document.getElementById("chatSpinner");
 
+    // Image
     const imageUploadInput = document.getElementById("imageUpload");
     const analyzeImageButton = document.getElementById("analyzeImage");
     const imagePreview = document.getElementById("imagePreview");
@@ -94,6 +97,7 @@ addOnUISdk.ready.then(async () => {
     imageCountrySelect.addEventListener("change", () => enableResetOnInput(resetImageButton));
     imageBusinessType.addEventListener("change", () => enableResetOnInput(resetImageButton));
 
+    // Design - Scan
     scanDesignButton.addEventListener("click", async event => {
         setDesignPanelButtonsExceptResetState(true);
         resetDesignButton.disabled = true;
@@ -109,7 +113,7 @@ addOnUISdk.ready.then(async () => {
 
             if (!country) {
                 scanDesignSpinner.style.display = "none";
-                scanDesignContent.innerHTML = `<span style="color:orange;">Please select a country before scanning.</span>`;
+                scanDesignContent.innerHTML = `<span class="error">Please select a country before scanning.</span>`;
                 setDesignPanelButtonsExceptResetState(false);
                 if (countrySelect.value === "" && businessSelect.value === "" && chatInput.value.trim() === "") {
                     resetDesignButton.disabled = true;
@@ -121,7 +125,7 @@ addOnUISdk.ready.then(async () => {
 
             if (!businessType) {
                 scanDesignSpinner.style.display = "none";
-                scanDesignContent.innerHTML = `<span style="color:orange;">Please select a business type before scanning.</span>`;
+                scanDesignContent.innerHTML = `<span class="error">Please select a business type before scanning.</span>`;
                 setDesignPanelButtonsExceptResetState(false);
                 if (countrySelect.value === "" && businessSelect.value === "" && chatInput.value.trim() === "") {
                     resetDesignButton.disabled = true;
@@ -139,7 +143,7 @@ addOnUISdk.ready.then(async () => {
 
             if (fullPrompt.includes("No elements selected")) {
                 scanDesignSpinner.style.display = "none";
-                scanDesignContent.innerHTML = `<span style="color:orange;">Please select a design element on the canvas first.</span>`;
+                scanDesignContent.innerHTML = `<span class="error">Please select a design element on the canvas first.</span>`;
                 setDesignPanelButtonsExceptResetState(false);
                 if (countrySelect.value === "" && businessSelect.value === "" && chatInput.value.trim() === "") {
                     resetDesignButton.disabled = true;
@@ -159,7 +163,7 @@ addOnUISdk.ready.then(async () => {
             lastPromptContext = fullPrompt;
         } catch (error) {
             scanDesignSpinner.style.display = "none";
-            scanDesignContent.innerHTML = `<span style="color:red;">Error: ${error.message}</span>`;
+            scanDesignContent.innerHTML = `<span class="error">Error: ${error.message}</span>`;
             setDesignPanelButtonsExceptResetState(false);
             resetDesignButton.disabled = false;
         }
@@ -171,6 +175,7 @@ addOnUISdk.ready.then(async () => {
 
     resetDesignPanel();
 
+    // Design - Chat
     chatSend.addEventListener("click", async () => {
         chatError.innerHTML = "";
         chatError.style.display = "none";
@@ -221,6 +226,7 @@ addOnUISdk.ready.then(async () => {
         if (e.key === "Enter") chatSend.click();
     });
 
+    // Image
     analyzeImageButton.addEventListener("click", async () => {
         setImagePanelButtonsExceptResetState(true);
         resetImageButton.disabled = true;

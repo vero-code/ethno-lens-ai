@@ -82,6 +82,7 @@ input:focus, select:focus {
     color: #e74c3c;
     font-size: 13px;
     margin-top: 8px;
+    font-style: normal;
 }
 
 /* Scan Design */
@@ -144,75 +145,4 @@ textarea:focus {
     font-size: 13px;
     color: #888;
     font-style: italic;
-}
-
-/* Buttons */
-button {
-    background-color: #4A90E2;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    margin-top: 12px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    transition: all 0.2s ease-in-out;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-button:disabled {
-    background-color: #C0C0C0;
-    color: #888;
-    cursor: not-allowed;
-    box-shadow: none;
-    transform: none;
-}
-
-button:not(:disabled):hover {
-    background-color: #357ABD;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    transform: translateY(-1px);
-}
-
-button:active {
-    background-color: #28649E;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    transform: translateY(0);
-}
-
-.btn-icon {
-    font-size: 16px;
-    line-height: 1;
-    display: inline-block;
-}
-
-.btn-label {
-    display: inline-block;
-}
-
-.button-row {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-}
-
-.button-row button {
-    flex: 1;
-    justify-content: center;
-    padding: 10px 0;
-}
-
-.btn-icon i {
-    font-size: 16px;
-    line-height: 1;
-}
-
-/* "Send" button */
-#chatSend {
-    width: 100%;
-    justify-content: center;
 }
