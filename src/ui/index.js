@@ -240,7 +240,7 @@ addOnUISdk.ready.then(async () => {
 
         if (!file) {
             imageSpinner.style.display = "none";
-            imageError.innerHTML = `<span style="color:orange;">Please select an image file to upload.</span>`;
+            imageError.innerHTML = `<span class="error">Please select an image file to upload.</span>`;
             imageError.style.display = "block";
             setImagePanelButtonsExceptResetState(false);
             analyzeImageButton.disabled = true;
@@ -250,7 +250,7 @@ addOnUISdk.ready.then(async () => {
 
         if (!country) {
             imageSpinner.style.display = "none";
-            imageError.innerHTML = `<span style="color:orange;">Please select a country.</span>`;
+            imageError.innerHTML = `<span class="error">Please select a country.</span>`;
             imageError.style.display = "block";
             setImagePanelButtonsExceptResetState(false);
             resetImageButton.disabled = false;
@@ -259,7 +259,7 @@ addOnUISdk.ready.then(async () => {
 
         if (!businessType) {
             imageSpinner.style.display = "none";
-            imageError.innerHTML = `<span style="color:orange;">Please select a business type.</span>`;
+            imageError.innerHTML = `<span class="error">Please select a business type.</span>`;
             imageError.style.display = "block";
             setImagePanelButtonsExceptResetState(false);
             resetImageButton.disabled = false;
@@ -281,7 +281,7 @@ addOnUISdk.ready.then(async () => {
 
         } catch (err) {
             imageSpinner.style.display = "none";
-            imageError.innerHTML = `<span style="color:red;">Error analyzing image: ${err.message}</span>`;
+            imageError.innerHTML = `<span class="error">Error analyzing image: ${err.message}</span>`;
             imageError.style.display = "block";
             setImagePanelButtonsExceptResetState(false);
             resetImageButton.disabled = false;

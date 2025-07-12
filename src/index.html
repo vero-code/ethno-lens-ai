@@ -54,9 +54,9 @@
                     </button>
                 </div>
 
-                <div id="resultBox" class="scanResponse">
+                <div id="resultBox" class="responseBlock">
                     <div id="scanDesignSpinner" class="spinner" style="display: none;"></div>
-                    <span id="scanDesignContent" class="scanContent">No issues detected yet.</span>
+                    <span id="scanDesignContent" class="responseBlockContents">No issues detected yet.</span>
                 </div>
 
                 <!-- followUpChat -->
@@ -71,7 +71,7 @@
                         <span class="btn-label">Send</span>
                     </button>
 
-                    <div id="chatResponse" class="chatResponse">
+                    <div id="chatResponse" class="responseBlock">
                         <div id="chatSpinner" class="spinner" style="display: none;"></div>
                         <span id="chatResponseContent">AI conversation not started yet.</span>
                         <div id="chatError" class="error"></div>
@@ -80,9 +80,7 @@
             </div>
 
             <div id="panel-analyze-image" role="tabpanel" aria-labelledby="tab-analyze-image" hidden>
-                <h3>Upload an image for cultural analysis</h3>
-                <input type="file" id="imageUpload" accept="image/*" />
-
+                <!-- Dropdown lists -->
                 <label for="imageCountrySelect">Select country:</label>
                 <select id="imageCountrySelect">
                     <option value="">Loading countries...</option>
@@ -93,21 +91,27 @@
                     <option value="">Loading business types...</option>
                 </select>
 
-                <div style="margin-top: 15px; display: flex; gap: 8px;">
+                <h3 class="section-heading">Upload an image</h3>
+                <input type="file" id="imageUpload" accept="image/*" />
+
+                <div class="button-row">
                     <button id="analyzeImage" disabled>
-                        <span>Analyze Image</span>
+                        <span class="btn-icon"><i class="fas fa-search"></i></span>
+                        <span class="btn-label">Analyze</span>
                     </button>
+
                     <button id="resetImage" disabled>
-                        <span>Reset</span>
+                        <span class="btn-icon"><i class="fas fa-redo"></i></span>
+                        <span class="btn-label">Reset</span>
                     </button>
                 </div>
 
-                <img id="imagePreview" style="max-width: 100%; margin-top: 10px; display: none; border: 1px solid var(--spectrum-global-color-gray-300); border-radius: 4px;" alt="Image Preview" />
+                <img id="imagePreview" alt="Image Preview" />
 
-                <div id="imageResultBox" class="resultBox" style="margin-top: 10px;">
+                <div id="imageResultBox" class="responseBlock">
                     <div id="imageSpinner" class="spinner" style="display: none;"></div>
-                    <span id="imageResultContent">No image analyzed yet.</span>
-                    <div id="imageError"></div>
+                    <span id="imageResultContent" class="responseBlockContents">No image analyzed yet.</span>
+                    <div id="imageError" class="error"></div>
                 </div>
             </div>
         </div>

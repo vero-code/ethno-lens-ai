@@ -19,7 +19,8 @@
     transition: all 0.2s ease;
 }
 
-.tab-button:hover {
+/* Hover over an inactive button. */
+.tab-button:not(.active):hover {
     color: #f0f5ff;
     border-bottom: 3px solid #3b82f6;
     background: #3b82f6 !important;
@@ -32,9 +33,11 @@
     font-weight: 600;
 }
 
+/* Hover over the active button. */
 .tab-button.active:hover {
-    border-bottom: 3px solid #3b82f6;
     color: #f0f5ff;
+    border-bottom: 3px solid #3b82f6;
+    background: #3b82f6 !important;
     font-weight: 600;
 }
 

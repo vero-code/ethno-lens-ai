@@ -7,11 +7,13 @@ body {
 
 .container {
     max-width: 600px;
+    width: 277px;
     margin: 0 auto;
     background-color: white;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    box-sizing: border-box;
 }
 
 h1, h2, h3 {
@@ -46,22 +48,19 @@ input:focus, select:focus {
     outline: none;
 }
 
-.resultBox {
-    background-color: #f4f4f4;
-    padding: 12px;
-    border-radius: 6px;
-    font-size: 14px;
-    margin-top: 12px;
-    overflow-y: auto;
-    max-height: 400px;
-}
-
-.chatResponse {
+/* Response Block */
+.responseBlock {
     background-color: #eef2ff;
     padding: 10px;
     border-left: 4px solid #3b82f6;
     border-radius: 4px;
     margin-top: 12px;
+}
+
+.responseBlockContents {
+    font-size: 13px;
+    color: #888;
+    font-style: italic;
 }
 
 .spinner {
@@ -83,21 +82,6 @@ input:focus, select:focus {
     font-size: 13px;
     margin-top: 8px;
     font-style: normal;
-}
-
-/* Scan Design */
-.scanResponse {
-    background-color: #f4f6fc;
-    padding: 10px 12px;
-    border-left: 4px solid #3b82f6;
-    border-radius: 4px;
-    margin-top: 12px;
-}
-
-.scanContent {
-    font-size: 13px;
-    color: #888;
-    font-style: italic;
 }
 
 /* Follow-up */
@@ -145,4 +129,17 @@ textarea:focus {
     font-size: 13px;
     color: #888;
     font-style: italic;
+}
+
+/* Image Tab */
+#imageUpload {
+    font-family: 'IBM Plex Sans', sans-serif;
+}
+
+#imagePreview {
+    max-width: 100%;
+    margin-top: 10px;
+    display: none;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
