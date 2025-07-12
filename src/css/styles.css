@@ -100,37 +100,66 @@ button:disabled {
     margin-top: 8px;
 }
 
-/* Tabs */
-.tab-buttons {
-    position: relative;
-    display: flex;
-    gap: 4px;
-    border-bottom: 2px solid #ddd;
-    margin-bottom: 16px;
+/* Scan Design */
+.scanResponse {
+    background-color: #f4f6fc;
+    padding: 10px 12px;
+    border-left: 4px solid #3b82f6;
+    border-radius: 4px;
+    margin-top: 12px;
 }
 
-.tab-button {
-    flex: 1;
-    background: transparent;
-    border: none;
-    border-bottom: 3px solid transparent;
-    padding: 10px 16px;
-    font-size: 14px;
-    color: #555;
-    cursor: pointer;
-    transition: all 0.2s ease;
+.scanContent {
+    font-size: 13px;
+    color: #888;
+    font-style: italic;
 }
 
-.tab-button.active {
-    border-bottom: 3px solid #3b82f6;
-    color: #111;
+/* Follow-up */
+.follow-up {
+    border-top: 1px solid #e0e0e0;
+    margin-top: 32px;
+    padding-top: 24px;
+}
+
+.section-heading {
+    font-size: 16px;
     font-weight: 600;
+    margin-bottom: 12px;
+    color: #222;
 }
 
-#selectionIndicator {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    background-color: #3b82f6;
-    transition: transform 0.3s ease, width 0.3s ease;
+textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+    font-size: 14px;
+    resize: vertical;
+    margin-bottom: 8px;
+    font-family: inherit;
 }
+
+textarea:focus {
+    border-color: #3b82f6;
+    outline: none;
+}
+
+.example-prompt {
+    font-size: 13px;
+    color: #666;
+    margin: 4px 0 12px;
+}
+.example-prompt em {
+    font-style: normal;
+    color: #3b82f6;
+}
+
+#chatResponseContent {
+    font-size: 13px;
+    color: #888;
+    font-style: italic;
+}
+
+

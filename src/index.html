@@ -10,6 +10,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Ethno Lens AI</title>
         <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="css/tabs.css" />
         <link rel="stylesheet" href="css/styles.css" />
     </head>
     <body>
@@ -42,23 +43,24 @@
                 <button id="scanDesign" disabled>Scan Design</button>
                 <button id="resetDesign" disabled>Reset</button>
 
-                <div id="resultBox" class="resultBox">
+                <div id="resultBox" class="scanResponse">
                     <div id="scanDesignSpinner" class="spinner" style="display: none;"></div>
-                    <span id="scanDesignContent">No issues detected yet.</span>
+                    <span id="scanDesignContent" class="scanContent">No issues detected yet.</span>
                 </div>
 
                 <!-- followUpChat -->
-                <div id="followUpChat" style="margin-top: 0px;">
-                    <label for="chatInput">Continue the conversation with AI:</label>
-                    <div style="display: flex; gap: 8px;">
-                        <input type="text" id="chatInput" placeholder="Ask a follow-up question..." style="flex: 1;" />
-                        <button id="chatSend">Send</button>
-                    </div>
-                    <small style="color: gray;">e.g. "What color would work better?" </small>
+                <div id="followUpChat" class="follow-up">
+                    <h3 class="section-heading">Ask the AI</h3>
+
+                    <textarea id="chatInput" rows="3" placeholder="Ask a follow-up question..."></textarea>
+                    <div class="example-prompt">Try: <em>What color would work better?</em></div>
+
+                    <button id="chatSend">Send</button>
+
                     <div id="chatResponse" class="chatResponse">
                         <div id="chatSpinner" class="spinner" style="display: none;"></div>
                         <span id="chatResponseContent">AI conversation not started yet.</span>
-                        <div id="chatError" style="color: red; margin-top: 6px;"></div>
+                        <div id="chatError" class="error"></div>
                     </div>
                 </div>
             </div>
