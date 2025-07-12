@@ -11,24 +11,23 @@
         <title>Ethno Lens AI</title>
         <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="css/styles.css" />
-        <link rel="stylesheet" href="css/spectrum-custom.css" />
     </head>
     <body>
         <div class="container">
             <h1>Ethno Lens AI</h1>
             <p>Scan your design for possible cultural or symbolic issues across regions.</p>
 
-            <div class="spectrum-Tabs spectrum-Tabs--horizontal" role="tablist" id="mainTabs">
-                <button class="spectrum-Tabs-item spectrum-Tabs-item--selected" role="tab" aria-selected="true" id="tab-scan-design" aria-controls="panel-scan-design">
-                    <span class="spectrum-Tabs-itemLabel">Design</span>
+            <div class="tab-buttons" role="tablist" id="mainTabs">
+                <button class="tab-button active" role="tab" aria-selected="true" id="tab-scan-design" aria-controls="panel-scan-design">
+                    <span>Design</span>
                 </button>
-                <button class="spectrum-Tabs-item" role="tab" aria-selected="false" id="tab-analyze-image" aria-controls="panel-analyze-image">
-                    <span class="spectrum-Tabs-itemLabel">Image</span>
+                <button class="tab-button" role="tab" aria-selected="false" id="tab-analyze-image" aria-controls="panel-analyze-image">
+                    <span>Image</span>
                 </button>
-                <div class="spectrum-Tabs-selectionIndicator" id="selectionIndicator"></div>
+                <div id="selectionIndicator"></div>
             </div>
 
-            <div id="panel-scan-design" class="spectrum-Tabs-panel" role="tabpanel" aria-labelledby="tab-scan-design">
+            <div id="panel-scan-design" role="tabpanel" aria-labelledby="tab-scan-design">
                 <!-- Dropdown lists -->
                 <label for="countrySelect">Select country:</label>
                 <select id="countrySelect">
@@ -64,7 +63,7 @@
                 </div>
             </div>
 
-            <div id="panel-analyze-image" class="spectrum-Tabs-panel" role="tabpanel" aria-labelledby="tab-analyze-image" hidden>
+            <div id="panel-analyze-image" role="tabpanel" aria-labelledby="tab-analyze-image" hidden>
                 <h3>Upload an image for cultural analysis</h3>
                 <input type="file" id="imageUpload" accept="image/*" />
 

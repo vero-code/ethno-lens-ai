@@ -1,17 +1,21 @@
 // src/ui/tabs.js
 
-const tabButtons = document.querySelectorAll('.spectrum-Tabs-item');
-const tabPanels = document.querySelectorAll('.spectrum-Tabs-panel');
+const tabButtons = document.querySelectorAll('.tab-button');
+const tabPanels = document.querySelectorAll('[role="tabpanel"]');
 const selectionIndicator = document.getElementById('selectionIndicator');
 
 function setSelectionIndicatorPosition(activeTab) {
     if (activeTab && selectionIndicator) {
         const tabRect = activeTab.getBoundingClientRect();
-        const tabsContainer = activeTab.closest('.spectrum-Tabs');
-        const containerRect = tabsContainer.getBoundingClientRect();
+        const spanRect = activeTab.querySelector('span').getBoundingClientRect();
 
-        selectionIndicator.style.width = `${tabRect.width}px`;
-        selectionIndicator.style.transform = `translateX(${tabRect.left - containerRect.left}px)`;
+        const width = spanRect.width;
+        const offset = spanRect.left - tabRect.left;
+
+        selectionIndicator.style.width = `${width}px`;
+        selectionIndicator.style.transform = `translateX(${offset}px)`;
+
+        activeTab.appendChild(selectionIndicator);
     }
 }
 
@@ -21,14 +25,14 @@ export function initializeTabs() {
             const targetPanelId = button.getAttribute('aria-controls');
 
             tabButtons.forEach(btn => {
-                btn.classList.remove('spectrum-Tabs-item--selected');
+                btn.classList.remove('active');
                 btn.setAttribute('aria-selected', 'false');
             });
             tabPanels.forEach(panel => {
                 panel.setAttribute('hidden', '');
             });
 
-            button.classList.add('spectrum-Tabs-item--selected');
+            button.classList.add('active');
             button.setAttribute('aria-selected', 'true');
             document.getElementById(targetPanelId).removeAttribute('hidden');
 
@@ -36,7 +40,7 @@ export function initializeTabs() {
         });
     });
 
-    const initialActiveTab = document.querySelector('.spectrum-Tabs-item--selected');
+    const initialActiveTab = document.querySelector('.tab-button.active');
     if (initialActiveTab) {
         setSelectionIndicatorPosition(initialActiveTab);
     }
