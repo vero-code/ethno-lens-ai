@@ -3,45 +3,60 @@
 [![JavaScript](https://img.shields.io/badge/language-JavaScript-F7DF1E.svg?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![Gemini](https://img.shields.io/badge/AI-Gemini-blueviolet.svg?logo=google)](https://deepmind.google/technologies/gemini/)
 
-An AI assistant that analyzes designs and warns about potential cultural, ethical or symbolic issues – to avoid misunderstandings and save money on fixing mistakes. The project will be sent to the ["Adobe Express Add-ons Hackathon"](https://devpost.com/software/ethnolens-ai).
+An AI-powered design add-on that scans your visuals and flags potential cultural, ethical, or symbolic pitfalls — before they become costly mistakes.
 
-## ✨ Features
+Built for global creators. Powered by Gemini. Designed for Adobe Express.
 
-- 🔌 **Seamless Adobe Express integration** — Works right inside your design workflow.
+👉 This project was created for the ["Adobe Express Add-ons Hackathon"](https://devpost.com/software/ethnolens-ai).
+ 
+## 🧠 Core AI Capabilities
 
 - 🧠 **Cultural check with AI** — Get instant feedback on how design fits different cultures.
 
-- 🔍 **Smart element scanning** — Detects text, colors, and shapes in selected elements.
-
 - 🌍 **Country-aware analysis** — Adjusts results based on your chosen region.
 
-- 🧾 **Clean markdown output** — AI replies are neatly formatted and easy to read.
+- 🏢 **Business type context** — Improves accuracy using industry-specific context.
 
-- ⏳ **Built-in loading indicator** — Shows when the AI is thinking.
+- 💬 **Follow-up chat with AI** — Ask clarification questions right after the analysis.
 
-- 🛡️ **Helpful error messages** — Lets you know if something’s missing or not selected.
+- 🖼️ **Image analysis** — Upload images for cultural and ethical review.
 
-- ⚙️ **Easy to extend** — Designed to grow with new element types and features.
+### 🛠️ Design Analysis Tools
 
-- 🏢 **Business type context** — Adding a "Business Type" field improves AI accuracy by providing cultural context for specific industries.
+- 🔍 **Smart element scanning** — Detects text, colors, and shapes.
 
-- 💬 **Follow-up chat with AI** — Ask clarification questions right after the analysis to refine your design choices.
+- 🔌 **Seamless Adobe Express integration** — Works right inside your design workflow.
 
-- 🖼️ **Image analysis** — Upload images directly for comprehensive cultural and ethical assessment.
+- ⚙️ **Easy to extend** — Built for future element types and features.
+
+### 📐 Output & UI Features
+
+- 🧾 **Clean markdown output** — Neatly formatted AI replies.
+
+- ⏳ **Built-in loading indicator** — Shows AI activity status.
+
+- 🛡️ **Helpful error messages** — Alerts if something’s missing or wrong.
 
 ## Tools
 
-This project has been created with _@adobe/create-ccweb-add-on_.
+This project has been created with _@adobe/create-ccweb-add-on_ and is designed to run inside **Adobe Express**.
 
--   HTML
--   CSS
--   JavaScript
+- HTML, CSS
+- JavaScript, Node.js
+- Adobe Express Add-on API
+- Gemini 2.5 Flash
 
 ## Setup
 
-1. To install the dependencies, run `npm install`.
-2. To build the application, run `npm run build`.
-3. To start the application, run `npm run start`.
+To run this add-on locally:
+
+1. **Fork this repository** and clone it to your machine.
+2. Navigate into the project folder.
+3. Install dependencies: `npm install`.
+4. Build the application: `npm run build`.
+5. Start the development server: `npm run start`.
+
+> ⚠️ To run the add-on inside Adobe Express, you’ll need an [Adobe Developer account](https://developer.adobe.com/) and follow the local setup instructions in the official docs: [Development Tools](https://developer.adobe.com/express/add-ons/docs/guides/getting_started/local_development/dev_tooling/).
 
 ## 📜 License
 

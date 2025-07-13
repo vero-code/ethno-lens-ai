@@ -58,9 +58,9 @@ input:focus, select:focus {
 }
 
 .responseBlockContents {
-    font-size: 13px;
+    font-size: 14px;
     color: #888;
-    font-style: italic;
+    display: block;
 }
 
 .spinner {
@@ -79,8 +79,7 @@ input:focus, select:focus {
 
 .error {
     color: #e74c3c;
-    font-size: 13px;
-    margin-top: 8px;
+    font-size: 14px;
     font-style: normal;
 }
 
@@ -123,12 +122,6 @@ textarea:focus {
 .example-prompt em {
     font-style: normal;
     color: #3b82f6;
-}
-
-#chatResponseContent {
-    font-size: 13px;
-    color: #888;
-    font-style: italic;
 }
 
 /* Image Tab */
