@@ -48,15 +48,51 @@ This project has been created with _@adobe/create-ccweb-add-on_ and is designed 
 
 ## Setup
 
-To run this add-on locally:
+This project consists of two parts: a frontend add-on and a backend server. Both must be running simultaneously.
 
-1. **Fork this repository** and clone it to your machine.
-2. Navigate into the project folder.
-3. Install dependencies: `npm install`.
-4. Build the application: `npm run build`.
-5. Start the development server: `npm run start`.
+**Prerequisites**
 
-> ⚠️ To run the add-on inside Adobe Express, you’ll need an [Adobe Developer account](https://developer.adobe.com/) and follow the local setup instructions in the official docs: [Development Tools](https://developer.adobe.com/express/add-ons/docs/guides/getting_started/local_development/dev_tooling/).
+- Node.js and npm installed.
+- An Adobe Developer account.
+- The Adobe Express Add-on Development Tool installed and configured. See the [official guide](https://developer.adobe.com/express/add-ons/docs/guides/getting_started/local_development/dev_tooling/).
+
+
+### Installation
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/vero-code/ethno-lens-ai.git
+    cd ethno-lens-ai
+    ```
+
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+
+3.  **Setup your API Key:**
+  -  Create a `.env` file in the project root.
+  -  Add your Gemini API key to it: `GEMINI_API_KEY=YOUR_API_KEY_HERE`
+
+### Running Locally
+
+You will need two separate terminals open.
+
+**Terminal 1: Start the Backend Server**
+
+  ```bash
+  node server.js
+  ```
+
+_Your backend is now running at `http://localhost:3000`._
+
+**Terminal 2: Start the Frontend Add-on Server**
+
+  ```bash
+  npm run start
+  ```
+
+_Your add-on is now hosted and can be sideloaded in Adobe Express._
 
 ## 📜 License
 
