@@ -66,6 +66,8 @@ addOnUISdk.ready.then(async () => {
         chatResponseContent.innerHTML = "AI conversation not started yet.";
         chatSpinner.style.display = "none";
         chatError.style.display = "none";
+        otherBusinessInput.style.display = "none";
+        otherBusinessInput.value = "";
         lastPromptContext = "";
         resetDesignButton.disabled = true;
         setDesignPanelButtonsExceptResetState(false);
@@ -78,6 +80,8 @@ addOnUISdk.ready.then(async () => {
         imageResultContent.innerHTML = `No image analyzed yet.`;
         imageSpinner.style.display = "none";
         imageError.style.display = "none";
+        imageOtherBusinessInput.style.display = "none";
+        imageOtherBusinessInput.value = "";
         imageCountrySelect.value = "";
         imageBusinessType.value = "";
         resetImageButton.disabled = true;
