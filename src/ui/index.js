@@ -17,6 +17,7 @@ addOnUISdk.ready.then(async () => {
     const scanDesignSpinner = document.getElementById("scanDesignSpinner");
     const countrySelect = document.getElementById("countrySelect");
     const businessSelect = document.getElementById("businessType");
+    const otherBusinessInput = document.getElementById("otherBusinessType");
     const resetDesignButton = document.getElementById("resetDesign");
 
     // Design - Chat
@@ -37,6 +38,7 @@ addOnUISdk.ready.then(async () => {
 
     const imageCountrySelect = document.getElementById("imageCountrySelect");
     const imageBusinessType = document.getElementById("imageBusinessType");
+    const imageOtherBusinessInput = document.getElementById("imageOtherBusinessType");
 
     let lastPromptContext = "";
 
@@ -84,6 +86,25 @@ addOnUISdk.ready.then(async () => {
         imageUploadInput.disabled = false;
     };
 
+    // For other business type
+    function handleBusinessTypeChange(selectElement, inputElement) {
+        if (selectElement.value === "Other...") {
+            inputElement.style.display = "block";
+        } else {
+            inputElement.style.display = "none";
+        }
+    }
+
+    businessSelect.addEventListener("change", () => {
+        handleBusinessTypeChange(businessSelect, otherBusinessInput);
+        enableResetOnInput(resetDesignButton);
+    });
+
+    imageBusinessType.addEventListener("change", () => {
+        handleBusinessTypeChange(imageBusinessType, imageOtherBusinessInput);
+        enableResetOnInput(resetImageButton);
+    });
+
     countrySelect.addEventListener("change", () => enableResetOnInput(resetDesignButton));
     businessSelect.addEventListener("change", () => enableResetOnInput(resetDesignButton));
     chatInput.addEventListener("input", () => {
@@ -109,7 +130,11 @@ addOnUISdk.ready.then(async () => {
         try {
             const description = await sandboxProxy.getDesignDescription();
             const country = countrySelect.value;
-            const businessType = businessSelect.value;
+
+            let businessType = businessSelect.value;
+            if (businessType === "Other...") {
+                businessType = otherBusinessInput.value.trim();
+            }
 
             if (!country) {
                 scanDesignSpinner.style.display = "none";
@@ -236,7 +261,11 @@ addOnUISdk.ready.then(async () => {
 
         const file = imageUploadInput.files[0];
         const country = imageCountrySelect.value;
-        const businessType = imageBusinessType.value;
+
+        let businessType = imageBusinessType.value;
+        if (businessType === "Other...") {
+            businessType = imageOtherBusinessInput.value.trim();
+        }
 
         if (!file) {
             imageSpinner.style.display = "none";

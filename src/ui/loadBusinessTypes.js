@@ -30,7 +30,8 @@ const businessTypes = [
     "Logistics / Delivery",
     "Religious / Spiritual",
     "Luxury / Premium Goods",
-    "Environmental / Sustainability"
+    "Environmental / Sustainability",
+    "Other..."
 ];
 
 allBusinessSelects.forEach(selectElement => {
@@ -38,7 +39,11 @@ allBusinessSelects.forEach(selectElement => {
 
     businessTypes.forEach(type => {
         const option = document.createElement("option");
-        option.value = type.toLowerCase().replace(/[^a-z0-9]/g, "-");
+        if (type === "Other...") {
+            option.value = "Other...";
+        } else {
+            option.value = type.toLowerCase().replace(/[^a-z0-9]/g, "-");
+        }
         option.textContent = type;
         selectElement.appendChild(option);
     });

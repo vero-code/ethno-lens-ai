@@ -136,3 +136,10 @@ textarea:focus {
     border: 1px solid #ddd;
     border-radius: 4px;
 }
+
+/* For other business type */
+.other-input {
+    display: none;
+    width: 100%;
+    margin-top: 8px;
+}
