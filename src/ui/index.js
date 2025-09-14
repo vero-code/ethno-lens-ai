@@ -11,21 +11,22 @@ addOnUISdk.ready.then(async () => {
     const { runtime } = addOnUISdk.instance;
     const sandboxProxy = await runtime.apiProxy("documentSandbox");
 
-    // Design - Scan
-    const scanDesignButton = document.getElementById("scanDesign");
-    const scanDesignContent = document.getElementById("scanDesignContent");
-    const scanDesignSpinner = document.getElementById("scanDesignSpinner");
-    const countrySelect = document.getElementById("countrySelect");
-    const businessSelect = document.getElementById("businessType");
-    const otherBusinessInput = document.getElementById("otherBusinessType");
-    const resetDesignButton = document.getElementById("resetDesign");
-
-    // Design - Chat
-    const chatInput = document.getElementById("chatInput");
-    const chatSend = document.getElementById("chatSend");
-    const chatResponseContent = document.getElementById("chatResponseContent");
-    const chatError = document.getElementById("chatError");
-    const chatSpinner = document.getElementById("chatSpinner");
+    const designPanel = {
+        scanButton: document.getElementById("scanDesign"),
+        content: document.getElementById("scanDesignContent"),
+        spinner: document.getElementById("scanDesignSpinner"),
+        countrySelect: document.getElementById("countrySelect"),
+        businessSelect: document.getElementById("businessType"),
+        otherBusinessInput: document.getElementById("otherBusinessType"),
+        resetButton: document.getElementById("resetDesign"),
+        chat: {
+            input: document.getElementById("chatInput"),
+            sendButton: document.getElementById("chatSend"),
+            responseContent: document.getElementById("chatResponseContent"),
+            error: document.getElementById("chatError"),
+            spinner: document.getElementById("chatSpinner")
+        }
+    };
 
     // Image
     const imageUploadInput = document.getElementById("imageUpload");
@@ -43,11 +44,11 @@ addOnUISdk.ready.then(async () => {
     let lastPromptContext = "";
 
     const setDesignPanelButtonsExceptResetState = (disabled) => {
-        scanDesignButton.disabled = disabled;
-        countrySelect.disabled = disabled;
-        businessSelect.disabled = disabled;
-        chatInput.disabled = disabled;
-        chatSend.disabled = disabled;
+        designPanel.scanButton.disabled = disabled;
+        designPanel.countrySelect.disabled = disabled;
+        designPanel.businessSelect.disabled = disabled;
+        designPanel.chat.input.disabled = disabled;
+        designPanel.chat.sendButton.disabled = disabled;
     };
 
     const setImagePanelButtonsExceptResetState = (disabled) => {
@@ -58,18 +59,18 @@ addOnUISdk.ready.then(async () => {
     };
 
     const resetDesignPanel = () => {
-        countrySelect.value = "";
-        businessSelect.value = "";
-        scanDesignContent.innerHTML = "No issues detected yet.";
-        scanDesignSpinner.style.display = "none";
-        chatInput.value = "";
-        chatResponseContent.innerHTML = "AI conversation not started yet.";
-        chatSpinner.style.display = "none";
-        chatError.style.display = "none";
-        otherBusinessInput.style.display = "none";
-        otherBusinessInput.value = "";
+        designPanel.countrySelect.value = "";
+        designPanel.businessSelect.value = "";
+        designPanel.content.innerHTML = "No issues detected yet.";
+        designPanel.spinner.style.display = "none";
+        designPanel.chat.input.value = "";
+        designPanel.chat.responseContent.innerHTML = "AI conversation not started yet.";
+        designPanel.chat.spinner.style.display = "none";
+        designPanel.chat.error.style.display = "none";
+        designPanel.otherBusinessInput.style.display = "none";
+        designPanel.otherBusinessInput.value = "";
         lastPromptContext = "";
-        resetDesignButton.disabled = true;
+        designPanel.resetButton.disabled = true;
         setDesignPanelButtonsExceptResetState(false);
     };
 
@@ -99,9 +100,9 @@ addOnUISdk.ready.then(async () => {
         }
     }
 
-    businessSelect.addEventListener("change", () => {
-        handleBusinessTypeChange(businessSelect, otherBusinessInput);
-        enableResetOnInput(resetDesignButton);
+    designPanel.businessSelect.addEventListener("change", () => {
+        handleBusinessTypeChange(designPanel.businessSelect, designPanel.otherBusinessInput);
+        enableResetOnInput(designPanel.resetButton);
     });
 
     imageBusinessType.addEventListener("change", () => {
@@ -109,13 +110,13 @@ addOnUISdk.ready.then(async () => {
         enableResetOnInput(resetImageButton);
     });
 
-    countrySelect.addEventListener("change", () => enableResetOnInput(resetDesignButton));
-    businessSelect.addEventListener("change", () => enableResetOnInput(resetDesignButton));
-    chatInput.addEventListener("input", () => {
-        if (chatInput.value.trim() !== "") {
-            enableResetOnInput(resetDesignButton);
-        } else if (lastPromptContext === "" && scanDesignContent.innerHTML === "No issues detected yet.") {
-            resetDesignButton.disabled = true;
+    designPanel.countrySelect.addEventListener("change", () => enableResetOnInput(designPanel.resetButton));
+    designPanel.businessSelect.addEventListener("change", () => enableResetOnInput(designPanel.resetButton));
+    designPanel.chat.input.addEventListener("input", () => {
+        if (designPanel.chat.input.value.trim() !== "") {
+            enableResetOnInput(designPanel.resetButton);
+        } else if (lastPromptContext === "" && designPanel.content.innerHTML === "No issues detected yet.") {
+            designPanel.resetButton.disabled = true;
         }
     });
 
@@ -123,43 +124,43 @@ addOnUISdk.ready.then(async () => {
     imageBusinessType.addEventListener("change", () => enableResetOnInput(resetImageButton));
 
     // Design - Scan
-    scanDesignButton.addEventListener("click", async event => {
+    designPanel.scanButton.addEventListener("click", async event => {
         setDesignPanelButtonsExceptResetState(true);
-        resetDesignButton.disabled = true;
-        scanDesignSpinner.style.display = "block";
-        scanDesignContent.innerHTML = "";
-        chatError.innerHTML = "";
-        chatResponseContent.innerHTML = "AI conversation not started yet.";
+        designPanel.resetButton.disabled = true;
+        designPanel.spinner.style.display = "block";
+        designPanel.content.innerHTML = "";
+        designPanel.chat.error.innerHTML = "";
+        designPanel.chat.responseContent.innerHTML = "AI conversation not started yet.";
 
         try {
             const description = await sandboxProxy.getDesignDescription();
-            const country = countrySelect.value;
+            const country = designPanel.countrySelect.value;
 
-            let businessType = businessSelect.value;
+            let businessType = designPanel.businessSelect.value;
             if (businessType === "Other...") {
-                businessType = otherBusinessInput.value.trim();
+                businessType = designPanel.otherBusinessInput.value.trim();
             }
 
             if (!country) {
-                scanDesignSpinner.style.display = "none";
-                scanDesignContent.innerHTML = `<span class="error">Please select a country before scanning.</span>`;
+                designPanel.spinner.style.display = "none";
+                designPanel.content.innerHTML = `<span class="error">Please select a country before scanning.</span>`;
                 setDesignPanelButtonsExceptResetState(false);
-                if (countrySelect.value === "" && businessSelect.value === "" && chatInput.value.trim() === "") {
-                    resetDesignButton.disabled = true;
+                if (designPanel.countrySelect.value === "" && designPanel.businessSelect.value === "" && designPanel.chat.input.value.trim() === "") {
+                    designPanel.resetButton.disabled = true;
                 } else {
-                    resetDesignButton.disabled = false;
+                    designPanel.resetButton.disabled = false;
                 }
                 return;
             }
 
             if (!businessType) {
-                scanDesignSpinner.style.display = "none";
-                scanDesignContent.innerHTML = `<span class="error">Please select a business type before scanning.</span>`;
+                designPanel.spinner.style.display = "none";
+                designPanel.content.innerHTML = `<span class="error">Please select a business type before scanning.</span>`;
                 setDesignPanelButtonsExceptResetState(false);
-                if (countrySelect.value === "" && businessSelect.value === "" && chatInput.value.trim() === "") {
-                    resetDesignButton.disabled = true;
+                if (designPanel.countrySelect.value === "" && designPanel.businessSelect.value === "" && designPanel.chat.input.value.trim() === "") {
+                    designPanel.resetButton.disabled = true;
                 } else {
-                    resetDesignButton.disabled = false;
+                    designPanel.resetButton.disabled = false;
                 }
                 return;
             }
@@ -171,88 +172,88 @@ addOnUISdk.ready.then(async () => {
             const fullPrompt = startPrompt + businessContext + endPrompt;
 
             if (fullPrompt.includes("No elements selected")) {
-                scanDesignSpinner.style.display = "none";
-                scanDesignContent.innerHTML = `<span class="error">Please select a design element on the canvas first.</span>`;
+                designPanel.spinner.style.display = "none";
+                designPanel.content.innerHTML = `<span class="error">Please select a design element on the canvas first.</span>`;
                 setDesignPanelButtonsExceptResetState(false);
-                if (countrySelect.value === "" && businessSelect.value === "" && chatInput.value.trim() === "") {
-                    resetDesignButton.disabled = true;
+                if (designPanel.countrySelect.value === "" && designPanel.businessSelect.value === "" && designPanel.chat.input.value.trim() === "") {
+                    designPanel.resetButton.disabled = true;
                 } else {
-                    resetDesignButton.disabled = false;
+                    designPanel.resetButton.disabled = false;
                 }
                 return;
             }
 
             const data = await analyzeDesign(fullPrompt);
-            scanDesignSpinner.style.display = "none";
+            designPanel.spinner.style.display = "none";
             setDesignPanelButtonsExceptResetState(false);
-            resetDesignButton.disabled = false;
+            designPanel.resetButton.disabled = false;
 
-            renderMarkdown(scanDesignContent, data.result, "<b>AI Response</b><br>");
+            renderMarkdown(designPanel.content, data.result, "<b>AI Response</b><br>");
 
             lastPromptContext = fullPrompt;
         } catch (error) {
-            scanDesignSpinner.style.display = "none";
-            scanDesignContent.innerHTML = `<span class="error">Error: ${error.message}</span>`;
+            designPanel.spinner.style.display = "none";
+            designPanel.content.innerHTML = `<span class="error">Error: ${error.message}</span>`;
             setDesignPanelButtonsExceptResetState(false);
-            resetDesignButton.disabled = false;
+            designPanel.resetButton.disabled = false;
         }
     });
 
-    resetDesignButton.addEventListener("click", () => {
+    designPanel.resetButton.addEventListener("click", () => {
         resetDesignPanel();
     });
 
     resetDesignPanel();
 
     // Design - Chat
-    chatSend.addEventListener("click", async () => {
-        chatError.innerHTML = "";
-        chatError.style.display = "none";
-        chatResponseContent.innerHTML = "";
+    designPanel.chat.sendButton.addEventListener("click", async () => {
+        designPanel.chat.error.innerHTML = "";
+        designPanel.chat.error.style.display = "none";
+        designPanel.chat.responseContent.innerHTML = "";
 
-        const followUp = chatInput.value.trim();
+        const followUp = designPanel.chat.input.value.trim();
 
         if (!followUp) {
-            chatError.innerHTML = "Please enter a message before sending.";
-            chatError.style.display = "block";
+            designPanel.chat.error.innerHTML = "Please enter a message before sending.";
+            designPanel.chat.error.style.display = "block";
             return;
         }
 
         if (!lastPromptContext) {
-            chatError.innerHTML = "Please scan a design before asking follow-up questions.";
-            chatError.style.display = "block";
+            designPanel.chat.error.innerHTML = "Please scan a design before asking follow-up questions.";
+            designPanel.chat.error.style.display = "block";
             return;
         }
 
         setDesignPanelButtonsExceptResetState(true);
-        resetDesignButton.disabled = true;
-        chatSpinner.style.display = "block";
+        designPanel.resetButton.disabled = true;
+        designPanel.chat.spinner.style.display = "block";
 
         const fullFollowUpPrompt = `${lastPromptContext}\n\nThe user now asks: "${followUp}"`;
         console.log("fullFollowUpPrompt -> ", fullFollowUpPrompt);
 
         try {
             const data = await analyzeDesign(fullFollowUpPrompt);
-            chatSpinner.style.display = "none";
+            designPanel.chat.spinner.style.display = "none";
 
             setDesignPanelButtonsExceptResetState(false);
-            resetDesignButton.disabled = false;
+            designPanel.resetButton.disabled = false;
 
-            renderMarkdown(chatResponseContent, data.result, `<b>AI responds:</b><br>`);
-            chatInput.value = "";
-            chatError.style.display = "none";
+            renderMarkdown(designPanel.chat.responseContent, data.result, `<b>AI responds:</b><br>`);
+            designPanel.chat.input.value = "";
+            designPanel.chat.error.style.display = "none";
         } catch (err) {
-            chatSpinner.style.display = "none";
-            chatError.innerHTML = `Error: ${err.message}`;
-            chatError.style.display = "block";
+            designPanel.chat.spinner.style.display = "none";
+            designPanel.chat.error.innerHTML = `Error: ${err.message}`;
+            designPanel.chat.error.style.display = "block";
 
             setDesignPanelButtonsExceptResetState(false);
-            resetDesignButton.disabled = false;
+            designPanel.resetButton.disabled = false;
         }
     });
 
-    chatInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") chatSend.click();
+    designPanel.chat.input.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") designPanel.chat.sendButton.click();
     });
 
     // Image
