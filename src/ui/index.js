@@ -28,18 +28,18 @@ addOnUISdk.ready.then(async () => {
         }
     };
 
-    // Image
-    const imageUploadInput = document.getElementById("imageUpload");
-    const analyzeImageButton = document.getElementById("analyzeImage");
-    const imagePreview = document.getElementById("imagePreview");
-    const imageResultContent = document.getElementById("imageResultContent");
-    const imageError = document.getElementById("imageError");
-    const resetImageButton = document.getElementById("resetImage");
-    const imageSpinner = document.getElementById("imageSpinner");
-
-    const imageCountrySelect = document.getElementById("imageCountrySelect");
-    const imageBusinessType = document.getElementById("imageBusinessType");
-    const imageOtherBusinessInput = document.getElementById("imageOtherBusinessType");
+    const imagePanel = {
+        uploadInput: document.getElementById("imageUpload"),
+        analyzeButton: document.getElementById("analyzeImage"),
+        preview: document.getElementById("imagePreview"),
+        resultContent: document.getElementById("imageResultContent"),
+        error: document.getElementById("imageError"),
+        resetButton: document.getElementById("resetImage"),
+        spinner: document.getElementById("imageSpinner"),
+        countrySelect: document.getElementById("imageCountrySelect"),
+        businessTypeSelect: document.getElementById("imageBusinessType"),
+        otherBusinessInput: document.getElementById("imageOtherBusinessType")
+    };
 
     let lastPromptContext = "";
 
@@ -52,10 +52,10 @@ addOnUISdk.ready.then(async () => {
     };
 
     const setImagePanelButtonsExceptResetState = (disabled) => {
-        imageUploadInput.disabled = disabled;
-        analyzeImageButton.disabled = disabled;
-        imageCountrySelect.disabled = disabled;
-        imageBusinessType.disabled = disabled;
+        imagePanel.uploadInput.disabled = disabled;
+        imagePanel.analyzeButton.disabled = disabled;
+        imagePanel.countrySelect.disabled = disabled;
+        imagePanel.businessTypeSelect.disabled = disabled;
     };
 
     const resetDesignPanel = () => {
@@ -75,20 +75,20 @@ addOnUISdk.ready.then(async () => {
     };
 
     const resetImagePanel = () => {
-        imageUploadInput.value = "";
-        imagePreview.src = "";
-        imagePreview.style.display = "none";
-        imageResultContent.innerHTML = `No image analyzed yet.`;
-        imageSpinner.style.display = "none";
-        imageError.style.display = "none";
-        imageOtherBusinessInput.style.display = "none";
-        imageOtherBusinessInput.value = "";
-        imageCountrySelect.value = "";
-        imageBusinessType.value = "";
-        resetImageButton.disabled = true;
+        imagePanel.uploadInput.value = "";
+        imagePanel.preview.src = "";
+        imagePanel.preview.style.display = "none";
+        imagePanel.resultContent.innerHTML = `No image analyzed yet.`;
+        imagePanel.spinner.style.display = "none";
+        imagePanel.error.style.display = "none";
+        imagePanel.otherBusinessInput.style.display = "none";
+        imagePanel.otherBusinessInput.value = "";
+        imagePanel.countrySelect.value = "";
+        imagePanel.businessTypeSelect.value = "";
+        imagePanel.resetButton.disabled = true;
         setImagePanelButtonsExceptResetState(false);
-        analyzeImageButton.disabled = true;
-        imageUploadInput.disabled = false;
+        imagePanel.analyzeButton.disabled = true;
+        imagePanel.uploadInput.disabled = false;
     };
 
     // For other business type
@@ -105,9 +105,9 @@ addOnUISdk.ready.then(async () => {
         enableResetOnInput(designPanel.resetButton);
     });
 
-    imageBusinessType.addEventListener("change", () => {
-        handleBusinessTypeChange(imageBusinessType, imageOtherBusinessInput);
-        enableResetOnInput(resetImageButton);
+    imagePanel.businessTypeSelect.addEventListener("change", () => {
+        handleBusinessTypeChange(imagePanel.businessTypeSelect, imagePanel.otherBusinessInput);
+        enableResetOnInput(imagePanel.resetButton);
     });
 
     designPanel.countrySelect.addEventListener("change", () => enableResetOnInput(designPanel.resetButton));
@@ -120,8 +120,8 @@ addOnUISdk.ready.then(async () => {
         }
     });
 
-    imageCountrySelect.addEventListener("change", () => enableResetOnInput(resetImageButton));
-    imageBusinessType.addEventListener("change", () => enableResetOnInput(resetImageButton));
+    imagePanel.countrySelect.addEventListener("change", () => enableResetOnInput(imagePanel.resetButton));
+    imagePanel.businessTypeSelect.addEventListener("change", () => enableResetOnInput(imagePanel.resetButton));
 
     // Design - Scan
     designPanel.scanButton.addEventListener("click", async event => {
@@ -257,46 +257,46 @@ addOnUISdk.ready.then(async () => {
     });
 
     // Image
-    analyzeImageButton.addEventListener("click", async () => {
+    imagePanel.analyzeButton.addEventListener("click", async () => {
         setImagePanelButtonsExceptResetState(true);
-        resetImageButton.disabled = true;
-        imageSpinner.style.display = "block";
-        imageResultContent.innerHTML = "";
-        imageError.style.display = "none";
+        imagePanel.resetButton.disabled = true;
+        imagePanel.spinner.style.display = "block";
+        imagePanel.resultContent.innerHTML = "";
+        imagePanel.error.style.display = "none";
 
-        const file = imageUploadInput.files[0];
-        const country = imageCountrySelect.value;
+        const file = imagePanel.uploadInput.files[0];
+        const country = imagePanel.countrySelect.value;
 
-        let businessType = imageBusinessType.value;
+        let businessType = imagePanel.businessTypeSelect.value;
         if (businessType === "Other...") {
-            businessType = imageOtherBusinessInput.value.trim();
+            businessType = imagePanel.otherBusinessInput.value.trim();
         }
 
         if (!file) {
-            imageSpinner.style.display = "none";
-            imageError.innerHTML = `<span class="error">Please select an image file to upload.</span>`;
-            imageError.style.display = "block";
+            imagePanel.spinner.style.display = "none";
+            imagePanel.error.innerHTML = `<span class="error">Please select an image file to upload.</span>`;
+            imagePanel.error.style.display = "block";
             setImagePanelButtonsExceptResetState(false);
-            analyzeImageButton.disabled = true;
-            resetImageButton.disabled = true;
+            imagePanel.analyzeButton.disabled = true;
+            imagePanel.resetButton.disabled = true;
             return;
         }
 
         if (!country) {
-            imageSpinner.style.display = "none";
-            imageError.innerHTML = `<span class="error">Please select a country.</span>`;
-            imageError.style.display = "block";
+            imagePanel.spinner.style.display = "none";
+            imagePanel.error.innerHTML = `<span class="error">Please select a country.</span>`;
+            imagePanel.error.style.display = "block";
             setImagePanelButtonsExceptResetState(false);
-            resetImageButton.disabled = false;
+            imagePanel.resetButton.disabled = false;
             return;
         }
 
         if (!businessType) {
-            imageSpinner.style.display = "none";
-            imageError.innerHTML = `<span class="error">Please select a business type.</span>`;
-            imageError.style.display = "block";
+            imagePanel.spinner.style.display = "none";
+            imagePanel.error.innerHTML = `<span class="error">Please select a business type.</span>`;
+            imagePanel.error.style.display = "block";
             setImagePanelButtonsExceptResetState(false);
-            resetImageButton.disabled = false;
+            imagePanel.resetButton.disabled = false;
             return;
         }
 
@@ -307,46 +307,46 @@ addOnUISdk.ready.then(async () => {
 
         try {
             const data = await analyzeImage(formData);
-            imageSpinner.style.display = "none";
+            imagePanel.spinner.style.display = "none";
             setImagePanelButtonsExceptResetState(false);
-            resetImageButton.disabled = false;
+            imagePanel.resetButton.disabled = false;
 
-            renderMarkdown(imageResultContent, data.result, "<b>AI Image Analysis</b><br>");
+            renderMarkdown(imagePanel.resultContent, data.result, "<b>AI Image Analysis</b><br>");
 
         } catch (err) {
-            imageSpinner.style.display = "none";
-            imageError.innerHTML = `<span class="error">Error analyzing image: ${err.message}</span>`;
-            imageError.style.display = "block";
+            imagePanel.spinner.style.display = "none";
+            imagePanel.error.innerHTML = `<span class="error">Error analyzing image: ${err.message}</span>`;
+            imagePanel.error.style.display = "block";
             setImagePanelButtonsExceptResetState(false);
-            resetImageButton.disabled = false;
+            imagePanel.resetButton.disabled = false;
         }
     });
 
-    imageUploadInput.addEventListener("change", () => {
-        const file = imageUploadInput.files[0];
+    imagePanel.uploadInput.addEventListener("change", () => {
+        const file = imagePanel.uploadInput.files[0];
         if (file && file.type.startsWith("image/")) {
             const reader = new FileReader();
             reader.onload = function (e) {
-                imagePreview.src = e.target.result;
-                imagePreview.style.display = "block";
-                analyzeImageButton.disabled = false;
-                resetImageButton.disabled = false;
-                imageError.style.display = "none";
-                imageResultContent.innerHTML = `The image is ready for analysis.`;
+                imagePanel.preview.src = e.target.result;
+                imagePanel.preview.style.display = "block";
+                imagePanel.analyzeButton.disabled = false;
+                imagePanel.resetButton.disabled = false;
+                imagePanel.error.style.display = "none";
+                imagePanel.resultContent.innerHTML = `The image is ready for analysis.`;
             };
             reader.readAsDataURL(file);
         } else {
-            imagePreview.src = "";
-            imagePreview.style.display = "none";
-            analyzeImageButton.disabled = true;
-            resetImageButton.disabled = true;
-            imageError.innerHTML = "Please select a valid image file.";
-            imageError.style.display = "block";
-            imageResultContent.innerHTML = `No image analyzed yet.`;
+            imagePanel.preview.src = "";
+            imagePanel.preview.style.display = "none";
+            imagePanel.analyzeButton.disabled = true;
+            imagePanel.resetButton.disabled = true;
+            imagePanel.error.innerHTML = "Please select a valid image file.";
+            imagePanel.error.style.display = "block";
+            imagePanel.resultContent.innerHTML = `No image analyzed yet.`;
         }
     });
 
-    resetImageButton.addEventListener("click", () => {
+    imagePanel.resetButton.addEventListener("click", () => {
         resetImagePanel();
     });
 
