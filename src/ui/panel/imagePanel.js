@@ -1,6 +1,17 @@
-// src/ui/imagePanel.js
-import { renderMarkdown, enableResetOnInput } from './utils.js';
-import { analyzeImage } from "./api.js";
+// src/ui/panel/imagePanel.js
+import { renderMarkdown, enableResetOnInput, handleBusinessTypeChange } from '../utils.js';
+import { analyzeImage } from "../api.js";
+
+// --- CONSTANTS ---
+const MESSAGES = {
+    NO_IMAGE_ANALYZED: "No image analyzed yet.",
+    IMAGE_READY: "The image is ready for analysis.",
+    INVALID_FILE: "Please select a valid image file.",
+    SELECT_IMAGE: "Please select an image file to upload.",
+    SELECT_COUNTRY: "Please select a country.",
+    SELECT_BUSINESS_TYPE: "Please select a business type."
+};
+const OTHER_OPTION_VALUE = "Other...";
 
 // --- HELPER FUNCTIONS ---
 const setButtonsState = (imagePanel, disabled) => {
@@ -17,14 +28,6 @@ const showImageError = (imagePanel, message) => {
   setButtonsState(imagePanel, false);
   imagePanel.resetButton.disabled = false;
 };
-
-function handleBusinessTypeChange(selectElement, inputElement) {
-  if (selectElement.value === "Other...") {
-    inputElement.style.display = "block";
-  } else {
-    inputElement.style.display = "none";
-  }
-}
 
 // --- MAIN INITIALIZATION FUNCTION ---
 export function initializeImagePanel() {
@@ -83,7 +86,7 @@ export function initializeImagePanel() {
         imagePanel.preview.style.display = "none";
         imagePanel.analyzeButton.disabled = true;
         imagePanel.resetButton.disabled = true;
-        showImageError(imagePanel, "Please select a valid image file.");
+        showImageError(imagePanel, MESSAGES.INVALID_FILE);
       }
   });
 
@@ -98,13 +101,13 @@ export function initializeImagePanel() {
     const file = imagePanel.uploadInput.files[0];
     const country = imagePanel.countrySelect.value;
     let businessType = imagePanel.businessTypeSelect.value;
-    if (businessType === "Other...") {
+    if (businessType === OTHER_OPTION_VALUE) {
       businessType = imagePanel.otherBusinessInput.value.trim();
     }
 
-    if (!file) return showImageError(imagePanel, "Please select an image file to upload.");
-    if (!country) return showImageError(imagePanel, "Please select a country.");
-    if (!businessType) return showImageError(imagePanel, "Please select a business type.");
+    if (!file) return showImageError(imagePanel, MESSAGES.SELECT_IMAGE);
+    if (!country) return showImageError(imagePanel, MESSAGES.SELECT_COUNTRY);
+    if (!businessType) return showImageError(imagePanel, MESSAGES.SELECT_BUSINESS_TYPE);
 
     const formData = new FormData();
     formData.append("image", file);

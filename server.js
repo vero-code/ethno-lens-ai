@@ -28,7 +28,7 @@ app.post("/analyze", async (req, res) => {
     }
 
     const fullPrompt = `${personaPrompt}\n\n ${prompt}`;
-    console.log(fullPrompt);
+    // console.log(fullPrompt);
 
     try {
         const result = await model.generateContent(fullPrompt);
@@ -65,7 +65,7 @@ app.post("/analyze-image", upload.single("image"), async (req, res) => {
         }
     ];
 
-    console.log(promptText);
+    // console.log(promptText);
 
     try {
         const result = await model.generateContent(parts);

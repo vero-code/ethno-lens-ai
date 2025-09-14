@@ -13,3 +13,11 @@ export const renderMarkdown = (targetElement, markdownText, prefix = "") => {
 export const enableResetOnInput = (button) => {
     button.disabled = false;
 };
+
+export function handleBusinessTypeChange(selectElement, inputElement) {
+  if (selectElement.value === "Other...") {
+    inputElement.style.display = "block";
+  } else {
+    inputElement.style.display = "none";
+  }
+}
