@@ -27,14 +27,24 @@ app.post("/analyze", async (req, res) => {
         return res.status(400).json({ error: "Prompt is required" });
     }
 
-    const fullPrompt = `${personaPrompt}\n\n ${prompt}`;
+    const fullPrompt = `${personaPrompt}\n\n${prompt}\n\nFinally, on a new line at the very end, provide a "Cultural Sensitivity Score" from 0 (very high risk) to 100 (very low risk) based on your analysis. The line must start with "SCORE:" followed by the number. For example: SCORE: 85`;
     // console.log(fullPrompt);
 
     try {
         const result = await model.generateContent(fullPrompt);
         const response = await result.response;
         const text = response.text();
-        res.json({ result: text });
+
+        let analysisText = text;
+        let score = null;
+
+        const scoreMatch = text.match(/SCORE:\s*(\d+)/);
+        if (scoreMatch && scoreMatch[1]) {
+            score = parseInt(scoreMatch[1], 10);
+            analysisText = text.replace(/SCORE:\s*(\d+)/, "").trim();
+        }
+
+        res.json({ result: analysisText, score: score });
     } catch (err) {
         console.error("Error from Gemini:", err);
         res.status(500).json({ error: "Failed to generate content" });

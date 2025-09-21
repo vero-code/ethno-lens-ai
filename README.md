@@ -9,7 +9,7 @@ Built for global creators. Powered by Gemini. Designed for Adobe Express.
 
 👉 This project was created for the ["Adobe Express Add-ons Hackathon"](https://devpost.com/software/ethnolens-ai).
  
-## 🧠 Core AI Capabilities
+## 🤖 Core AI Capabilities
 
 - 🧠 **Cultural check with AI** — Get instant feedback on how design fits different cultures.
 
@@ -30,6 +30,8 @@ Built for global creators. Powered by Gemini. Designed for Adobe Express.
 - ⚙️ **Easy to extend** — Built for future element types and features.
 
 ### 📐 Output & UI Features
+
+- 💯 **Cultural Sensitivity Score** — Get a clear 0-100 score to quickly assess cultural fitness.
 
 - 🧾 **Clean markdown output** — Neatly formatted AI replies.
 

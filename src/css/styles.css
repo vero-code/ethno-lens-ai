@@ -143,3 +143,23 @@ textarea:focus {
     width: 100%;
     margin-top: 8px;
 }
+
+/* Score box */
+.score-box {
+    text-align: center;
+    margin-bottom: 16px;
+    padding: 12px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+}
+.score-box h3 {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    color: #555;
+}
+.score-box p {
+    margin: 0;
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+}

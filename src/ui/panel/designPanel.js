@@ -40,6 +40,8 @@ export function initializeDesignPanel(sandboxProxy) {
     businessSelect: document.getElementById("businessType"),
     otherBusinessInput: document.getElementById("otherBusinessType"),
     resetButton: document.getElementById("resetDesign"),
+    scoreBox: document.getElementById("scoreBox"),
+    scoreValue: document.getElementById("scoreValue"),
     chat: {
       input: document.getElementById("chatInput"),
       sendButton: document.getElementById("chatSend"),
@@ -55,6 +57,8 @@ export function initializeDesignPanel(sandboxProxy) {
     designPanel.countrySelect.value = "";
     designPanel.businessSelect.value = "";
     designPanel.content.innerHTML = MESSAGES.NO_ISSUES;
+    designPanel.scoreBox.style.display = 'none';
+    designPanel.scoreValue.textContent = '--';
     designPanel.spinner.style.display = "none";
     designPanel.chat.input.value = "";
     designPanel.chat.responseContent.innerHTML = MESSAGES.AI_CONVERSATION_START;
@@ -104,7 +108,12 @@ export function initializeDesignPanel(sandboxProxy) {
       const prompt = `Analyze the provided visual design. The design includes ${description} and is intended for ${country}. The business type is "${businessType}". Identify any culturally insensitive or inappropriate elements and suggest changes to promote inclusive visual solutions that are suitable for a diverse international audience, with a focus on cultural appropriateness for ${country}. In the first sentence, give a short answer whether this element should be used in the selected country.`;
 
       const data = await analyzeDesign(prompt);
+      // Display both text and rating
       renderMarkdown(designPanel.content, data.result, "<b>AI Response</b><br>");
+      if (data.score !== null) {
+          designPanel.scoreValue.textContent = data.score;
+          designPanel.scoreBox.style.display = 'block';
+      }
       lastPromptContext = prompt;
     } catch (error) {
       showDesignError(designPanel, `Error: ${error.message}`);
