@@ -21,11 +21,12 @@ const personaPrompt = `You are a Senior Cultural Inclusivity & Design Ethics Spe
 const upload = multer({ storage: multer.memoryStorage() });
 
 app.post("/analyze", async (req, res) => {
-    const { prompt } = req.body;
+    const { prompt, userId } = req.body;
 
-    if (!prompt) {
-        return res.status(400).json({ error: "Prompt is required" });
-    }
+    if (!prompt) return res.status(400).json({ error: "Prompt is required" });
+    if (!userId) return res.status(400).json({ error: "User ID is required" });
+
+    console.log(`Received text analysis request from user: ${userId}`);
 
     const fullPrompt = `${personaPrompt}\n\n${prompt}\n\nFinally, on a new line at the very end, provide a "Cultural Sensitivity Score" from 0 (very high risk) to 100 (very low risk) based on your analysis. The line must start with "SCORE:" followed by the number. For example: SCORE: 85`;
     // console.log(fullPrompt);
@@ -52,15 +53,14 @@ app.post("/analyze", async (req, res) => {
 });
 
 app.post("/analyze-image", upload.single("image"), async (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ error: "No image uploaded" });
-    }
+    if (!req.file) return res.status(400).json({ error: "No image uploaded" });
 
-    const { country, businessType } = req.body;
+    const { country, businessType, userId } = req.body;
 
-    if (!country || !businessType) {
-        return res.status(400).json({ error: "Country and business type are required." });
-    }
+    if (!country || !businessType) return res.status(400).json({ error: "Country and business type are required." });
+    if (!userId) return res.status(400).json({ error: "User ID is required." });
+
+    console.log(`Received image analysis request from user: ${userId}`);
 
     const base64Image = req.file.buffer.toString("base64");
     const promptText = `${personaPrompt}\n\nAnalyze the provided image for potential cultural, symbolic or ethical issues. This image is intended for ${country} with a business type of "${businessType}". Identify any culturally insensitive or inappropriate elements and suggest changes to promote inclusive visual solutions suitable for a diverse international audience, with a focus on cultural appropriateness for ${country}. In the first sentence, give a short answer whether this element should be used in the selected country.`;

@@ -1,6 +1,7 @@
 // src/ui/panel/designPanel.js
 import { renderMarkdown, enableResetOnInput, handleBusinessTypeChange } from '../utils.js';
 import { analyzeDesign } from "../api.js";
+import { getUserId } from '../user.js';
 
 // --- CONSTANTS ---
 const MESSAGES = {
@@ -10,7 +11,8 @@ const MESSAGES = {
   SELECT_BUSINESS_TYPE: "Please select a business type before scanning.",
   SELECT_ELEMENT: "Please select a design element on the canvas first.",
   ENTER_MESSAGE: "Please enter a message before sending.",
-  SCAN_FIRST: "Please scan a design before asking follow-up questions."
+  SCAN_FIRST: "Please scan a design before asking follow-up questions.",
+  USER_ID_ERROR: "Could not identify user. Please try again."
 };
 const OTHER_OPTION_VALUE = "Other...";
 
@@ -52,6 +54,7 @@ export function initializeDesignPanel(sandboxProxy) {
   };
 
   let lastPromptContext = "";
+  let userId = null;
 
   const resetDesignPanel = () => {
     designPanel.countrySelect.value = "";
@@ -85,6 +88,8 @@ export function initializeDesignPanel(sandboxProxy) {
   designPanel.resetButton.addEventListener("click", resetDesignPanel);
 
   // --- ACTION BUTTON LISTENERS ---
+  
+  // Design - Scan
   designPanel.scanButton.addEventListener("click", async () => {
     setButtonsState(designPanel, true);
     designPanel.resetButton.disabled = true;
@@ -94,6 +99,9 @@ export function initializeDesignPanel(sandboxProxy) {
     designPanel.chat.responseContent.innerHTML = MESSAGES.AI_CONVERSATION_START;
 
     try {
+      if (!userId) userId = await getUserId();
+      if (!userId) return showDesignError(designPanel, MESSAGES.USER_ID_ERROR);
+
       const description = await sandboxProxy.getDesignDescription();
       const country = designPanel.countrySelect.value;
       let businessType = designPanel.businessSelect.value;
@@ -107,7 +115,15 @@ export function initializeDesignPanel(sandboxProxy) {
 
       const prompt = `Analyze the provided visual design. The design includes ${description} and is intended for ${country}. The business type is "${businessType}". Identify any culturally insensitive or inappropriate elements and suggest changes to promote inclusive visual solutions that are suitable for a diverse international audience, with a focus on cultural appropriateness for ${country}. In the first sentence, give a short answer whether this element should be used in the selected country.`;
 
-      const data = await analyzeDesign(prompt);
+      // --- TEMPORARY TEST CODE ---
+      console.log("API call is OFF. Using mock data.");
+      const data = {
+          result: "This is a **mock response** for testing the UI. The real API call was not made.",
+          score: 75
+      };
+
+      //const data = await analyzeDesign(prompt, userId);
+
       // Display both text and rating
       renderMarkdown(designPanel.content, data.result, "<b>AI Response</b><br>");
       if (data.score !== null) {
@@ -124,7 +140,7 @@ export function initializeDesignPanel(sandboxProxy) {
     }
   });
 
-  // Design - Chat
+  // Design - Ask the AI - Send
   designPanel.chat.sendButton.addEventListener("click", async () => {
     const followUp = designPanel.chat.input.value.trim();
     if (!followUp) {
@@ -147,7 +163,7 @@ export function initializeDesignPanel(sandboxProxy) {
     const fullFollowUpPrompt = `${lastPromptContext}\n\nThe user now asks: "${followUp}"`;
 
     try {
-      const data = await analyzeDesign(fullFollowUpPrompt);
+      const data = await analyzeDesign(fullFollowUpPrompt, userId);
       renderMarkdown(designPanel.chat.responseContent, data.result, `<b>AI responds:</b><br>`);
       designPanel.chat.input.value = "";
     } catch (err) {
