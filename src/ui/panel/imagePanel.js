@@ -1,6 +1,7 @@
 // src/ui/panel/imagePanel.js
 import { renderMarkdown, enableResetOnInput, handleBusinessTypeChange } from '../utils.js';
 import { analyzeImage } from "../api.js";
+import { getUserId } from '../user.js';
 
 // --- CONSTANTS ---
 const MESSAGES = {
@@ -9,7 +10,8 @@ const MESSAGES = {
     INVALID_FILE: "Please select a valid image file.",
     SELECT_IMAGE: "Please select an image file to upload.",
     SELECT_COUNTRY: "Please select a country.",
-    SELECT_BUSINESS_TYPE: "Please select a business type."
+    SELECT_BUSINESS_TYPE: "Please select a business type.",
+    USER_ID_ERROR: "Could not identify user. Please try again."
 };
 const OTHER_OPTION_VALUE = "Other...";
 
@@ -43,6 +45,8 @@ export function initializeImagePanel() {
     businessTypeSelect: document.getElementById("imageBusinessType"),
     otherBusinessInput: document.getElementById("imageOtherBusinessType")
   };
+
+  let userId = null;
 
   const resetImagePanel = () => {
     imagePanel.uploadInput.value = "";
@@ -98,24 +102,35 @@ export function initializeImagePanel() {
     imagePanel.resultContent.innerHTML = "";
     imagePanel.error.style.display = "none";
 
-    const file = imagePanel.uploadInput.files[0];
-    const country = imagePanel.countrySelect.value;
-    let businessType = imagePanel.businessTypeSelect.value;
-    if (businessType === OTHER_OPTION_VALUE) {
-      businessType = imagePanel.otherBusinessInput.value.trim();
-    }
-
-    if (!file) return showImageError(imagePanel, MESSAGES.SELECT_IMAGE);
-    if (!country) return showImageError(imagePanel, MESSAGES.SELECT_COUNTRY);
-    if (!businessType) return showImageError(imagePanel, MESSAGES.SELECT_BUSINESS_TYPE);
-
-    const formData = new FormData();
-    formData.append("image", file);
-    formData.append("country", country);
-    formData.append("businessType", businessType);
-
     try {
-      const data = await analyzeImage(formData);
+      if (!userId) userId = await getUserId();
+      if (!userId) return showImageError(imagePanel, MESSAGES.USER_ID_ERROR);
+
+      const file = imagePanel.uploadInput.files[0];
+      const country = imagePanel.countrySelect.value;
+      let businessType = imagePanel.businessTypeSelect.value;
+      if (businessType === OTHER_OPTION_VALUE) {
+        businessType = imagePanel.otherBusinessInput.value.trim();
+      }
+
+      if (!file) return showImageError(imagePanel, MESSAGES.SELECT_IMAGE);
+      if (!country) return showImageError(imagePanel, MESSAGES.SELECT_COUNTRY);
+      if (!businessType) return showImageError(imagePanel, MESSAGES.SELECT_BUSINESS_TYPE);
+
+      const formData = new FormData();
+      formData.append("image", file);
+      formData.append("country", country);
+      formData.append("businessType", businessType);
+      formData.append("userId", userId);
+
+      // --- TEMPORARY TEST CODE ---
+      console.log("Image API call is OFF. Using mock data.");
+      const data = {
+          result: "This is a **mock response** for the image panel. The real API call was not made."
+      };
+
+      // const data = await analyzeImage(formData, userId);
+
       renderMarkdown(imagePanel.resultContent, data.result, "<b>AI Image Analysis</b><br>");
     } catch (err) {
       showImageError(imagePanel, `Error analyzing image: ${err.message}`);
