@@ -32,7 +32,7 @@ const showImageError = (imagePanel, message) => {
 };
 
 // --- MAIN INITIALIZATION FUNCTION ---
-export function initializeImagePanel() {
+export function initializeImagePanel(isMockMode) {
   const imagePanel = {
     uploadInput: document.getElementById("imageUpload"),
     analyzeButton: document.getElementById("analyzeImage"),
@@ -117,19 +117,18 @@ export function initializeImagePanel() {
       if (!country) return showImageError(imagePanel, MESSAGES.SELECT_COUNTRY);
       if (!businessType) return showImageError(imagePanel, MESSAGES.SELECT_BUSINESS_TYPE);
 
-      const formData = new FormData();
-      formData.append("image", file);
-      formData.append("country", country);
-      formData.append("businessType", businessType);
-      formData.append("userId", userId);
-
-      // --- TEMPORARY TEST CODE ---
-      console.log("Image API call is OFF. Using mock data.");
-      const data = {
-          result: "This is a **mock response** for the image panel. The real API call was not made."
-      };
-
-      // const data = await analyzeImage(formData, userId);
+      let data;
+      if (isMockMode()) {
+        console.log("Image API call is OFF. Using mock data for Image Panel.");
+        data = { result: "This is a **mock response** for the image panel. The real API call was not made." };
+      } else {
+        const formData = new FormData();
+        formData.append("image", file);
+        formData.append("country", country);
+        formData.append("businessType", businessType);
+        formData.append("userId", userId);
+        data = await analyzeImage(formData, userId);
+      }
 
       renderMarkdown(imagePanel.resultContent, data.result, "<b>AI Image Analysis</b><br>");
     } catch (err) {

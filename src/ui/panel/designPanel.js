@@ -33,7 +33,7 @@ const showDesignError = (designPanel, message) => {
 };
 
 // --- MAIN INITIALIZATION FUNCTION ---
-export function initializeDesignPanel(sandboxProxy) {
+export function initializeDesignPanel(sandboxProxy, isMockMode) {
   const designPanel = {
     scanButton: document.getElementById("scanDesign"),
     content: document.getElementById("scanDesignContent"),
@@ -115,14 +115,16 @@ export function initializeDesignPanel(sandboxProxy) {
 
       const prompt = `Analyze the provided visual design. The design includes ${description} and is intended for ${country}. The business type is "${businessType}". Identify any culturally insensitive or inappropriate elements and suggest changes to promote inclusive visual solutions that are suitable for a diverse international audience, with a focus on cultural appropriateness for ${country}. In the first sentence, give a short answer whether this element should be used in the selected country.`;
 
-      // --- TEMPORARY TEST CODE ---
-      console.log("API call is OFF. Using mock data.");
-      const data = {
-          result: "This is a **mock response** for testing the UI. The real API call was not made.",
-          score: 75
-      };
-
-      //const data = await analyzeDesign(prompt, userId);
+      let data;
+      if (isMockMode()) {
+        console.log("API call is OFF. Using mock data for Design Panel.");
+        data = {
+            result: "This is a **mock response** for testing the UI. The real API call was not made.",
+            score: 75
+        };
+      } else {
+        data = await analyzeDesign(prompt, userId);
+      }
 
       // Display both text and rating
       renderMarkdown(designPanel.content, data.result, "<b>AI Response</b><br>");
@@ -160,10 +162,18 @@ export function initializeDesignPanel(sandboxProxy) {
     designPanel.chat.responseContent.innerHTML = "";
     designPanel.chat.error.style.display = "none";
 
-    const fullFollowUpPrompt = `${lastPromptContext}\n\nThe user now asks: "${followUp}"`;
-
     try {
-      const data = await analyzeDesign(fullFollowUpPrompt, userId);
+      let data;
+      if (isMockMode()) {
+        console.log("Chat API call is OFF. Using mock data for Design Panel (Ask the AI).");
+        data = {
+          result: "This is a **mock chat response**. The real API call was not made."
+        };
+      } else {
+        const fullFollowUpPrompt = `${lastPromptContext}\n\nThe user now asks: "${followUp}"`;
+        data = await analyzeDesign(fullFollowUpPrompt, userId);
+      }
+
       renderMarkdown(designPanel.chat.responseContent, data.result, `<b>AI responds:</b><br>`);
       designPanel.chat.input.value = "";
     } catch (err) {

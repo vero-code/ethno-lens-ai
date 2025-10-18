@@ -4,6 +4,8 @@ import { initializeTabs } from './tabs.js';
 import { initializeDesignPanel } from './panel/designPanel.js';
 import { initializeImagePanel } from './panel/imagePanel.js';
 
+const IS_DEV_MODE = true;
+
 addOnUISdk.ready.then(async () => {
     console.log("addOnUISdk is ready for use.");
 
@@ -11,6 +13,13 @@ addOnUISdk.ready.then(async () => {
     const { runtime } = addOnUISdk.instance;
     const sandboxProxy = await runtime.apiProxy("documentSandbox");
 
-    initializeDesignPanel(sandboxProxy);
-    initializeImagePanel();
+    const mockDataToggle = document.getElementById("mockDataToggle");
+    if (!IS_DEV_MODE) {
+        mockDataToggle.parentElement.parentElement.style.display = 'none';
+    }
+    
+    const isMockMode = () => IS_DEV_MODE && mockDataToggle.checked;
+
+    initializeDesignPanel(sandboxProxy, isMockMode);
+    initializeImagePanel(isMockMode);
 });
