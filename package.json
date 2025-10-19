@@ -23,6 +23,7 @@
         "@adobe/ccweb-add-on-sdk-types": "^1.18.0",
         "@google/genai": "^1.8.0",
         "@google/generative-ai": "^0.24.1",
+        "@supabase/supabase-js": "^2.75.1",
         "body-parser": "^2.2.0",
         "cors": "^2.8.5",
         "dotenv": "^17.0.1",
