@@ -7,6 +7,8 @@ import multer from "multer";
 import { createClient } from '@supabase/supabase-js';
 import { checkUserLimit } from './src/db/limits.js';
 
+console.log("Reading SUPABASE_URL from environment:", process.env.SUPABASE_URL);
+
 dotenv.config();
 const app = express();
 
