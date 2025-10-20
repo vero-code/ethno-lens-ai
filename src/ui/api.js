@@ -25,16 +25,14 @@ export async function analyzeDesign(prompt, userId) {
     return response.json();
 }
 
-export async function analyzeImage(formData, userId) {
-    formData.append("userId", userId);
-    
+export async function analyzeImage(formData) {
     const response = await fetch(`${API_BASE_URL}/analyze-image`, {
         method: "POST",
         body: formData
     });
     if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || `Server error: ${response.status} ${response.statusText}`);
+        throw new ApiError(errorData.error || `Server error: ${response.status}`, response.status);
     }
     return response.json();
 }

@@ -1,6 +1,6 @@
 // src/ui/panel/imagePanel.js
-import { renderMarkdown, enableResetOnInput, handleBusinessTypeChange } from '../utils.js';
-import { analyzeImage } from "../api.js";
+import { renderMarkdown, enableResetOnInput, handleBusinessTypeChange, handlePremiumClick, showPremiumUpsell } from '../utils.js';
+import { analyzeImage, logPremiumInterest } from "../api.js";
 import { getUserId } from '../user.js';
 
 // --- CONSTANTS ---
@@ -11,7 +11,11 @@ const MESSAGES = {
     SELECT_IMAGE: "Please select an image file to upload.",
     SELECT_COUNTRY: "Please select a country.",
     SELECT_BUSINESS_TYPE: "Please select a business type.",
-    USER_ID_ERROR: "Could not identify user. Please try again."
+    USER_ID_ERROR: "Could not identify user. Please try again.",
+
+    PREMIUM_LIMIT_REACHED: "Free limit reached. Premium coming soon.",
+    PREMIUM_BUTTON_PROMPT: "I'm interested in Premium",
+    PREMIUM_BUTTON_THANKS: "Thanks! Your interest has been noted.",
 };
 const OTHER_OPTION_VALUE = "Other...";
 
@@ -43,7 +47,9 @@ export function initializeImagePanel(isMockMode) {
     spinner: document.getElementById("imageSpinner"),
     countrySelect: document.getElementById("imageCountrySelect"),
     businessTypeSelect: document.getElementById("imageBusinessType"),
-    otherBusinessInput: document.getElementById("imageOtherBusinessType")
+    otherBusinessInput: document.getElementById("imageOtherBusinessType"),
+    premiumUpsellImage: document.getElementById("premiumUpsellImage"),
+    notifyPremiumButtonImage: document.getElementById("notifyPremiumButtonImage")
   };
 
   let userId = null;
@@ -63,6 +69,7 @@ export function initializeImagePanel(isMockMode) {
     setButtonsState(imagePanel, false);
     imagePanel.analyzeButton.disabled = true;
     imagePanel.uploadInput.disabled = false;
+    imagePanel.premiumUpsellImage.style.display = 'none';
   };
 
   // --- EVENT LISTENERS ---
@@ -72,6 +79,12 @@ export function initializeImagePanel(isMockMode) {
       enableResetOnInput(imagePanel.resetButton);
     });
     imagePanel.resetButton.addEventListener("click", resetImagePanel);
+
+    imagePanel.notifyPremiumButtonImage.addEventListener("click", async () => {
+        if (!userId) userId = await getUserId();
+        handlePremiumClick(imagePanel.notifyPremiumButtonImage, userId, logPremiumInterest, MESSAGES);
+    });
+
     imagePanel.uploadInput.addEventListener("change", () => {
       const file = imagePanel.uploadInput.files[0];
       if (file && file.type.startsWith("image/")) {
@@ -127,12 +140,18 @@ export function initializeImagePanel(isMockMode) {
         formData.append("country", country);
         formData.append("businessType", businessType);
         formData.append("userId", userId);
-        data = await analyzeImage(formData, userId);
+        data = await analyzeImage(formData);
       }
 
       renderMarkdown(imagePanel.resultContent, data.result, "<b>AI Image Analysis</b><br>");
     } catch (err) {
-      showImageError(imagePanel, `Error analyzing image: ${err.message}`);
+      const isLimitError = err.status === 429;
+      console.log(isLimitError);
+      const errorMessage = isLimitError
+        ? MESSAGES.PREMIUM_LIMIT_REACHED
+        : `Error analyzing image: ${err.message}`;
+      showImageError(imagePanel, errorMessage);
+      if (isLimitError) { showPremiumUpsell(imagePanel, 'image', MESSAGES); }
     } finally { 
       imagePanel.spinner.style.display = "none";
       setButtonsState(imagePanel, false);
