@@ -1,5 +1,5 @@
 // src/ui/panel/designPanel.js
-import { renderMarkdown, enableResetOnInput, handleBusinessTypeChange } from '../utils.js';
+import { renderMarkdown, enableResetOnInput, handleBusinessTypeChange, showPremiumUpsell, handlePremiumClick } from '../utils.js';
 import { analyzeDesign, logPremiumInterest } from "../api.js";
 import { getUserId } from '../user.js';
 
@@ -64,37 +64,6 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
   let lastPromptContext = "";
   let userId = null;
 
-  // --- "Premium" button ---
-  const showPremiumUpsell = (designPanel, context) => {
-    let upsellContainer, button;
-    if (context === 'scan') {
-        upsellContainer = designPanel.premiumUpsellScan;
-        button = designPanel.notifyPremiumButtonScan;
-    } else { // context === 'chat'
-        upsellContainer = designPanel.premiumUpsellChat;
-        button = designPanel.notifyPremiumButtonChat;
-    }
-
-    upsellContainer.style.display = 'block';
-    button.disabled = false;
-    button.querySelector('.btn-label').textContent = MESSAGES.PREMIUM_BUTTON_PROMPT;
-  };
-
-  const handlePremiumClick = async (button) => {
-    if (!userId) userId = await getUserId();
-    if (!userId) {
-      console.error("Cannot log premium click: User ID is unknown.");
-      return;
-    }
-    try {
-      await logPremiumInterest(userId);
-      button.disabled = true;
-      button.querySelector('.btn-label').textContent = MESSAGES.PREMIUM_BUTTON_THANKS;
-    } catch (err) {
-      console.error("Failed to log premium click:", err);
-    }
-  };
-
   const resetDesignPanel = () => {
     designPanel.countrySelect.value = "";
     designPanel.businessSelect.value = "";
@@ -128,8 +97,15 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
   });
   designPanel.resetButton.addEventListener("click", resetDesignPanel);
 
-  designPanel.notifyPremiumButtonScan.addEventListener("click", () => handlePremiumClick(designPanel.notifyPremiumButtonScan));
-  designPanel.notifyPremiumButtonChat.addEventListener("click", () => handlePremiumClick(designPanel.notifyPremiumButtonChat));
+  designPanel.notifyPremiumButtonScan.addEventListener("click", async () => {
+    if (!userId) userId = await getUserId();
+    handlePremiumClick(designPanel.notifyPremiumButtonScan, userId, logPremiumInterest, MESSAGES);
+  });
+
+  designPanel.notifyPremiumButtonChat.addEventListener("click", async () => {
+    if (!userId) userId = await getUserId();
+    handlePremiumClick(designPanel.notifyPremiumButtonChat, userId, logPremiumInterest, MESSAGES);
+  });
 
   // --- ACTION BUTTON LISTENERS ---
   
@@ -178,11 +154,12 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
       }
       lastPromptContext = prompt;
     } catch (error) {
-      const errorMessage = (error.status === 429)
+      const isLimitError = error.status === 429;
+      const errorMessage = isLimitError
         ? MESSAGES.PREMIUM_LIMIT_REACHED
         : `Error: ${error.message}`;
       showDesignError(designPanel, errorMessage);
-      if (error.status === 429) { showPremiumUpsell(designPanel, 'scan'); }
+      if (error.status === 429) { showPremiumUpsell(designPanel, 'scan', MESSAGES); }
     } finally {
       designPanel.spinner.style.display = "none";
       setButtonsState(designPanel, false);
@@ -225,12 +202,13 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
       renderMarkdown(designPanel.chat.responseContent, data.result, `<b>AI responds:</b><br>`);
       designPanel.chat.input.value = "";
     } catch (err) {
-      const errorMessage = (err.status === 429)
+      const isLimitError = err.status === 429;
+      const errorMessage = isLimitError
         ? MESSAGES.PREMIUM_LIMIT_REACHED
         : `Error: ${err.message}`;
       designPanel.chat.error.innerHTML = `<span class="error">${errorMessage}</span>`;
       designPanel.chat.error.style.display = "block";
-      if (err.status === 429) { showPremiumUpsell(designPanel, 'chat'); }
+      if (err.status === 429) { showPremiumUpsell(designPanel, 'chat', MESSAGES); }
     } finally {
       designPanel.chat.spinner.style.display = "none";
       setButtonsState(designPanel, false);
