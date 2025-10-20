@@ -1,6 +1,6 @@
 // src/ui/api.js
 
-const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = "https://ethno-lens-ai.vercel.app";
 
 export async function analyzeDesign(prompt, userId) {
     const response = await fetch(`${API_BASE_URL}/analyze`, {
