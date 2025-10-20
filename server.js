@@ -102,6 +102,26 @@ app.post("/analyze-image", upload.single("image"), async (req, res) => {
     }
 });
 
+app.post("/log-premium-click", async (req, res) => {
+    const { userId } = req.body;
+    if (!userId) {
+        return res.status(400).json({ error: "User ID is required" });
+    }
+
+    try {
+        const { error } = await supabase
+            .from('premium_interest_clicks')
+            .insert([{ user_id: userId }]);
+
+        if (error) throw error;
+
+        res.status(200).json({ message: "Click logged successfully" });
+    } catch (err) {
+        console.error("Error logging premium click:", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server is listening on port ${port}`);

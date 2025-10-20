@@ -1,6 +1,7 @@
 // src/ui/api.js
 
 const API_BASE_URL = "https://ethno-lens-ai.onrender.com";
+// const API_BASE_URL = "http://localhost:3000";
 
 export async function analyzeDesign(prompt, userId) {
     const response = await fetch(`${API_BASE_URL}/analyze`, {
@@ -29,4 +30,12 @@ export async function analyzeImage(formData, userId) {
         throw new Error(errorData.error || `Server error: ${response.status} ${response.statusText}`);
     }
     return response.json();
+}
+
+export async function logPremiumInterest(userId) {
+    await fetch(`${API_BASE_URL}/log-premium-click`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId })
+    });
 }
