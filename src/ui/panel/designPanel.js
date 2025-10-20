@@ -14,9 +14,9 @@ const MESSAGES = {
   SCAN_FIRST: "Please scan a design before asking follow-up questions.",
   USER_ID_ERROR: "Could not identify user. Please try again.",
 
-  PREMIUM_LIMIT_REACHED: "Monthly limit reached. Please upgrade to Premium.", // same as db/limits.js
-  PREMIUM_BUTTON_PROMPT: "Notify me when Premium is ready",
-  PREMIUM_BUTTON_THANKS: "Thanks! We'll notify you",
+  PREMIUM_LIMIT_REACHED: "Free limit reached. Premium coming soon.", // same as db/limits.js
+  PREMIUM_BUTTON_PROMPT: "I'm interested in Premium",
+  PREMIUM_BUTTON_THANKS: "Thanks! Your interest has been noted.",
 };
 const OTHER_OPTION_VALUE = "Other...";
 

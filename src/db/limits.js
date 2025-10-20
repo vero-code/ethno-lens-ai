@@ -1,7 +1,7 @@
 // src/supabase/limits.js
 
 const MESSAGES = {
-  PREMIUM_LIMIT_REACHED: "Monthly limit reached. Please upgrade to Premium.", // also need to change in designPanel.js
+  PREMIUM_LIMIT_REACHED: "Free limit reached. Premium coming soon.", // also need to change in designPanel.js
 };
 
 const FREE_TIER_LIMIT = 20;
