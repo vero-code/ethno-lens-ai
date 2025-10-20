@@ -1,6 +1,6 @@
 // src/ui/panel/designPanel.js
 import { renderMarkdown, enableResetOnInput, handleBusinessTypeChange } from '../utils.js';
-import { analyzeDesign } from "../api.js";
+import { analyzeDesign, logPremiumInterest } from "../api.js";
 import { getUserId } from '../user.js';
 
 // --- CONSTANTS ---
@@ -12,7 +12,11 @@ const MESSAGES = {
   SELECT_ELEMENT: "Please select a design element on the canvas first.",
   ENTER_MESSAGE: "Please enter a message before sending.",
   SCAN_FIRST: "Please scan a design before asking follow-up questions.",
-  USER_ID_ERROR: "Could not identify user. Please try again."
+  USER_ID_ERROR: "Could not identify user. Please try again.",
+
+  PREMIUM_LIMIT_REACHED: "Monthly limit reached. Please upgrade to Premium.", // same as line 165, 170 and db/limits.js
+  PREMIUM_BUTTON_PROMPT: "Notify me when Premium is ready",
+  PREMIUM_BUTTON_THANKS: "Thanks! We'll notify you",
 };
 const OTHER_OPTION_VALUE = "Other...";
 
@@ -50,7 +54,9 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
       responseContent: document.getElementById("chatResponseContent"),
       error: document.getElementById("chatError"),
       spinner: document.getElementById("chatSpinner")
-    }
+    },
+    premiumUpsell: document.getElementById("premiumUpsell"),
+    notifyPremiumButton: document.getElementById("notifyPremiumButton")
   };
 
   let lastPromptContext = "";
@@ -72,6 +78,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     lastPromptContext = "";
     designPanel.resetButton.disabled = true;
     setButtonsState(designPanel, false);
+    designPanel.premiumUpsell.style.display = 'none';
   };
 
   // --- EVENT LISTENERS ---
@@ -86,6 +93,27 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     }
   });
   designPanel.resetButton.addEventListener("click", resetDesignPanel);
+
+  // --- Handler for the "premium" button ---
+  designPanel.notifyPremiumButton.addEventListener("click", async () => {
+    if (!userId) userId = await getUserId();
+    if (!userId) {
+      console.error("Cannot log premium click: User ID is unknown.");
+      return;
+    }
+
+    try {
+      // 1. Send click to backend
+      await logPremiumInterest(userId);
+
+      // 2. Give feedback to the user
+      designPanel.notifyPremiumButton.disabled = true;
+      designPanel.notifyPremiumButton.querySelector('.btn-label').textContent = MESSAGES.PREMIUM_BUTTON_THANKS;
+
+    } catch (err) {
+      console.error("Failed to log premium click:", err);
+    }
+  });
 
   // --- ACTION BUTTON LISTENERS ---
   
@@ -134,7 +162,16 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
       }
       lastPromptContext = prompt;
     } catch (error) {
-      showDesignError(designPanel, `Error: ${error.message}`);
+      const errorMessage = error.message.includes("Monthly limit reached")
+        ? MESSAGES.PREMIUM_LIMIT_REACHED
+        : `Error: ${error.message}`;
+      showDesignError(designPanel, errorMessage);
+
+      if (error.message.includes("Monthly limit reached")) {
+        designPanel.premiumUpsell.style.display = 'block';
+        designPanel.notifyPremiumButton.disabled = false;
+        designPanel.notifyPremiumButton.querySelector('.btn-label').textContent = MESSAGES.PREMIUM_BUTTON_PROMPT;
+      }
     } finally {
       designPanel.spinner.style.display = "none";
       setButtonsState(designPanel, false);
