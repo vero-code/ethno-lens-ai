@@ -5,7 +5,7 @@ import cors from "cors";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import multer from "multer";
 import { createClient } from '@supabase/supabase-js';
-import { checkUserLimit } from '../src/db/limits.js';
+import { checkUserLimit } from './src/db/limits.js';
 
 dotenv.config();
 const app = express();
@@ -47,7 +47,7 @@ app.post("/analyze", async (req, res) => {
         const fullPrompt = `${personaPrompt}\n\n${prompt}\n\nFinally, on a new line at the very end, provide a "Cultural Sensitivity Score" from 0 (very high risk) to 100 (very low risk) based on your analysis. The line must start with "SCORE:" followed by the number. For example: SCORE: 85`;
 
         const result = await model.generateContent(fullPrompt);
-        const { response } = result;
+        const response = await result.response;
         const text = response.text();
 
         let analysisText = text;
@@ -102,4 +102,7 @@ app.post("/analyze-image", upload.single("image"), async (req, res) => {
     }
 });
 
-export default app;
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`Server is listening on port ${port}`);
+});
