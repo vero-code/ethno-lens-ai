@@ -1,6 +1,7 @@
 // server.js
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 import bodyParser from "body-parser";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import multer from "multer";
@@ -11,6 +12,7 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use(cors());
 app.use(bodyParser.json());
 
 // --- Initializing clients ---
@@ -25,6 +27,10 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 const personaPrompt = `You are a Senior Cultural Inclusivity & Design Ethics Specialist at a global creative agency. Your expertise lies in ensuring visual materials are impeccably inclusive and free from cultural insensitivity. You proactively identify inappropriate elements and propose constructive solutions for global brand perception.`;
 
 const upload = multer({ storage: multer.memoryStorage() });
+
+app.get("/", (req, res) => {
+    res.send("EthnoLens AI Server is running!");
+});
 
 // --- REQUEST HANDLERS ---
 app.post("/analyze", async (req, res) => {
