@@ -10,7 +10,6 @@ import { checkUserLimit } from './src/db/limits.js';
 
 dotenv.config();
 const app = express();
-const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -104,6 +103,4 @@ app.post("/analyze-image", upload.single("image"), async (req, res) => {
     }
 });
 
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-});
+export default app;
