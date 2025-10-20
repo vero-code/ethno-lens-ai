@@ -2,17 +2,16 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import bodyParser from "body-parser";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import multer from "multer";
 import { createClient } from '@supabase/supabase-js';
-import { checkUserLimit } from './src/db/limits.js';
+import { checkUserLimit } from '../src/db/limits.js';
 
 dotenv.config();
 const app = express();
 
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 
 // --- Initializing clients ---
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
