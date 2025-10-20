@@ -14,7 +14,7 @@ const MESSAGES = {
   SCAN_FIRST: "Please scan a design before asking follow-up questions.",
   USER_ID_ERROR: "Could not identify user. Please try again.",
 
-  PREMIUM_LIMIT_REACHED: "Monthly limit reached. Please upgrade to Premium.", // same as line 165, 170 and db/limits.js
+  PREMIUM_LIMIT_REACHED: "Monthly limit reached. Please upgrade to Premium.", // same as db/limits.js
   PREMIUM_BUTTON_PROMPT: "Notify me when Premium is ready",
   PREMIUM_BUTTON_THANKS: "Thanks! We'll notify you",
 };
@@ -162,12 +162,12 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
       }
       lastPromptContext = prompt;
     } catch (error) {
-      const errorMessage = error.message.includes("Monthly limit reached")
+      const errorMessage = (error.status === 429)
         ? MESSAGES.PREMIUM_LIMIT_REACHED
         : `Error: ${error.message}`;
       showDesignError(designPanel, errorMessage);
 
-      if (error.message.includes("Monthly limit reached")) {
+      if (error.status === 429) {
         designPanel.premiumUpsell.style.display = 'block';
         designPanel.notifyPremiumButton.disabled = false;
         designPanel.notifyPremiumButton.querySelector('.btn-label').textContent = MESSAGES.PREMIUM_BUTTON_PROMPT;
