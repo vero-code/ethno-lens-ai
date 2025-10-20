@@ -1,7 +1,6 @@
 // server.js
 import express from "express";
 import dotenv from "dotenv";
-import cors from "cors";
 import bodyParser from "body-parser";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import multer from "multer";
@@ -12,21 +11,6 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-const allowedOrigins = [
-    'https://localhost:5241',
-    'https://new.express.adobe.com'
-];
-
-const corsOptions = {
-    origin: function (origin, callback) {
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    }
-};
-app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
 // --- Initializing clients ---
