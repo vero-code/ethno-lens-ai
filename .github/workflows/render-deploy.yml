@@ -5,9 +5,14 @@ on:
     branches: [ master ]
   workflow_dispatch:
 
+concurrency:
+  group: production-deploy
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
       deployments: write
@@ -15,12 +20,46 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Deploy to Render (+ post status to GitHub Deployments)
+      - name: Start GitHub Deployment
+        id: gh
+        uses: bobheadxi/deployments@v1
+        with:
+          step: start
+          env: production
+
+      - name: Deploy to Render
+        id: render
         uses: JorgeLNJunior/render-deploy@v1.4.6
         with:
           service_id: ${{ secrets.RENDER_SERVICE_ID }}
           api_key: ${{ secrets.RENDER_API_KEY }}
           wait_deploy: true
-          github_deployment: true
+          github_deployment: false
+          clear_cache: false
           deployment_environment: production
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Finish Deployment (success)
+        if: ${{ success() }}
+        uses: bobheadxi/deployments@v1
+        with:
+          step: finish
+          env: ${{ steps.gh.outputs.env }}
+          status: success
+          env_url: https://ethno-lens-ai.onrender.com
+
+      - name: Finish Deployment (failure)
+        if: ${{ failure() }}
+        uses: bobheadxi/deployments@v1
+        with:
+          step: finish
+          env: ${{ steps.gh.outputs.env }}
+          status: failure
+
+      - name: Finish Deployment (cancelled)
+        if: ${{ cancelled() }}
+        uses: bobheadxi/deployments@v1
+        with:
+          step: finish
+          env: ${{ steps.gh.outputs.env }}
+          status: inactive
