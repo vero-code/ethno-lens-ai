@@ -7,34 +7,43 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       deployments: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      ENV_NAME: production
+      REF_NAME: refs/heads/master
     steps:
-      - name: Deactivate only in-progress deployments for production@master
+      - name: Deactivate only in-progress deployments for env@ref
         shell: bash
-        env:
-          ENV_NAME: production
-          REF_NAME: refs/heads/master
         run: |
           set -euo pipefail
+
           echo "Repo: $GITHUB_REPOSITORY"
           echo "Env:  $ENV_NAME"
           echo "Ref:  $REF_NAME"
 
-          gh api -H "Accept: application/vnd.github+json" \
-            repos/$GITHUB_REPOSITORY/deployments \
-            --paginate -f environment="$ENV_NAME" -f ref="$REF_NAME" \
-          | jq -r '.[].id' | while read -r DEPLOY_ID; do
-              LAST_STATE=$(gh api -H "Accept: application/vnd.github+json" \
-                repos/$GITHUB_REPOSITORY/deployments/$DEPLOY_ID/statuses \
-                -f per_page=1 | jq -r '.[0].state // "none"')
+          ids=$(gh api -H "Accept: application/vnd.github+json" \
+                repos/$GITHUB_REPOSITORY/deployments \
+                --paginate -f environment="$ENV_NAME" -f ref="$REF_NAME" \
+                | jq -r '.[].id')
 
-              if [[ "$LAST_STATE" == "in_progress" || "$LAST_STATE" == "pending" || "$LAST_STATE" == "queued" ]]; then
-                echo "→ Deactivating deployment $DEPLOY_ID (was: $LAST_STATE)"
-                gh api -H "Accept: application/vnd.github+json" \
-                  repos/$GITHUB_REPOSITORY/deployments/$DEPLOY_ID/statuses \
-                  -f state=inactive >/dev/null
-              else
-                echo "✓ Skip $DEPLOY_ID (state: $LAST_STATE)"
-              fi
-            done
+          if [[ -z "$ids" ]]; then
+            echo "No deployments found for filter — nothing to do."
+            exit 0
+          fi
+
+          for id in $ids; do
+            last_state=$(gh api -H "Accept: application/vnd.github+json" \
+              repos/$GITHUB_REPOSITORY/deployments/$id/statuses -f per_page=1 \
+              | jq -r '.[0].state // "none"')
+
+            if [[ "$last_state" == "in_progress" || "$last_state" == "pending" || "$last_state" == "queued" ]]; then
+              echo "→ Deactivating deployment $id (was: $last_state)"
+              gh api -H "Accept: application/vnd.github+json" \
+                repos/$GITHUB_REPOSITORY/deployments/$id/statuses \
+                -f state=inactive >/dev/null
+            else
+              echo "✓ Skip $id (state: $last_state)"
+            fi
+          done
 
           echo "Done."
