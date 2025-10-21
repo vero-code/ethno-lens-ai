@@ -1,0 +1,45 @@
+name: Deploy to Render
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://ethno-lens-ai.onrender.com
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Start Deployment
+      uses: bobheadxi/deployments@v1
+      id: deployment
+      with:
+        step: start
+        token: ${{ secrets.GITHUB_TOKEN }}
+        env: production
+    
+    - name: Trigger Render Deploy
+      env:
+        RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+      run: |
+        curl -X POST "$RENDER_DEPLOY_HOOK_URL"
+    
+    - name: Wait for Render Deployment
+      run: |
+        echo "Waiting for Render to complete deployment..."
+        sleep 60
+    
+    - name: Update Deployment Status
+      uses: bobheadxi/deployments@v1
+      if: always()
+      with:
+        step: finish
+        token: ${{ secrets.GITHUB_TOKEN }}
+        status: ${{ job.status }}
+        env: ${{ steps.deployment.outputs.env }}
+        deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+        env_url: https://ethno-lens-ai.onrender.com
