@@ -9,150 +9,162 @@
         <meta name="keywords" content="Adobe, Express, Add-On, JavaScript, Document Sandbox Runtime" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>EthnoLens AI</title>
-        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-        <link rel="stylesheet" href="css/tabs.css" />
-        <link rel="stylesheet" href="css/buttons.css" />
-        <link rel="stylesheet" href="css/styles.css" />
+        <!-- Spectrum Bundle и Express theme -->
+        <script src="https://jspm.dev/@spectrum-web-components/bundle/elements.js" type="module"></script>
+        <script src="https://jspm.dev/@spectrum-web-components/theme@0.40.1/express/theme-light.js" type="module"></script>
+        <script src="https://jspm.dev/@spectrum-web-components/theme@0.40.1/express/scale-medium.js" type="module"></script>
+        <!-- Additional components -->
+         <script src="https://jspm.dev/@spectrum-web-components/field-label@0.40.1/sp-field-label.js" type="module"></script>
+        <script src="https://jspm.dev/@spectrum-web-components/picker@0.40.1/sp-picker.js" type="module"></script>
+        <script src="https://jspm.dev/@spectrum-web-components/menu@0.40.1/sp-menu.js" type="module"></script>
+        <script src="https://jspm.dev/@spectrum-web-components/menu@0.40.1/sp-menu-item.js" type="module"></script>
+        <script src="https://jspm.dev/@spectrum-web-components/textfield@0.40.1/sp-textfield.js" type="module"></script>
+        <script src="https://jspm.dev/@spectrum-web-components/button@0.40.1/sp-button.js" type="module"></script>
+        <script src="https://jspm.dev/@spectrum-web-components/tabs@0.40.1/sp-tabs.js" type="module"></script>
+        <script src="https://jspm.dev/@spectrum-web-components/tabs@0.40.1/sp-tab.js" type="module"></script>
+        <script src="https://jspm.dev/@spectrum-web-components/tabs@0.40.1/sp-tab-panel.js" type="module"></script>
+        <script src="https://jspm.dev/@spectrum-web-components/progress-circle@0.40.1/sp-progress-circle.js" type="module"></script>
+        <script src="https://jspm.dev/@spectrum-web-components/checkbox@0.40.1/sp-checkbox.js" type="module"></script>
     </head>
     <body>
-        <div class="container">
-            <h1>EthnoLens AI</h1>
-            <p>Scan your design for possible cultural or symbolic issues across regions.</p>
-
-            <div class="tab-buttons" role="tablist" id="mainTabs">
-                <button class="tab-button active" role="tab" aria-selected="true" id="tab-scan-design" aria-controls="panel-scan-design">
-                    <span>Design</span>
-                </button>
-                <button class="tab-button" role="tab" aria-selected="false" id="tab-analyze-image" aria-controls="panel-analyze-image">
-                    <span>Image</span>
-                </button>
-                <div id="selectionIndicator"></div>
-            </div>
-
-            <div id="panel-scan-design" role="tabpanel" aria-labelledby="tab-scan-design">
-                <!-- Dropdown lists -->
-                <label for="countrySelect">Select country:</label>
-                <select id="countrySelect">
-                    <option value="">Loading countries...</option>
-                </select>
-
-                <label for="businessType">Business type:</label>
-                <select id="businessType">
-                    <option value="">Loading business types...</option>
-                </select>
-                <input type="text" id="otherBusinessType" class="other-input" placeholder="Please specify your business type">
-
-                <div class="button-row">
-                    <button id="scanDesign">
-                        <span class="btn-icon"><i class="fas fa-search"></i></span>
-                        <span class="btn-label">Scan</span>
+        <sp-theme scale="medium" color="light" theme="express">
+            <div class="container" style="padding: 20px;">
+                <h1>EthnoLens AI</h1>
+                <p>Scan your design for possible cultural or symbolic issues across regions.</p>
+                <div class="tab-buttons" role="tablist" id="mainTabs">
+                    <button class="tab-button active" role="tab" aria-selected="true" id="tab-scan-design" aria-controls="panel-scan-design">
+                        <span>Design</span>
                     </button>
-
-                    <button id="resetDesign">
-                        <span class="btn-icon"><i class="fas fa-redo"></i></span>
-                        <span class="btn-label">Reset</span>
+                    <button class="tab-button" role="tab" aria-selected="false" id="tab-analyze-image" aria-controls="panel-analyze-image">
+                        <span>Image</span>
                     </button>
+                    <div id="selectionIndicator"></div>
                 </div>
 
-                <div id="scoreBox" class="score-box" style="display: none;">
-                    <h3>Cultural Sensitivity Score</h3>
-                    <p id="scoreValue">--</p>
-                </div>
+                <div id="panel-scan-design" role="tabpanel" aria-labelledby="tab-scan-design">
+                    <!-- Dropdown lists -->
+                    <label for="countrySelect">Select country:</label>
+                    <select id="countrySelect">
+                        <option value="">Loading countries...</option>
+                    </select>
 
-                <div id="resultBox" class="responseBlock">
-                    <div id="scanDesignSpinner" class="spinner" style="display: none;"></div>
-                    <span id="scanDesignContent" class="responseBlockContents">No issues detected yet.</span>
-                </div>
+                    <label for="businessType">Business type:</label>
+                    <select id="businessType">
+                        <option value="">Loading business types...</option>
+                    </select>
+                    <input type="text" id="otherBusinessType" class="other-input" placeholder="Please specify your business type">
 
-                <div id="premiumUpsellScan" class="premium-upsell" style="display: none;">
-                    <button id="notifyPremiumButtonScan" class="premium-button">
-                        <span class="btn-icon"><i class="fas fa-rocket"></i></span>
-                        <span class="btn-label">I'm interested in Premium</span>
-                    </button>
-                </div>
+                    <div class="button-row">
+                        <button id="scanDesign">
+                            <span class="btn-icon"><i class="fas fa-search"></i></span>
+                            <span class="btn-label">Scan</span>
+                        </button>
 
-                <!-- followUpChat -->
-                <div id="followUpChat" class="follow-up">
-                    <h3 class="section-heading">Ask the AI</h3>
-
-                    <textarea id="chatInput" rows="3" placeholder="Ask a follow-up question..."></textarea>
-                    <div class="example-prompt">Try: <em>What color would work better?</em></div>
-
-                    <button id="chatSend">
-                        <span class="btn-icon"><i class="fas fa-paper-plane"></i></span>
-                        <span class="btn-label">Send</span>
-                    </button>
-
-                    <div id="chatResponse" class="responseBlock">
-                        <div id="chatSpinner" class="spinner" style="display: none;"></div>
-                        <span id="chatResponseContent" class="responseBlockContents">AI conversation not started yet.</span>
-                        <div id="chatError" class="error"></div>
+                        <button id="resetDesign">
+                            <span class="btn-icon"><i class="fas fa-redo"></i></span>
+                            <span class="btn-label">Reset</span>
+                        </button>
                     </div>
 
-                    <div id="premiumUpsellChat" class="premium-upsell" style="display: none;">
-                        <button id="notifyPremiumButtonChat" class="premium-button">
+                    <div id="scoreBox" class="score-box" style="display: none;">
+                        <h3>Cultural Sensitivity Score</h3>
+                        <p id="scoreValue">--</p>
+                    </div>
+
+                    <div id="resultBox" class="responseBlock">
+                        <div id="scanDesignSpinner" class="spinner" style="display: none;"></div>
+                        <span id="scanDesignContent" class="responseBlockContents">No issues detected yet.</span>
+                    </div>
+
+                    <div id="premiumUpsellScan" class="premium-upsell" style="display: none;">
+                        <button id="notifyPremiumButtonScan" class="premium-button">
+                            <span class="btn-icon"><i class="fas fa-rocket"></i></span>
+                            <span class="btn-label">I'm interested in Premium</span>
+                        </button>
+                    </div>
+
+                    <!-- followUpChat -->
+                    <div id="followUpChat" class="follow-up">
+                        <h3 class="section-heading">Ask the AI</h3>
+
+                        <textarea id="chatInput" rows="3" placeholder="Ask a follow-up question..."></textarea>
+                        <div class="example-prompt">Try: <em>What color would work better?</em></div>
+
+                        <button id="chatSend">
+                            <span class="btn-icon"><i class="fas fa-paper-plane"></i></span>
+                            <span class="btn-label">Send</span>
+                        </button>
+
+                        <div id="chatResponse" class="responseBlock">
+                            <div id="chatSpinner" class="spinner" style="display: none;"></div>
+                            <span id="chatResponseContent" class="responseBlockContents">AI conversation not started yet.</span>
+                            <div id="chatError" class="error"></div>
+                        </div>
+
+                        <div id="premiumUpsellChat" class="premium-upsell" style="display: none;">
+                            <button id="notifyPremiumButtonChat" class="premium-button">
+                                <span class="btn-icon"><i class="fas fa-rocket"></i></span>
+                                <span class="btn-label">I'm interested in Premium</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="panel-analyze-image" role="tabpanel" aria-labelledby="tab-analyze-image" hidden>
+                    <!-- Dropdown lists -->
+                    <label for="imageCountrySelect">Select country:</label>
+                    <select id="imageCountrySelect">
+                        <option value="">Loading countries...</option>
+                    </select>
+
+                    <label for="imageBusinessType">Business type:</label>
+                    <select id="imageBusinessType">
+                        <option value="">Loading business types...</option>
+                    </select>
+                    <input type="text" id="imageOtherBusinessType" class="other-input" placeholder="Please specify your business type">
+
+                    <h3 class="section-heading">Upload an image</h3>
+                    <input type="file" id="imageUpload" accept="image/*" />
+
+                    <div class="button-row">
+                        <button id="analyzeImage" disabled>
+                            <span class="btn-icon"><i class="fas fa-search"></i></span>
+                            <span class="btn-label">Analyze</span>
+                        </button>
+
+                        <button id="resetImage" disabled>
+                            <span class="btn-icon"><i class="fas fa-redo"></i></span>
+                            <span class="btn-label">Reset</span>
+                        </button>
+                    </div>
+
+                    <img id="imagePreview" alt="Image Preview" />
+
+                    <div id="imageResultBox" class="responseBlock">
+                        <div id="imageSpinner" class="spinner" style="display: none;"></div>
+                        <span id="imageResultContent" class="responseBlockContents">No image analyzed yet.</span>
+                        <div id="imageError" class="error"></div>
+                    </div>
+                    <div id="premiumUpsellImage" class="premium-upsell" style="display: none;">
+                        <button id="notifyPremiumButtonImage" class="premium-button">
                             <span class="btn-icon"><i class="fas fa-rocket"></i></span>
                             <span class="btn-label">I'm interested in Premium</span>
                         </button>
                     </div>
                 </div>
-            </div>
 
-            <div id="panel-analyze-image" role="tabpanel" aria-labelledby="tab-analyze-image" hidden>
-                <!-- Dropdown lists -->
-                <label for="imageCountrySelect">Select country:</label>
-                <select id="imageCountrySelect">
-                    <option value="">Loading countries...</option>
-                </select>
-
-                <label for="imageBusinessType">Business type:</label>
-                <select id="imageBusinessType">
-                    <option value="">Loading business types...</option>
-                </select>
-                <input type="text" id="imageOtherBusinessType" class="other-input" placeholder="Please specify your business type">
-
-                <h3 class="section-heading">Upload an image</h3>
-                <input type="file" id="imageUpload" accept="image/*" />
-
-                <div class="button-row">
-                    <button id="analyzeImage" disabled>
-                        <span class="btn-icon"><i class="fas fa-search"></i></span>
-                        <span class="btn-label">Analyze</span>
-                    </button>
-
-                    <button id="resetImage" disabled>
-                        <span class="btn-icon"><i class="fas fa-redo"></i></span>
-                        <span class="btn-label">Reset</span>
-                    </button>
-                </div>
-
-                <img id="imagePreview" alt="Image Preview" />
-
-                <div id="imageResultBox" class="responseBlock">
-                    <div id="imageSpinner" class="spinner" style="display: none;"></div>
-                    <span id="imageResultContent" class="responseBlockContents">No image analyzed yet.</span>
-                    <div id="imageError" class="error"></div>
-                </div>
-                <div id="premiumUpsellImage" class="premium-upsell" style="display: none;">
-                    <button id="notifyPremiumButtonImage" class="premium-button">
-                        <span class="btn-icon"><i class="fas fa-rocket"></i></span>
-                        <span class="btn-label">I'm interested in Premium</span>
-                    </button>
+                <div class="dev-controls">
+                    <label for="mockDataToggle">
+                        <input type="checkbox" id="mockDataToggle">
+                        Use Mock Data
+                    </label>
                 </div>
             </div>
+        </sp-theme>
 
-            <div class="dev-controls">
-                <label for="mockDataToggle">
-                    <input type="checkbox" id="mockDataToggle">
-                    Use Mock Data
-                </label>
-            </div>
-        </div>
-
-        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-        <script type="module" src="ui/loadCountries.js"></script>
-        <script type="module" src="ui/loadBusinessTypes.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script> -->
+        <!-- <script type="module" src="ui/loadCountries.js"></script> -->
+        <!-- <script type="module" src="ui/loadBusinessTypes.js"></script> -->
         <script type="module" src="ui/index.js"></script>
     </body>
 </html>
