@@ -1,40 +1,72 @@
 // src/ui/loadCountries.js
 
-const countrySelect = document.getElementById("countrySelect");
-const imageCountrySelect = document.getElementById("imageCountrySelect");
+// Wait for Spectrum components to load
+function waitForSpectrumComponents() {
+    return new Promise((resolve) => {
+        if (customElements.get('sp-picker')) {
+            resolve();
+        } else {
+            customElements.whenDefined('sp-picker').then(resolve);
+        }
+    });
+}
 
-const allCountrySelects = [countrySelect, imageCountrySelect].filter(el => el);
+async function loadCountries() {
+    await waitForSpectrumComponents();
+    
+    const countryPicker = document.getElementById("countrySelect");
+    const imageCountryPicker = document.getElementById("imageCountrySelect");
+    
+    const allCountryPickers = [countryPicker, imageCountryPicker].filter(el => el);
 
-fetch("https://restcountries.com/v3.1/all?fields=name")
-    .then(res => {
+    try {
+        const res = await fetch("https://restcountries.com/v3.1/all?fields=name");
+        
         if (!res.ok) {
             throw new Error(`HTTP error! status: ${res.status}`);
         }
-        return res.json();
-    })
-    .then(data => {
+        
+        const data = await res.json();
 
-        if (!Array.isArray(data)) throw new Error("Invalid response format");
+        if (!Array.isArray(data)) {
+            throw new Error("Invalid response format");
+        }
 
         const countries = data
             .map(c => c.name.common)
             .filter(Boolean)
             .sort((a, b) => a.localeCompare(b));
 
-        allCountrySelects.forEach(selectElement => {
-            selectElement.innerHTML = `<option value="">-- Select a country --</option>`;
+        allCountryPickers.forEach(picker => {
+            picker.innerHTML = '';
+            
+            // Add placeholder option
+            const placeholderItem = document.createElement('sp-menu-item');
+            placeholderItem.textContent = "-- Select a country --";
+            placeholderItem.value = "";
+            picker.appendChild(placeholderItem);
+            
+            // Add all countries
             countries.forEach(name => {
-                const option = document.createElement("option");
-                option.value = name;
-                option.textContent = name;
-                selectElement.appendChild(option);
+                const menuItem = document.createElement('sp-menu-item');
+                menuItem.value = name;
+                menuItem.textContent = name;
+                picker.appendChild(menuItem);
             });
         });
-    })
-    .catch(err => {
+        
+        console.log('✅ Countries loaded successfully');
+        
+    } catch (err) {
         console.error("Failed to load countries", err);
-        allCountrySelects.forEach(selectElement => {
-            selectElement.innerHTML = `<option>Error loading countries</option>`;
-            selectElement.disabled = true;
+        allCountryPickers.forEach(picker => {
+            picker.innerHTML = '';
+            const errorItem = document.createElement('sp-menu-item');
+            errorItem.textContent = "Error loading countries";
+            errorItem.disabled = true;
+            picker.appendChild(errorItem);
         });
-    });
+    }
+}
+
+loadCountries();
