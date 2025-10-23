@@ -30,9 +30,6 @@
     <body>
         <sp-theme scale="medium" color="light" theme="express">
             <div class="addon-body">
-                <h1>EthnoLens AI</h1>
-                <p>Scan your design for possible cultural or symbolic issues across regions.</p>
-
                 <sp-tabs selected="tab-analyze-image">
                     <sp-tab value="tab-scan-design" label="Design"></sp-tab>
                     <sp-tab value="tab-analyze-image" label="Image"></sp-tab>
@@ -164,11 +161,11 @@
                         </div>
                     </sp-tab-panel>
                 </sp-tabs>
+            </div>
 
-                <!-- Dev Controls -->
-                <div id="devControls">
-                    <sp-checkbox id="mockDataToggle">Use Mock Data</sp-checkbox>
-                </div>
+            <!-- FOOTER: Dev Controls -->
+            <div class="addon-footer" id="devControls">
+                <sp-checkbox id="mockDataToggle">Use Mock Data</sp-checkbox>
             </div>
         </sp-theme>
 
