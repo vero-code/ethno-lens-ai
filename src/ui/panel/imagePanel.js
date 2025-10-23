@@ -58,7 +58,7 @@ export function initializeImagePanel(isMockMode) {
     imagePanel.uploadInput.value = "";
     imagePanel.preview.src = "";
     imagePanel.preview.style.display = "none";
-    imagePanel.resultContent.innerHTML = `No image analyzed yet.`;
+    imagePanel.resultContent.innerHTML = MESSAGES.NO_IMAGE_ANALYZED;
     imagePanel.spinner.style.display = "none";
     imagePanel.error.style.display = "none";
     imagePanel.otherBusinessInput.style.display = "none";
@@ -95,7 +95,7 @@ export function initializeImagePanel(isMockMode) {
           imagePanel.analyzeButton.disabled = false;
           imagePanel.resetButton.disabled = false;
           imagePanel.error.style.display = "none";
-          imagePanel.resultContent.innerHTML = `The image is ready for analysis.`;
+          imagePanel.resultContent.innerHTML = MESSAGES.IMAGE_READY;
         };
         reader.readAsDataURL(file);
       } else {
@@ -144,9 +144,9 @@ export function initializeImagePanel(isMockMode) {
       }
 
       renderMarkdown(imagePanel.resultContent, data.result, "<b>AI Image Analysis</b><br>");
+      imagePanel.premiumUpsellImage.style.display = 'none';
     } catch (err) {
       const isLimitError = err.status === 429;
-      console.log(isLimitError);
       const errorMessage = isLimitError
         ? MESSAGES.PREMIUM_LIMIT_REACHED
         : `Error analyzing image: ${err.message}`;
