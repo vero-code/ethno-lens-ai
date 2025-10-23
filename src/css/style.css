@@ -103,9 +103,13 @@ sp-progress-circle[style*="display: block"] {
 
 /* === CHAT === */
 #followUpChat {
-    display: flex;
+    display: none;
     flex-direction: column;
     gap: 16px;
+}
+
+#followUpChat.visible {
+    display: flex !important;
 }
 
 .chat-hint {

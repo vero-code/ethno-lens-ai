@@ -48,6 +48,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     resetButton: document.getElementById("resetDesign"),
     scoreBox: document.getElementById("scoreBox"),
     scoreValue: document.getElementById("scoreValue"),
+    followUpChat: document.getElementById("followUpChat"),
     chat: {
       input: document.getElementById("chatInput"),
       sendButton: document.getElementById("chatSend"),
@@ -71,6 +72,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     designPanel.scoreBox.style.display = 'none';
     designPanel.scoreValue.textContent = '--';
     designPanel.spinner.style.display = "none";
+    designPanel.followUpChat.classList.remove('visible');
     designPanel.chat.input.value = "";
     designPanel.chat.responseContent.innerHTML = MESSAGES.AI_CONVERSATION_START;
     designPanel.chat.spinner.style.display = "none";
@@ -154,6 +156,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
       }
       lastPromptContext = prompt;
 
+      designPanel.followUpChat.classList.add('visible');
       designPanel.premiumUpsellScan.style.display = 'none';
     } catch (error) {
       const isLimitError = error.status === 429;
