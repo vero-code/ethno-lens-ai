@@ -13,24 +13,12 @@
         <script src="https://jspm.dev/@spectrum-web-components/bundle/elements.js" type="module"></script>
         <script src="https://jspm.dev/@spectrum-web-components/theme@0.40.1/express/theme-light.js" type="module"></script>
         <script src="https://jspm.dev/@spectrum-web-components/theme@0.40.1/express/scale-medium.js" type="module"></script>
-        <!-- Additional components -->
-         <script src="https://jspm.dev/@spectrum-web-components/field-label@0.40.1/sp-field-label.js" type="module"></script>
-        <script src="https://jspm.dev/@spectrum-web-components/picker@0.40.1/sp-picker.js" type="module"></script>
-        <script src="https://jspm.dev/@spectrum-web-components/menu@0.40.1/sp-menu.js" type="module"></script>
-        <script src="https://jspm.dev/@spectrum-web-components/menu@0.40.1/sp-menu-item.js" type="module"></script>
-        <script src="https://jspm.dev/@spectrum-web-components/textfield@0.40.1/sp-textfield.js" type="module"></script>
-        <script src="https://jspm.dev/@spectrum-web-components/button@0.40.1/sp-button.js" type="module"></script>
-        <script src="https://jspm.dev/@spectrum-web-components/tabs@0.40.1/sp-tabs.js" type="module"></script>
-        <script src="https://jspm.dev/@spectrum-web-components/tabs@0.40.1/sp-tab.js" type="module"></script>
-        <script src="https://jspm.dev/@spectrum-web-components/tabs@0.40.1/sp-tab-panel.js" type="module"></script>
-        <script src="https://jspm.dev/@spectrum-web-components/progress-circle@0.40.1/sp-progress-circle.js" type="module"></script>
-        <script src="https://jspm.dev/@spectrum-web-components/checkbox@0.40.1/sp-checkbox.js" type="module"></script>
         <link rel="stylesheet" href="css/style.css" />
     </head>
     <body>
         <sp-theme scale="medium" color="light" theme="express">
             <div class="addon-body">
-                <sp-tabs selected="tab-analyze-image">
+                <sp-tabs selected="tab-scan-design">
                     <sp-tab value="tab-scan-design" label="Design"></sp-tab>
                     <sp-tab value="tab-analyze-image" label="Image"></sp-tab>
 
@@ -93,9 +81,7 @@
                                     Try: <em>What color would work better?</em>
                                 </p>
 
-                                <sp-button id="chatSend" variant="accent">
-                                    Send
-                                </sp-button>
+                                <sp-button id="chatSend">Send</sp-button>
 
                                 <div id="chatResponse">
                                     <sp-progress-circle id="chatSpinner" indeterminate></sp-progress-circle>
@@ -168,7 +154,6 @@
                 <sp-checkbox id="mockDataToggle">Use Mock Data</sp-checkbox>
             </div>
         </sp-theme>
-
         <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
         <script type="module" src="ui/loadCountries.js"></script>
         <script type="module" src="ui/loadBusinessTypes.js"></script>
