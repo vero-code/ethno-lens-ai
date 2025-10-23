@@ -153,6 +153,8 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
           designPanel.scoreBox.style.display = 'block';
       }
       lastPromptContext = prompt;
+
+      designPanel.premiumUpsellScan.style.display = 'none';
     } catch (error) {
       const isLimitError = error.status === 429;
       const errorMessage = isLimitError
@@ -201,6 +203,8 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
 
       renderMarkdown(designPanel.chat.responseContent, data.result, `<b>AI responds:</b><br>`);
       designPanel.chat.input.value = "";
+
+      designPanel.premiumUpsellChat.style.display = 'none';
     } catch (err) {
       const isLimitError = err.status === 429;
       const errorMessage = isLimitError
