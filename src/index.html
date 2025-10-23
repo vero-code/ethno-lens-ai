@@ -25,59 +25,59 @@
         <script src="https://jspm.dev/@spectrum-web-components/tabs@0.40.1/sp-tab-panel.js" type="module"></script>
         <script src="https://jspm.dev/@spectrum-web-components/progress-circle@0.40.1/sp-progress-circle.js" type="module"></script>
         <script src="https://jspm.dev/@spectrum-web-components/checkbox@0.40.1/sp-checkbox.js" type="module"></script>
+        <link rel="stylesheet" href="css/style.css" />
     </head>
     <body>
         <sp-theme scale="medium" color="light" theme="express">
-            <div class="container" style="padding: 5px;">
+            <div class="addon-body">
                 <h1>EthnoLens AI</h1>
                 <p>Scan your design for possible cultural or symbolic issues across regions.</p>
 
-                <sp-tabs selected="tab-analyze-image" style="margin-bottom: 20px;">
+                <sp-tabs selected="tab-analyze-image">
                     <sp-tab value="tab-scan-design" label="Design"></sp-tab>
                     <sp-tab value="tab-analyze-image" label="Image"></sp-tab>
 
                     <!-- Panel 1: Design -->
                     <sp-tab-panel value="tab-scan-design">
-                        <div style="display: flex; flex-direction: column; gap: 16px; padding-top: 10px;">
+                        <div class="tab-panel-content">
                             <!-- Country Select -->
                             <sp-field-label for="countrySelect">Select country:</sp-field-label>
-                            <sp-picker id="countrySelect" label="Choose a country" style="width: 100%; margin-bottom: 16px;">
+                            <sp-picker id="countrySelect" label="Choose a country">
                                 <sp-menu-item>Loading countries...</sp-menu-item>
                             </sp-picker>
                             
                             <!-- Business Type Select -->
                             <sp-field-label for="businessType">Business type:</sp-field-label>
-                            <sp-picker id="businessType" label="Choose business type" style="width: 100%; margin-bottom: 16px;">
+                            <sp-picker id="businessType" label="Choose business type">
                                 <sp-menu-item>Loading business types...</sp-menu-item>
                             </sp-picker>
 
                             <!-- Other Business Type Input -->
                             <sp-textfield 
                                 id="otherBusinessType" 
-                                placeholder="Please specify your business type"
-                                style="width: 100%; margin-bottom: 16px;">
+                                placeholder="Please specify your business type">
                             </sp-textfield>
                             
                             <!-- Action Buttons -->
-                            <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                            <div class="button-row">
                                 <sp-button id="scanDesign">Scan</sp-button>
                                 <sp-button id="resetDesign">Reset</sp-button>
                             </div>
 
                             <!-- Score Box -->
-                            <div id="scoreBox" style="display: none; margin-bottom: 16px; padding: 16px; border: 1px solid #ccc; border-radius: 8px;">
+                            <div id="scoreBox">
                                 <h3>Cultural Sensitivity Score</h3>
-                                <p id="scoreValue" style="font-size: 24px; font-weight: bold;">--</p>
+                                <p id="scoreValue">--</p>
                             </div>
 
                             <!-- Result Box -->
-                            <div id="resultBox" style="margin-bottom: 16px; padding: 16px; background: #f5f5f5; border-radius: 8px;">
-                                <sp-progress-circle id="scanDesignSpinner" indeterminate style="display: none;"></sp-progress-circle>
+                            <div id="resultBox">
+                                <sp-progress-circle id="scanDesignSpinner" indeterminate></sp-progress-circle>
                                 <div id="scanDesignContent">No issues detected yet.</div>
                             </div>
 
                             <!-- Premium Upsell -->
-                            <div id="premiumUpsellScan" style="display: none; margin-bottom: 16px;">
+                            <div id="premiumUpsellScan">
                                 <sp-button id="notifyPremiumButtonScan" variant="primary">
                                     I'm interested in Premium
                                 </sp-button>
@@ -90,24 +90,23 @@
                                     id="chatInput" 
                                     multiline
                                     rows="3"
-                                    placeholder="Ask a follow-up question..."
-                                    style="width: 100%; margin-bottom: 8px;">
+                                    placeholder="Ask a follow-up question...">
                                 </sp-textfield>
-                                <p style="font-size: 12px; color: #666; margin-bottom: 12px;">
+                                <p class="chat-hint">
                                     Try: <em>What color would work better?</em>
                                 </p>
 
-                                <sp-button id="chatSend" variant="accent" style="margin-bottom: 16px;">
+                                <sp-button id="chatSend" variant="accent">
                                     Send
                                 </sp-button>
 
-                                <div id="chatResponse" style="padding: 16px; background: #f5f5f5; border-radius: 8px; margin-bottom: 16px;">
-                                    <sp-progress-circle id="chatSpinner" indeterminate style="display: none;"></sp-progress-circle>
+                                <div id="chatResponse">
+                                    <sp-progress-circle id="chatSpinner" indeterminate></sp-progress-circle>
                                     <div id="chatResponseContent">AI conversation not started yet.</div>
-                                    <div id="chatError" style="color: red;"></div>
+                                    <div id="chatError"></div>
                                 </div>
 
-                                <div id="premiumUpsellChat" style="display: none;">
+                                <div id="premiumUpsellChat">
                                     <sp-button id="notifyPremiumButtonChat" variant="primary">
                                         I'm interested in Premium
                                     </sp-button>
@@ -118,47 +117,46 @@
 
                     <!-- Panel 2: Image Analysis -->
                     <sp-tab-panel value="tab-analyze-image">
-                        <div style="display: flex; flex-direction: column; gap: 16px; padding-top: 10px;">
+                        <div class="tab-panel-content">
                             <!-- Country Select -->
                             <sp-field-label for="imageCountrySelect">Select country:</sp-field-label>
-                            <sp-picker id="imageCountrySelect" label="Choose a country" style="width: 100%; margin-bottom: 16px;">
+                            <sp-picker id="imageCountrySelect" label="Choose a country">
                                 <sp-menu-item>Loading countries...</sp-menu-item>
                             </sp-picker>
 
                             <!-- Business Type Select -->
                             <sp-field-label for="imageBusinessType">Business type:</sp-field-label>
-                            <sp-picker id="imageBusinessType" label="Choose business type" style="width: 100%; margin-bottom: 16px;">
+                            <sp-picker id="imageBusinessType" label="Choose business type">
                                 <sp-menu-item>Loading business types...</sp-menu-item>
                             </sp-picker>
 
                             <!-- Other Business Type Input -->
                             <sp-textfield 
                                 id="imageOtherBusinessType" 
-                                placeholder="Please specify your business type"
-                                style="width: 100%; margin-bottom: 16px;">
+                                placeholder="Please specify your business type">
                             </sp-textfield>
 
                             <h3>Upload an image</h3>
-                            <input type="file" id="imageUpload" accept="image/*" style="margin-bottom: 16px;" />
+                            <input type="file" id="imageUpload" accept="image/*"/>
 
                             <!-- Action Buttons -->
-                            <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                            <div class="button-row">
                                 <sp-button id="analyzeImage" variant="accent" disabled>Analyze</sp-button>
                                 <sp-button id="resetImage" disabled>Reset</sp-button>
                             </div>
 
                             <!-- Image Preview -->
-                            <img id="imagePreview" alt="Image Preview" style="max-width: 100%; display: none; margin-bottom: 16px; border-radius: 8px;" />
+                            <img id="imagePreview" alt="Image Preview"/>
 
                             <!-- Result Box -->
-                            <div id="imageResultBox" style="padding: 16px; background: #f5f5f5; border-radius: 8px; margin-bottom: 16px;">
-                                <sp-progress-circle id="imageSpinner" indeterminate style="display: none;"></sp-progress-circle>
+                            <div id="imageResultBox">
+                                <sp-progress-circle id="imageSpinner" indeterminate></sp-progress-circle>
                                 <div id="imageResultContent">No image analyzed yet.</div>
-                                <div id="imageError" style="color: red;"></div>
+                                <div id="imageError"></div>
                             </div>
 
                             <!-- Premium Upsell -->
-                            <div id="premiumUpsellImage" style="display: none;">
+                            <div id="premiumUpsellImage">
                                 <sp-button id="notifyPremiumButtonImage" variant="primary">
                                     I'm interested in Premium
                                 </sp-button>
@@ -168,7 +166,7 @@
                 </sp-tabs>
 
                 <!-- Dev Controls -->
-                <div id="devControls" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #ccc;">
+                <div id="devControls">
                     <sp-checkbox id="mockDataToggle">Use Mock Data</sp-checkbox>
                 </div>
             </div>
