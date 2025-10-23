@@ -31,7 +31,7 @@ export async function handlePremiumClick(button, userId, logPremiumInterest, mes
     try {
         await logPremiumInterest(userId);
         button.disabled = true;
-        button.querySelector('.btn-label').textContent = messages.PREMIUM_BUTTON_THANKS;
+        button.textContent = messages.PREMIUM_BUTTON_THANKS;
     } catch (err) {
         console.error("Failed to log premium click:", err);
     }
@@ -52,5 +52,5 @@ export function showPremiumUpsell(panel, context, messages) {
 
     upsellContainer.style.display = 'block';
     button.disabled = false;
-    button.querySelector('.btn-label').textContent = messages.PREMIUM_BUTTON_PROMPT;
+    button.textContent = messages.PREMIUM_BUTTON_PROMPT;
 }
