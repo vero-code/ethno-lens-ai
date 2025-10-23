@@ -26,16 +26,23 @@
                     <sp-tab-panel value="tab-scan-design">
                         <div class="tab-panel-content">
                             <!-- Country Select -->
-                            <sp-field-label for="countrySelect">Select country:</sp-field-label>
-                            <sp-picker id="countrySelect" label="Choose a country">
-                                <sp-menu-item>Loading countries...</sp-menu-item>
-                            </sp-picker>
+                            <div>
+                                <sp-field-label size="l" for="countrySelect">Select country:</sp-field-label>
+                                <sp-picker id="countrySelect" label="Choose a country">
+                                    <sp-menu-item>Loading countries...</sp-menu-item>
+                                </sp-picker>
+                            </div>
                             
                             <!-- Business Type Select -->
-                            <sp-field-label for="businessType">Business type:</sp-field-label>
-                            <sp-picker id="businessType" label="Choose business type">
-                                <sp-menu-item>Loading business types...</sp-menu-item>
-                            </sp-picker>
+                            <div>
+                                <sp-field-label size="l" for="businessType">Business type:</sp-field-label>
+                                <sp-picker id="businessType" label="Choose business type">
+                                    <sp-menu-item>Loading business types...</sp-menu-item>
+                                </sp-picker>
+                                <sp-help-text id="help-text">
+                                    Enter your type of business by selecting "Other"
+                                </sp-help-text>
+                            </div>
 
                             <!-- Other Business Type Input -->
                             <sp-textfield 
@@ -102,16 +109,24 @@
                     <sp-tab-panel value="tab-analyze-image">
                         <div class="tab-panel-content">
                             <!-- Country Select -->
-                            <sp-field-label for="imageCountrySelect">Select country:</sp-field-label>
-                            <sp-picker id="imageCountrySelect" label="Choose a country">
-                                <sp-menu-item>Loading countries...</sp-menu-item>
-                            </sp-picker>
+                            <div>
+                                <sp-field-label size="l" for="imageCountrySelect">Select country:</sp-field-label>
+                                <sp-picker id="imageCountrySelect" label="Choose a country">
+                                    <sp-menu-item>Loading countries...</sp-menu-item>
+                                </sp-picker>
+                            </div>
 
                             <!-- Business Type Select -->
-                            <sp-field-label for="imageBusinessType">Business type:</sp-field-label>
-                            <sp-picker id="imageBusinessType" label="Choose business type">
-                                <sp-menu-item>Loading business types...</sp-menu-item>
-                            </sp-picker>
+                            <div>
+                                <sp-field-label size="l" for="imageBusinessType">Business type:</sp-field-label>
+                                <sp-picker id="imageBusinessType" label="Choose business type">
+                                    <sp-menu-item>Loading business types...</sp-menu-item>
+                                </sp-picker>
+                                <sp-help-text id="help-text">
+                                    Enter your type of business by selecting "Other"
+                                </sp-help-text>
+                            </div>
+
 
                             <!-- Other Business Type Input -->
                             <sp-textfield 
