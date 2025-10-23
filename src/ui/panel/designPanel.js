@@ -49,6 +49,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     scoreBox: document.getElementById("scoreBox"),
     scoreValue: document.getElementById("scoreValue"),
     followUpChat: document.getElementById("followUpChat"),
+    chatAvailableToast: document.getElementById("chatAvailableToast"),
     chat: {
       input: document.getElementById("chatInput"),
       sendButton: document.getElementById("chatSend"),
@@ -157,6 +158,13 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
       lastPromptContext = prompt;
 
       designPanel.followUpChat.classList.add('visible');
+
+      // Show toast notification with 6 second timeout
+      designPanel.chatAvailableToast.open = true;
+      setTimeout(() => {
+        designPanel.chatAvailableToast.open = false;
+      }, 6000);
+      
       designPanel.premiumUpsellScan.style.display = 'none';
     } catch (error) {
       const isLimitError = error.status === 429;

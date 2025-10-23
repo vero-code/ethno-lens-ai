@@ -77,6 +77,7 @@
 
                             <!-- Follow-up Chat -->
                             <div id="followUpChat">
+                                <sp-divider size="m"></sp-divider>
                                 <h3>Ask the AI</h3>
                                 <sp-textfield 
                                     id="chatInput" 
@@ -168,6 +169,13 @@
             <div class="addon-footer" id="devControls">
                 <sp-checkbox id="mockDataToggle">Use Mock Data</sp-checkbox>
             </div>
+            <!-- Toast Notifications Region -->
+            <div role="region" aria-label="Toast Notifications" id="toastContainer">
+                <sp-toast id="chatAvailableToast" variant="info">
+                    You can now ask follow-up questions about your design!
+                </sp-toast>
+            </div>
+            
         </sp-theme>
         <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
         <script type="module" src="ui/loadCountries.js"></script>
