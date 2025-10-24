@@ -39,6 +39,7 @@ const showImageError = (imagePanel, message) => {
 export function initializeImagePanel(isMockMode) {
   const imagePanel = {
     uploadInput: document.getElementById("imageUpload"),
+    browseButton: document.getElementById("browseButton"),
     analyzeButton: document.getElementById("analyzeImage"),
     preview: document.getElementById("imagePreview"),
     resultContent: document.getElementById("imageResultContent"),
@@ -54,9 +55,10 @@ export function initializeImagePanel(isMockMode) {
   };
 
   let userId = null;
+  let selectedFile = null;
 
   const resetImagePanel = () => {
-    imagePanel.uploadInput.value = "";
+    selectedFile = null;
     imagePanel.preview.src = "";
     imagePanel.preview.style.display = "none";
     imagePanel.resultContent.innerHTML = MESSAGES.NO_IMAGE_ANALYZED;
@@ -73,39 +75,57 @@ export function initializeImagePanel(isMockMode) {
     imagePanel.premiumUpsellImage.style.display = 'none';
   };
 
+  const handleFileSelect = (file) => {
+    if (file && file.type.startsWith("image/")) {
+      selectedFile = file;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        imagePanel.preview.src = e.target.result;
+        imagePanel.preview.style.display = "block";
+        imagePanel.analyzeButton.disabled = false;
+        imagePanel.resetButton.disabled = false;
+        imagePanel.error.style.display = "none";
+        imagePanel.resultContent.innerHTML = MESSAGES.IMAGE_READY;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      selectedFile = null;
+      imagePanel.preview.src = "";
+      imagePanel.preview.style.display = "none";
+      imagePanel.analyzeButton.disabled = true;
+      imagePanel.resetButton.disabled = true;
+      showImageError(imagePanel, MESSAGES.INVALID_FILE);
+    }
+  };
+
   // --- EVENT LISTENERS ---
-    imagePanel.countrySelect.addEventListener("change", () => enableResetOnInput(imagePanel.resetButton));
-    imagePanel.businessTypeSelect.addEventListener("change", () => {
-      handleBusinessTypeChange(imagePanel.businessTypeSelect, imagePanel.imageOtherBusinessTypeContainer);
-      enableResetOnInput(imagePanel.resetButton);
-    });
-    imagePanel.resetButton.addEventListener("click", resetImagePanel);
+  imagePanel.countrySelect.addEventListener("change", () => enableResetOnInput(imagePanel.resetButton));
+  imagePanel.businessTypeSelect.addEventListener("change", () => {
+    handleBusinessTypeChange(imagePanel.businessTypeSelect, imagePanel.imageOtherBusinessTypeContainer);
+    enableResetOnInput(imagePanel.resetButton);
+  });
+  imagePanel.resetButton.addEventListener("click", resetImagePanel);
 
-    imagePanel.notifyPremiumButtonImage.addEventListener("click", async () => {
-        if (!userId) userId = await getUserId();
-        handlePremiumClick(imagePanel.notifyPremiumButtonImage, userId, logPremiumInterest, MESSAGES);
+  imagePanel.notifyPremiumButtonImage.addEventListener("click", async () => {
+      if (!userId) userId = await getUserId();
+      handlePremiumClick(imagePanel.notifyPremiumButtonImage, userId, logPremiumInterest, MESSAGES);
+  });
+
+  // --- "Browse files" btn ---
+  imagePanel.browseButton.addEventListener("click", () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+
+    fileInput.addEventListener("change", (event) => {
+        const files = event.target.files;
+        if (files && files.length > 0) {
+            handleFileSelect(files[0]);
+        }
     });
 
-    imagePanel.uploadInput.addEventListener("change", () => {
-      const file = imagePanel.uploadInput.files[0];
-      if (file && file.type.startsWith("image/")) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          imagePanel.preview.src = e.target.result;
-          imagePanel.preview.style.display = "block";
-          imagePanel.analyzeButton.disabled = false;
-          imagePanel.resetButton.disabled = false;
-          imagePanel.error.style.display = "none";
-          imagePanel.resultContent.innerHTML = MESSAGES.IMAGE_READY;
-        };
-        reader.readAsDataURL(file);
-      } else {
-        imagePanel.preview.src = "";
-        imagePanel.preview.style.display = "none";
-        imagePanel.analyzeButton.disabled = true;
-        imagePanel.resetButton.disabled = true;
-        showImageError(imagePanel, MESSAGES.INVALID_FILE);
-      }
+    fileInput.click();
   });
 
   // --- ACTION BUTTON LISTENERS ---
@@ -120,7 +140,7 @@ export function initializeImagePanel(isMockMode) {
       if (!userId) userId = await getUserId();
       if (!userId) return showImageError(imagePanel, MESSAGES.USER_ID_ERROR);
 
-      const file = imagePanel.uploadInput.files[0];
+      const file = selectedFile;
       const country = imagePanel.countrySelect.value;
       let businessType = imagePanel.businessTypeSelect.value;
       if (businessType === OTHER_OPTION_VALUE) {

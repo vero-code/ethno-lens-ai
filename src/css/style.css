@@ -136,7 +136,14 @@ sp-progress-circle[style*="display: block"] {
 }
 
 /* === IMAGE UPLOAD === */
-#imageUpload {}
+#imageUpload {
+    width: 100%;
+}
+
+sp-dropzone {
+    width: 100%;
+    min-height: 200px;
+}
 
 #imagePreview {
     max-width: 100%;
