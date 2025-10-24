@@ -48,6 +48,7 @@ export function initializeImagePanel(isMockMode) {
     countrySelect: document.getElementById("imageCountrySelect"),
     businessTypeSelect: document.getElementById("imageBusinessType"),
     otherBusinessInput: document.getElementById("imageOtherBusinessType"),
+    imageOtherBusinessTypeContainer: document.getElementById("imageOtherBusinessTypeContainer"),
     premiumUpsellImage: document.getElementById("premiumUpsellImage"),
     notifyPremiumButtonImage: document.getElementById("notifyPremiumButtonImage")
   };
@@ -61,7 +62,7 @@ export function initializeImagePanel(isMockMode) {
     imagePanel.resultContent.innerHTML = MESSAGES.NO_IMAGE_ANALYZED;
     imagePanel.spinner.style.display = "none";
     imagePanel.error.style.display = "none";
-    imagePanel.otherBusinessInput.style.display = "none";
+    imagePanel.imageOtherBusinessTypeContainer.style.display = "none";
     imagePanel.otherBusinessInput.value = "";
     imagePanel.countrySelect.value = "";
     imagePanel.businessTypeSelect.value = "";
@@ -75,7 +76,7 @@ export function initializeImagePanel(isMockMode) {
   // --- EVENT LISTENERS ---
     imagePanel.countrySelect.addEventListener("change", () => enableResetOnInput(imagePanel.resetButton));
     imagePanel.businessTypeSelect.addEventListener("change", () => {
-      handleBusinessTypeChange(imagePanel.businessTypeSelect, imagePanel.otherBusinessInput);
+      handleBusinessTypeChange(imagePanel.businessTypeSelect, imagePanel.imageOtherBusinessTypeContainer);
       enableResetOnInput(imagePanel.resetButton);
     });
     imagePanel.resetButton.addEventListener("click", resetImagePanel);
