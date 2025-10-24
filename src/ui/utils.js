@@ -14,11 +14,11 @@ export const enableResetOnInput = (button) => {
     button.disabled = false;
 };
 
-export function handleBusinessTypeChange(selectElement, inputElement) {
+export function handleBusinessTypeChange(selectElement, containerElement) {
   if (selectElement.value === "Other...") {
-    inputElement.style.display = "block";
+    containerElement.style.display = "block";
   } else {
-    inputElement.style.display = "none";
+    containerElement.style.display = "none";
   }
 }
 

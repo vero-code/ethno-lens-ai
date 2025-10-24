@@ -45,6 +45,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     countrySelect: document.getElementById("countrySelect"),
     businessSelect: document.getElementById("businessType"),
     otherBusinessInput: document.getElementById("otherBusinessType"),
+    otherBusinessTypeContainer: document.getElementById("otherBusinessTypeContainer"),
     resetButton: document.getElementById("resetDesign"),
     scoreBox: document.getElementById("scoreBox"),
     scoreValue: document.getElementById("scoreValue"),
@@ -78,7 +79,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     designPanel.chat.responseContent.innerHTML = MESSAGES.AI_CONVERSATION_START;
     designPanel.chat.spinner.style.display = "none";
     designPanel.chat.error.style.display = "none";
-    designPanel.otherBusinessInput.style.display = "none";
+    designPanel.otherBusinessTypeContainer.style.display = "none";
     designPanel.otherBusinessInput.value = "";
     lastPromptContext = "";
     designPanel.resetButton.disabled = true;
@@ -90,7 +91,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
   // --- EVENT LISTENERS ---
   designPanel.countrySelect.addEventListener("change", () => enableResetOnInput(designPanel.resetButton));
   designPanel.businessSelect.addEventListener("change", () => {
-    handleBusinessTypeChange(designPanel.businessSelect, designPanel.otherBusinessInput);
+    handleBusinessTypeChange(designPanel.businessSelect, designPanel.otherBusinessTypeContainer);
     enableResetOnInput(designPanel.resetButton);
   });
   designPanel.chat.input.addEventListener("input", () => {

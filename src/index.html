@@ -27,7 +27,7 @@
                         <div class="tab-panel-content">
                             <!-- Country Select -->
                             <div>
-                                <sp-field-label size="l" for="countrySelect">Select country:</sp-field-label>
+                                <sp-field-label size="l" for="countrySelect" required>Select country</sp-field-label>
                                 <sp-picker id="countrySelect" label="Choose a country">
                                     <sp-menu-item>Loading countries...</sp-menu-item>
                                 </sp-picker>
@@ -35,7 +35,7 @@
                             
                             <!-- Business Type Select -->
                             <div>
-                                <sp-field-label size="l" for="businessType">Business type:</sp-field-label>
+                                <sp-field-label size="l" for="businessType" required>Business type</sp-field-label>
                                 <sp-picker id="businessType" label="Choose business type">
                                     <sp-menu-item>Loading business types...</sp-menu-item>
                                 </sp-picker>
@@ -45,16 +45,19 @@
                             </div>
 
                             <!-- Other Business Type Input -->
-                            <sp-textfield 
-                                id="otherBusinessType" 
-                                placeholder="Please specify your business type">
-                            </sp-textfield>
+                            <div id="otherBusinessTypeContainer">
+                                <sp-field-label size="l" for="otherBusinessType" required>Own business type</sp-field-label>
+                                <sp-textfield 
+                                    id="otherBusinessType" 
+                                    placeholder="Please specify your business type">
+                                </sp-textfield>
+                            </div>
                             
                             <!-- Action Buttons -->
-                            <div class="button-row">
+                            <sp-button-group>
                                 <sp-button id="scanDesign">Scan</sp-button>
                                 <sp-button id="resetDesign">Reset</sp-button>
-                            </div>
+                            </sp-button-group>
 
                             <!-- Score Box -->
                             <div id="scoreBox">
@@ -79,15 +82,18 @@
                             <div id="followUpChat">
                                 <sp-divider size="m"></sp-divider>
                                 <h3>Ask the AI</h3>
+                                <sp-field-label for="chatInput" required>Ask a follow-up question</sp-field-label>
                                 <sp-textfield 
                                     id="chatInput" 
                                     multiline
-                                    rows="3"
-                                    placeholder="Ask a follow-up question...">
+                                    placeholder="What text would work better?"
+                                    pattern=".{0,500}"
+                                >
+                                    <sp-help-text slot="help-text">500 character limit</sp-help-text>
+                                    <sp-help-text slot="negative-help-text">
+                                        Exceeded 500 character limit
+                                    </sp-help-text>
                                 </sp-textfield>
-                                <p class="chat-hint">
-                                    Try: <em>What color would work better?</em>
-                                </p>
 
                                 <sp-button id="chatSend">Send</sp-button>
 
@@ -111,7 +117,7 @@
                         <div class="tab-panel-content">
                             <!-- Country Select -->
                             <div>
-                                <sp-field-label size="l" for="imageCountrySelect">Select country:</sp-field-label>
+                                <sp-field-label size="l" for="imageCountrySelect" required>Select country</sp-field-label>
                                 <sp-picker id="imageCountrySelect" label="Choose a country">
                                     <sp-menu-item>Loading countries...</sp-menu-item>
                                 </sp-picker>
@@ -119,7 +125,7 @@
 
                             <!-- Business Type Select -->
                             <div>
-                                <sp-field-label size="l" for="imageBusinessType">Business type:</sp-field-label>
+                                <sp-field-label size="l" for="imageBusinessType" required>Business type</sp-field-label>
                                 <sp-picker id="imageBusinessType" label="Choose business type">
                                     <sp-menu-item>Loading business types...</sp-menu-item>
                                 </sp-picker>
@@ -128,21 +134,23 @@
                                 </sp-help-text>
                             </div>
 
-
                             <!-- Other Business Type Input -->
-                            <sp-textfield 
-                                id="imageOtherBusinessType" 
-                                placeholder="Please specify your business type">
-                            </sp-textfield>
+                            <div id="imageOtherBusinessTypeContainer">
+                                <sp-field-label size="l" for="imageOtherBusinessType" required>Own business type</sp-field-label>
+                                <sp-textfield 
+                                    id="imageOtherBusinessType" 
+                                    placeholder="Please specify your business type">
+                                </sp-textfield>
+                            </div>
 
                             <h3>Upload an image</h3>
                             <input type="file" id="imageUpload" accept="image/*"/>
 
                             <!-- Action Buttons -->
-                            <div class="button-row">
-                                <sp-button id="analyzeImage" variant="accent" disabled>Analyze</sp-button>
+                            <sp-button-group>
+                                <sp-button id="analyzeImage" disabled>Analyze</sp-button>
                                 <sp-button id="resetImage" disabled>Reset</sp-button>
-                            </div>
+                            </sp-button-group>
 
                             <!-- Image Preview -->
                             <img id="imagePreview" alt="Image Preview"/>

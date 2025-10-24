@@ -73,12 +73,13 @@ sp-textfield {
 }
 
 /* === BUTTONS === */
-.button-row {
-    display: flex;
-    gap: 16px;
+sp-button-group {
+    width: 100%;
 }
 
-sp-button[id="chatSend"] {}
+sp-button-group sp-button {
+    flex: 1;
+}
 
 /* === SCORE BOX === */
 #scoreBox {
@@ -127,11 +128,6 @@ sp-progress-circle[style*="display: block"] {
 
 #followUpChat.visible {
     display: flex !important;
-}
-
-.chat-hint {
-    font-size: 12px;
-    color: #666;
 }
 
 #chatError,
