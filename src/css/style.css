@@ -81,6 +81,10 @@ sp-button-group sp-button {
     flex: 1;
 }
 
+#resetImage {
+    width: 100%;
+}
+
 /* === SCORE BOX === */
 #scoreBox {
     display: none;

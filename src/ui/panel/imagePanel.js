@@ -102,7 +102,8 @@ export function initializeImagePanel(isMockMode) {
     accordionStep2: document.getElementById("step2"),
     accordionStep3: document.getElementById("step3"),
     confirmResetButton: document.getElementById("confirm-reset"),
-    cancelResetButton: document.getElementById("cancel-reset")
+    cancelResetButton: document.getElementById("cancel-reset"),
+    clearImageButton: document.getElementById("clearImageButton")
   };
 
   let userId = null;
@@ -112,6 +113,7 @@ export function initializeImagePanel(isMockMode) {
     selectedFile = null;
     imagePanel.uploadInput.style.backgroundImage = "none";
     toggleDropzoneContent(imagePanel, true);
+    if (imagePanel.clearImageButton) imagePanel.clearImageButton.style.display = 'none';
     imagePanel.resultContent.innerHTML = MESSAGES.NO_IMAGE_ANALYZED;
     imagePanel.spinner.style.display = "none";
     imagePanel.error.style.display = "none";
@@ -141,6 +143,7 @@ export function initializeImagePanel(isMockMode) {
         imagePanel.uploadInput.style.backgroundRepeat = "no-repeat";
         imagePanel.uploadInput.style.backgroundPosition = "center";
         toggleDropzoneContent(imagePanel, false);
+        if (imagePanel.clearImageButton) imagePanel.clearImageButton.style.display = 'block';
         imagePanel.error.style.display = "none";
         imagePanel.resultContent.innerHTML = MESSAGES.IMAGE_READY;
 
@@ -153,6 +156,7 @@ export function initializeImagePanel(isMockMode) {
       selectedFile = null;
       imagePanel.uploadInput.style.backgroundImage = "none";
       toggleDropzoneContent(imagePanel, true);
+      if (imagePanel.clearImageButton) imagePanel.clearImageButton.style.display = 'none';
       showImageError(imagePanel, MESSAGES.INVALID_FILE);
       updatePanelState(imagePanel, selectedFile);
     }
@@ -180,6 +184,22 @@ export function initializeImagePanel(isMockMode) {
     resetImagePanel();
     imagePanel.resetButton.closest('overlay-trigger').open = false;
   });
+
+  // --- Clear Image Button ---
+  if (imagePanel.clearImageButton) {
+    imagePanel.clearImageButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      selectedFile = null;
+      imagePanel.uploadInput.style.backgroundImage = "none";
+      toggleDropzoneContent(imagePanel, true);
+      imagePanel.clearImageButton.style.display = "none";
+      imagePanel.resultContent.innerHTML = MESSAGES.NO_IMAGE_ANALYZED;
+      imagePanel.error.style.display = "none";
+      updatePanelState(imagePanel, selectedFile);
+      imagePanel.accordionStep2.open = true;
+      imagePanel.accordionStep3.open = false;
+    });
+  }
 
   imagePanel.notifyPremiumButtonImage.addEventListener("click", async () => {
       if (!userId) userId = await getUserId();
