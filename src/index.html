@@ -201,34 +201,38 @@
                                 </sp-accordion-item>
                             </sp-accordion>
                             <overlay-trigger type="modal">
-                                <sp-button id="resetImage" slot="trigger" disabled>
-                                    Reset All
-                                </sp-button>
-                                <sp-dialog-wrapper 
-                                    id="reset-dialog-wrapper" 
-                                    underlay 
-                                    modal
-                                    slot="click-content" 
-                                >
-                                    <sp-dialog size="s">
-                                        <h2 slot="heading">Confirm Reset</h2>
-                                        <p>Are you sure you want to clear all fields and remove the uploaded image?</p>
-                                        <sp-button 
-                                            slot="button" 
-                                            variant="secondary" 
+                                <sp-dialog-base underlay slot="click-content">
+                                    <sp-alert-dialog
+                                        role="alertdialog"
+                                        aria-labelledby="reset-heading"
+                                        aria-describedby="reset-message"
+                                        variant="destructive"
+                                    >
+                                        <h2 id="reset-heading" slot="heading">Confirm Reset</h2>
+                                        <p id="reset-message">
+                                            Are you sure you want to clear all fields and remove the uploaded image?
+                                        </p>
+                                        <sp-button
+                                            slot="button"
+                                            variant="secondary"
+                                            treatment="outline"
                                             id="cancel-reset"
                                         >
                                             Cancel
                                         </sp-button>
-                                        <sp-button 
-                                            slot="button" 
-                                            variant="negative" 
+                                        <sp-button
+                                            slot="button"
+                                            variant="accent"
+                                            treatment="fill"
                                             id="confirm-reset"
                                         >
                                             Yes, Reset All
                                         </sp-button>
-                                    </sp-dialog>
-                                </sp-dialog-wrapper>
+                                    </sp-alert-dialog>
+                                </sp-dialog-base>
+                                <sp-button id="resetImage" slot="trigger" disabled>
+                                    Reset All
+                                </sp-button>
                             </overlay-trigger>
                         </div>
                     </sp-tab-panel>
