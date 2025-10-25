@@ -128,6 +128,20 @@ export function initializeImagePanel(isMockMode) {
     fileInput.click();
   });
 
+  // --- Drag and Drop для sp-dropzone ---
+  imagePanel.uploadInput.addEventListener("drop", (event) => {
+    console.log("Drop event triggered");
+    
+    const files = event.dataTransfer?.files;
+    
+    if (files && files.length > 0) {
+      console.log("File dropped:", files[0].name);
+      handleFileSelect(files[0]);
+    } else {
+      console.log("No files found in drop event");
+    }
+  });
+
   // --- ACTION BUTTON LISTENERS ---
   imagePanel.analyzeButton.addEventListener("click", async () => {
     setButtonsState(imagePanel, true);
