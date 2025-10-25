@@ -118,6 +118,7 @@
                     <!-- Panel 2: Image Analysis -->
                     <sp-tab-panel value="tab-analyze-image">
                         <div class="tab-panel-content">
+                            <sp-badge>Step 1: Set Context</sp-badge>
                             <!-- Country Select -->
                             <div>
                                 <sp-field-label size="l" for="imageCountrySelect" required>Select country</sp-field-label>
@@ -146,12 +147,13 @@
                                 </sp-textfield>
                             </div>
 
+                            <sp-badge>Step 2: Upload Image</sp-badge>
                             <!-- Image Upload Dropzone -->
                             <div>
-                                <sp-field-label size="l">Upload an image</sp-field-label>
+                                <sp-field-label size="l">Upload your design to analyze its cultural relevance for the selected market.</sp-field-label>
                                 <sp-dropzone id="imageUpload">
                                     <sp-illustrated-message
-                                        heading="Drag and drop your image"
+                                        heading="Drag and drop your ad, banner, or post"
                                         description="Or browse files on your computer"
                                     >
                                         <svg
@@ -167,21 +169,22 @@
                                     </sp-illustrated-message>
                                     <sp-button variant="accent" id="browseButton">Browse files</sp-button>
                                 </sp-dropzone>
+                                <sp-help-text id="help-text">
+                                    Formats: PNG, JPEG, WebP. Maximum file size: 7MB.
+                                </sp-help-text>
                             </div>
 
+                            <sp-badge>Step 3: Get Analysis</sp-badge>
                             <!-- Action Buttons -->
                             <sp-button-group>
-                                <sp-button id="analyzeImage" disabled>Analyze</sp-button>
-                                <sp-button id="resetImage" disabled>Reset</sp-button>
+                                <sp-button size="l" id="analyzeImage" disabled>Check Cultural Fit</sp-button>
+                                <sp-button id="resetImage" disabled>Reset All</sp-button>
                             </sp-button-group>
-
-                            <!-- Image Preview -->
-                            <img id="imagePreview" alt="Image Preview"/>
 
                             <!-- Result Box -->
                             <div id="imageResultBox">
                                 <sp-progress-circle id="imageSpinner" indeterminate></sp-progress-circle>
-                                <div id="imageResultContent">No image analyzed yet.</div>
+                                <div id="imageResultContent"></div>
                                 <div id="imageError"></div>
                             </div>
 
