@@ -35,13 +35,28 @@ const showImageError = (imagePanel, message) => {
   imagePanel.resetButton.disabled = false;
 };
 
+/**
+ * Toggles visibility of sp-dropzone content.
+ * @param {object} imagePanel - Panel elements.
+ * @param {boolean} show - Whether to show or hide the content.
+ */
+const toggleDropzoneContent = (imagePanel, show) => {
+    const displayValue = show ? "" : "none";
+    const message = imagePanel.uploadInput.querySelector("sp-illustrated-message");
+    if (message) {
+        message.style.display = displayValue;
+    }
+    if (imagePanel.browseButton) {
+        imagePanel.browseButton.style.display = displayValue;
+    }
+};
+
 // --- MAIN INITIALIZATION FUNCTION ---
 export function initializeImagePanel(isMockMode) {
   const imagePanel = {
     uploadInput: document.getElementById("imageUpload"),
     browseButton: document.getElementById("browseButton"),
     analyzeButton: document.getElementById("analyzeImage"),
-    preview: document.getElementById("imagePreview"),
     resultContent: document.getElementById("imageResultContent"),
     error: document.getElementById("imageError"),
     resetButton: document.getElementById("resetImage"),
@@ -59,8 +74,8 @@ export function initializeImagePanel(isMockMode) {
 
   const resetImagePanel = () => {
     selectedFile = null;
-    imagePanel.preview.src = "";
-    imagePanel.preview.style.display = "none";
+    imagePanel.uploadInput.style.backgroundImage = "none";
+    toggleDropzoneContent(imagePanel, true);
     imagePanel.resultContent.innerHTML = MESSAGES.NO_IMAGE_ANALYZED;
     imagePanel.spinner.style.display = "none";
     imagePanel.error.style.display = "none";
@@ -81,8 +96,12 @@ export function initializeImagePanel(isMockMode) {
 
       const reader = new FileReader();
       reader.onload = function (e) {
-        imagePanel.preview.src = e.target.result;
-        imagePanel.preview.style.display = "block";
+        const imageUrl = e.target.result;
+        imagePanel.uploadInput.style.backgroundImage = `url(${imageUrl})`;
+        imagePanel.uploadInput.style.backgroundSize = "contain";
+        imagePanel.uploadInput.style.backgroundRepeat = "no-repeat";
+        imagePanel.uploadInput.style.backgroundPosition = "center";
+        toggleDropzoneContent(imagePanel, false);
         imagePanel.analyzeButton.disabled = false;
         imagePanel.resetButton.disabled = false;
         imagePanel.error.style.display = "none";
@@ -91,8 +110,8 @@ export function initializeImagePanel(isMockMode) {
       reader.readAsDataURL(file);
     } else {
       selectedFile = null;
-      imagePanel.preview.src = "";
-      imagePanel.preview.style.display = "none";
+      imagePanel.uploadInput.style.backgroundImage = "none";
+      toggleDropzoneContent(imagePanel, true);
       imagePanel.analyzeButton.disabled = true;
       imagePanel.resetButton.disabled = true;
       showImageError(imagePanel, MESSAGES.INVALID_FILE);
