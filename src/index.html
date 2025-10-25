@@ -21,7 +21,7 @@
     <body>
         <sp-theme scale="medium" color="light" theme="express">
             <div class="addon-body">
-                <sp-tabs selected="tab-scan-design">
+                <sp-tabs selected="tab-analyze-image">
                     <sp-tab value="tab-scan-design" label="Design"></sp-tab>
                     <sp-tab value="tab-analyze-image" label="Image"></sp-tab>
 
@@ -181,11 +181,7 @@
                                     <div>
                                         <!-- Action Buttons -->
                                         <sp-button-group>
-                                            <sp-button size="l" id="analyzeImage" disabled>Check Cultural Fit</sp-button>
-                                            <sp-button id="resetImage" disabled>Reset All</sp-button>
-                                            <sp-help-text id="help-text">
-                                                To enable buttons, set context and upload image above.
-                                            </sp-help-text>
+                                            <sp-button size="l" id="analyzeImage" disabled>Analyze Cultural Fit</sp-button>
                                         </sp-button-group>
 
                                         <!-- Result Box -->
@@ -204,6 +200,7 @@
                                     </div>
                                 </sp-accordion-item>
                             </sp-accordion>
+                            <sp-button id="resetImage" disabled>Reset All</sp-button>
                         </div>
                     </sp-tab-panel>
                 </sp-tabs>
