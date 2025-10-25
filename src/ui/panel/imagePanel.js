@@ -1,5 +1,5 @@
 // src/ui/panel/imagePanel.js
-import { renderMarkdown, enableResetOnInput, handleBusinessTypeChange, handlePremiumClick, showPremiumUpsell } from '../utils.js';
+import { renderMarkdown, handleBusinessTypeChange, handlePremiumClick, showPremiumUpsell } from '../utils.js';
 import { analyzeImage, logPremiumInterest } from "../api.js";
 import { getUserId } from '../user.js';
 
@@ -51,6 +51,37 @@ const toggleDropzoneContent = (imagePanel, show) => {
     }
 };
 
+/**
+ * Checks the state of all inputs and updates the accordion and buttons.
+ * @param {object} imagePanel - The panel elements.
+ * @param {File | null} selectedFile - The currently selected file, if any.
+ */
+const updatePanelState = (imagePanel, selectedFile) => {
+  // 1. Check if Step 1 is completed
+  const country = imagePanel.countrySelect.value;
+  let businessType = imagePanel.businessTypeSelect.value;
+  
+  if (businessType === OTHER_OPTION_VALUE) {
+      businessType = imagePanel.otherBusinessInput.value.trim();
+  }
+  const step1Complete = !!country && !!businessType;
+
+  // 2. Check if Step 2 is completed
+  const step2Complete = !!selectedFile;
+
+  // 3. Step 2 becomes available once Step 1 is completed
+  imagePanel.accordionStep2.disabled = !step1Complete;
+
+  // 4. Update availability of Step 3
+  const readyForAnalysis = step1Complete && step2Complete;
+  imagePanel.accordionStep3.disabled = !readyForAnalysis;
+  imagePanel.analyzeButton.disabled = !readyForAnalysis;
+
+  // 5. Enable Reset if *at least something* is filled in
+  const hasAnyInput = !!country || !!businessType || !!selectedFile;
+  imagePanel.resetButton.disabled = !hasAnyInput;
+};
+
 // --- MAIN INITIALIZATION FUNCTION ---
 export function initializeImagePanel(isMockMode) {
   const imagePanel = {
@@ -66,7 +97,10 @@ export function initializeImagePanel(isMockMode) {
     otherBusinessInput: document.getElementById("imageOtherBusinessType"),
     imageOtherBusinessTypeContainer: document.getElementById("imageOtherBusinessTypeContainer"),
     premiumUpsellImage: document.getElementById("premiumUpsellImage"),
-    notifyPremiumButtonImage: document.getElementById("notifyPremiumButtonImage")
+    notifyPremiumButtonImage: document.getElementById("notifyPremiumButtonImage"),
+    accordionStep1: document.getElementById("step1"),
+    accordionStep2: document.getElementById("step2"),
+    accordionStep3: document.getElementById("step3")
   };
 
   let userId = null;
@@ -83,11 +117,14 @@ export function initializeImagePanel(isMockMode) {
     imagePanel.otherBusinessInput.value = "";
     imagePanel.countrySelect.value = "";
     imagePanel.businessTypeSelect.value = "";
-    imagePanel.resetButton.disabled = true;
     setButtonsState(imagePanel, false);
-    imagePanel.analyzeButton.disabled = true;
     imagePanel.uploadInput.disabled = false;
     imagePanel.premiumUpsellImage.style.display = 'none';
+
+    imagePanel.accordionStep1.open = true;
+    imagePanel.accordionStep2.open = false;
+    imagePanel.accordionStep3.open = false;
+    updatePanelState(imagePanel, selectedFile);
   };
 
   const handleFileSelect = (file) => {
@@ -102,28 +139,35 @@ export function initializeImagePanel(isMockMode) {
         imagePanel.uploadInput.style.backgroundRepeat = "no-repeat";
         imagePanel.uploadInput.style.backgroundPosition = "center";
         toggleDropzoneContent(imagePanel, false);
-        imagePanel.analyzeButton.disabled = false;
-        imagePanel.resetButton.disabled = false;
         imagePanel.error.style.display = "none";
         imagePanel.resultContent.innerHTML = MESSAGES.IMAGE_READY;
+
+        updatePanelState(imagePanel, selectedFile);
+        imagePanel.accordionStep2.open = false;
+        imagePanel.accordionStep3.open = true;
       };
       reader.readAsDataURL(file);
     } else {
       selectedFile = null;
       imagePanel.uploadInput.style.backgroundImage = "none";
       toggleDropzoneContent(imagePanel, true);
-      imagePanel.analyzeButton.disabled = true;
-      imagePanel.resetButton.disabled = true;
       showImageError(imagePanel, MESSAGES.INVALID_FILE);
+      updatePanelState(imagePanel, selectedFile);
     }
   };
 
   // --- EVENT LISTENERS ---
-  imagePanel.countrySelect.addEventListener("change", () => enableResetOnInput(imagePanel.resetButton));
-  imagePanel.businessTypeSelect.addEventListener("change", () => {
+  const handleStep1Change = () => {
     handleBusinessTypeChange(imagePanel.businessTypeSelect, imagePanel.imageOtherBusinessTypeContainer);
-    enableResetOnInput(imagePanel.resetButton);
-  });
+    updatePanelState(imagePanel, selectedFile);
+    if (!imagePanel.accordionStep2.disabled) {
+        imagePanel.accordionStep1.open = false;
+        imagePanel.accordionStep2.open = true;
+    }
+  };
+  imagePanel.countrySelect.addEventListener("change", handleStep1Change);
+  imagePanel.businessTypeSelect.addEventListener("change", handleStep1Change);
+  imagePanel.otherBusinessInput.addEventListener("input", handleStep1Change);
   imagePanel.resetButton.addEventListener("click", resetImagePanel);
 
   imagePanel.notifyPremiumButtonImage.addEventListener("click", async () => {
