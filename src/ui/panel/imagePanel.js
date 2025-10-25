@@ -100,7 +100,9 @@ export function initializeImagePanel(isMockMode) {
     notifyPremiumButtonImage: document.getElementById("notifyPremiumButtonImage"),
     accordionStep1: document.getElementById("step1"),
     accordionStep2: document.getElementById("step2"),
-    accordionStep3: document.getElementById("step3")
+    accordionStep3: document.getElementById("step3"),
+    confirmResetButton: document.getElementById("confirm-reset"),
+    cancelResetButton: document.getElementById("cancel-reset")
   };
 
   let userId = null;
@@ -168,7 +170,16 @@ export function initializeImagePanel(isMockMode) {
   imagePanel.countrySelect.addEventListener("change", handleStep1Change);
   imagePanel.businessTypeSelect.addEventListener("change", handleStep1Change);
   imagePanel.otherBusinessInput.addEventListener("input", handleStep1Change);
-  imagePanel.resetButton.addEventListener("click", resetImagePanel);
+
+  // Reset: Confirmation dialog
+  imagePanel.cancelResetButton.addEventListener("click", () => {
+    imagePanel.resetButton.closest('overlay-trigger').open = false;
+  });
+
+  imagePanel.confirmResetButton.addEventListener("click", () => {
+    resetImagePanel();
+    imagePanel.resetButton.closest('overlay-trigger').open = false;
+  });
 
   imagePanel.notifyPremiumButtonImage.addEventListener("click", async () => {
       if (!userId) userId = await getUserId();
