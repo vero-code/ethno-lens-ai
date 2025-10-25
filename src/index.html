@@ -118,82 +118,92 @@
                     <!-- Panel 2: Image Analysis -->
                     <sp-tab-panel value="tab-analyze-image">
                         <div class="tab-panel-content">
-                            <sp-badge>Step 1: Set Context</sp-badge>
-                            <!-- Country Select -->
-                            <div>
-                                <sp-field-label size="l" for="imageCountrySelect" required>Select country</sp-field-label>
-                                <sp-picker id="imageCountrySelect" label="Choose a country">
-                                    <sp-menu-item>Loading countries...</sp-menu-item>
-                                </sp-picker>
-                            </div>
+                            <sp-accordion>
+                                <sp-accordion-item open label="Step 1: Set Context" id="step1">
+                                    <div>
+                                        <!-- Country Select -->
+                                        <div>
+                                            <sp-field-label size="l" for="imageCountrySelect" required>Select country</sp-field-label>
+                                            <sp-picker id="imageCountrySelect" label="Choose a country">
+                                                <sp-menu-item>Loading countries...</sp-menu-item>
+                                            </sp-picker>
+                                        </div>
 
-                            <!-- Business Type Select -->
-                            <div>
-                                <sp-field-label size="l" for="imageBusinessType" required>Business type</sp-field-label>
-                                <sp-picker id="imageBusinessType" label="Choose business type">
-                                    <sp-menu-item>Loading business types...</sp-menu-item>
-                                </sp-picker>
-                                <sp-help-text id="help-text">
-                                    Enter your type of business by selecting "Other"
-                                </sp-help-text>
-                            </div>
+                                        <!-- Business Type Select -->
+                                        <div>
+                                            <sp-field-label size="l" for="imageBusinessType" required>Business type</sp-field-label>
+                                            <sp-picker id="imageBusinessType" label="Choose business type">
+                                                <sp-menu-item>Loading business types...</sp-menu-item>
+                                            </sp-picker>
+                                            <sp-help-text id="help-text">
+                                                Enter your type of business by selecting "Other"
+                                            </sp-help-text>
+                                        </div>
 
-                            <!-- Other Business Type Input -->
-                            <div id="imageOtherBusinessTypeContainer">
-                                <sp-field-label size="l" for="imageOtherBusinessType" required>Own business type</sp-field-label>
-                                <sp-textfield 
-                                    id="imageOtherBusinessType" 
-                                    placeholder="Please specify your business type">
-                                </sp-textfield>
-                            </div>
+                                        <!-- Other Business Type Input -->
+                                        <div id="imageOtherBusinessTypeContainer">
+                                            <sp-field-label size="l" for="imageOtherBusinessType" required>Own business type</sp-field-label>
+                                            <sp-textfield 
+                                                id="imageOtherBusinessType" 
+                                                placeholder="Please specify your business type">
+                                            </sp-textfield>
+                                        </div>
+                                    </div>
+                                </sp-accordion-item>
+                                <sp-accordion-item label="Step 2: Upload Image" id="step2" disabled>
+                                    <div>
+                                        <!-- Image Upload Dropzone -->
+                                        <sp-field-label size="l">Upload your design to analyze its cultural relevance for the selected market.</sp-field-label>
+                                        <sp-dropzone id="imageUpload">
+                                            <sp-illustrated-message
+                                                heading="Drag and drop your ad, banner, or post"
+                                                description="Or browse files on your computer"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    viewBox="0 0 150 103"
+                                                    width="150"
+                                                    height="103"
+                                                >
+                                                    <path
+                                                        d="M133.7,8.5h-118c-1.9,0-3.5,1.6-3.5,3.5v27c0,0.8,0.7,1.5,1.5,1.5s1.5-0.7,1.5-1.5V23.5h119V92c0,0.3-0.2,0.5-0.5,0.5h-118c-0.3,0-0.5-0.2-0.5-0.5V69c0-0.8-0.7-1.5-1.5-1.5s-1.5,0.7-1.5,1.5v23c0,1.9,1.6,3.5,3.5,3.5h118c1.9,0,3.5-1.6,3.5-3.5V12C137.2,10.1,135.6,8.5,133.7,8.5z M15.2,21.5V12c0-0.3,0.2-0.5,0.5-0.5h118c0.3,0,0.5,0.2,0.5,0.5v9.5H15.2z M32.6,16.5c0,0.6-0.4,1-1,1h-10c-0.6,0-1-0.4-1-1s0.4-1,1-1h10C32.2,15.5,32.6,15.9,32.6,16.5z M13.6,56.1l-8.6,8.5C4.8,65,4.4,65.1,4,65.1c-0.4,0-0.8-0.1-1.1-0.4c-0.6-0.6-0.6-1.5,0-2.1l8.6-8.5l-8.6-8.5c-0.6-0.6-0.6-1.5,0-2.1c0.6-0.6,1.5-0.6,2.1,0l8.6,8.5l8.6-8.5c0.6-0.6,1.5-0.6,2.1,0c0.6,0.6,0.6,1.5,0,2.1L15.8,54l8.6,8.5c0.6,0.6,0.6,1.5,0,2.1c-0.3,0.3-0.7,0.4-1.1,0.4c-0.4,0-0.8-0.1-1.1-0.4L13.6,56.1z"
+                                                    ></path>
+                                                </svg>
+                                            </sp-illustrated-message>
+                                            <sp-button variant="accent" id="browseButton">Browse files</sp-button>
+                                        </sp-dropzone>
+                                        <sp-help-text id="help-text">
+                                            Formats: PNG, JPEG, WebP. Maximum file size: 7MB.
+                                        </sp-help-text>
+                                    </div>
+                                </sp-accordion-item>
+                                <sp-accordion-item label="Step 3: Get Analysis" id="step3" disabled>
+                                    <div>
+                                        <!-- Action Buttons -->
+                                        <sp-button-group>
+                                            <sp-button size="l" id="analyzeImage" disabled>Check Cultural Fit</sp-button>
+                                            <sp-button id="resetImage" disabled>Reset All</sp-button>
+                                            <sp-help-text id="help-text">
+                                                To enable buttons, set context and upload image above.
+                                            </sp-help-text>
+                                        </sp-button-group>
 
-                            <sp-badge>Step 2: Upload Image</sp-badge>
-                            <!-- Image Upload Dropzone -->
-                            <div>
-                                <sp-field-label size="l">Upload your design to analyze its cultural relevance for the selected market.</sp-field-label>
-                                <sp-dropzone id="imageUpload">
-                                    <sp-illustrated-message
-                                        heading="Drag and drop your ad, banner, or post"
-                                        description="Or browse files on your computer"
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 150 103"
-                                            width="150"
-                                            height="103"
-                                        >
-                                            <path
-                                                d="M133.7,8.5h-118c-1.9,0-3.5,1.6-3.5,3.5v27c0,0.8,0.7,1.5,1.5,1.5s1.5-0.7,1.5-1.5V23.5h119V92c0,0.3-0.2,0.5-0.5,0.5h-118c-0.3,0-0.5-0.2-0.5-0.5V69c0-0.8-0.7-1.5-1.5-1.5s-1.5,0.7-1.5,1.5v23c0,1.9,1.6,3.5,3.5,3.5h118c1.9,0,3.5-1.6,3.5-3.5V12C137.2,10.1,135.6,8.5,133.7,8.5z M15.2,21.5V12c0-0.3,0.2-0.5,0.5-0.5h118c0.3,0,0.5,0.2,0.5,0.5v9.5H15.2z M32.6,16.5c0,0.6-0.4,1-1,1h-10c-0.6,0-1-0.4-1-1s0.4-1,1-1h10C32.2,15.5,32.6,15.9,32.6,16.5z M13.6,56.1l-8.6,8.5C4.8,65,4.4,65.1,4,65.1c-0.4,0-0.8-0.1-1.1-0.4c-0.6-0.6-0.6-1.5,0-2.1l8.6-8.5l-8.6-8.5c-0.6-0.6-0.6-1.5,0-2.1c0.6-0.6,1.5-0.6,2.1,0l8.6,8.5l8.6-8.5c0.6-0.6,1.5-0.6,2.1,0c0.6,0.6,0.6,1.5,0,2.1L15.8,54l8.6,8.5c0.6,0.6,0.6,1.5,0,2.1c-0.3,0.3-0.7,0.4-1.1,0.4c-0.4,0-0.8-0.1-1.1-0.4L13.6,56.1z"
-                                            ></path>
-                                        </svg>
-                                    </sp-illustrated-message>
-                                    <sp-button variant="accent" id="browseButton">Browse files</sp-button>
-                                </sp-dropzone>
-                                <sp-help-text id="help-text">
-                                    Formats: PNG, JPEG, WebP. Maximum file size: 7MB.
-                                </sp-help-text>
-                            </div>
+                                        <!-- Result Box -->
+                                        <div id="imageResultBox">
+                                            <sp-progress-circle id="imageSpinner" indeterminate></sp-progress-circle>
+                                            <div id="imageResultContent"></div>
+                                            <div id="imageError"></div>
+                                        </div>
 
-                            <sp-badge>Step 3: Get Analysis</sp-badge>
-                            <!-- Action Buttons -->
-                            <sp-button-group>
-                                <sp-button size="l" id="analyzeImage" disabled>Check Cultural Fit</sp-button>
-                                <sp-button id="resetImage" disabled>Reset All</sp-button>
-                            </sp-button-group>
-
-                            <!-- Result Box -->
-                            <div id="imageResultBox">
-                                <sp-progress-circle id="imageSpinner" indeterminate></sp-progress-circle>
-                                <div id="imageResultContent"></div>
-                                <div id="imageError"></div>
-                            </div>
-
-                            <!-- Premium Upsell -->
-                            <div id="premiumUpsellImage">
-                                <sp-button id="notifyPremiumButtonImage" variant="primary">
-                                    I'm interested in Premium
-                                </sp-button>
-                            </div>
+                                        <!-- Premium Upsell -->
+                                        <div id="premiumUpsellImage">
+                                            <sp-button id="notifyPremiumButtonImage" variant="primary">
+                                                I'm interested in Premium
+                                            </sp-button>
+                                        </div>
+                                    </div>
+                                </sp-accordion-item>
+                            </sp-accordion>
                         </div>
                     </sp-tab-panel>
                 </sp-tabs>
