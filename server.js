@@ -4,10 +4,8 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import multer from "multer";
-import { createClient } from '@supabase/supabase-js';
-import { checkUserLimit } from './src/db/limits.js';
-
-console.log("Reading SUPABASE_URL from environment:", process.env.SUPABASE_URL);
+import { supabase } from './db/client.js';
+import { checkUserLimit } from './db/limits.js';
 
 dotenv.config();
 const app = express();
@@ -18,10 +16,6 @@ app.use(express.json());
 // --- Initializing clients ---
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 // --- Constants ---
 const personaPrompt = `You are a Senior Cultural Inclusivity & Design Ethics Specialist at a global creative agency. Your expertise lies in ensuring visual materials are impeccably inclusive and free from cultural insensitivity. You proactively identify inappropriate elements and propose constructive solutions for global brand perception.`;
