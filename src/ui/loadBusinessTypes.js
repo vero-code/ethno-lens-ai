@@ -53,7 +53,7 @@ async function loadBusinessTypes() {
         
         // Add placeholder
         const placeholderItem = document.createElement('sp-menu-item');
-        placeholderItem.textContent = "-- Select business type --";
+        placeholderItem.textContent = "-- Select a business type --";
         placeholderItem.value = "";
         picker.appendChild(placeholderItem);
 

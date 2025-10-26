@@ -59,12 +59,17 @@ const toggleDropzoneContent = (imagePanel, show) => {
 const updatePanelState = (imagePanel, selectedFile) => {
   // 1. Check if Step 1 is completed
   const country = imagePanel.countrySelect.value;
+  const countryIsValid = country && country !== '-- Select a country --';
+
   let businessType = imagePanel.businessTypeSelect.value;
+  let businessIsValid = false;
   
   if (businessType === OTHER_OPTION_VALUE) {
-      businessType = imagePanel.otherBusinessInput.value.trim();
+      businessIsValid = !!imagePanel.otherBusinessInput.value.trim();
+  } else {
+    businessIsValid = businessType && businessType !== '-- Select a business type --';
   }
-  const step1Complete = !!country && !!businessType;
+  const step1Complete = countryIsValid && businessIsValid;
 
   // 2. Check if Step 2 is completed
   const step2Complete = !!selectedFile;
@@ -78,7 +83,7 @@ const updatePanelState = (imagePanel, selectedFile) => {
   imagePanel.analyzeButton.disabled = !readyForAnalysis;
 
   // 5. Enable Reset if *at least something* is filled in
-  const hasAnyInput = !!country || !!businessType || !!selectedFile;
+  const hasAnyInput = !!country || (businessType && businessType !== OTHER_OPTION_VALUE) || (businessType === OTHER_OPTION_VALUE && !!imagePanel.otherBusinessInput.value.trim()) || !!selectedFile;
   imagePanel.resetButton.disabled = !hasAnyInput;
 };
 
@@ -148,8 +153,11 @@ export function initializeImagePanel(isMockMode) {
         imagePanel.resultContent.innerHTML = MESSAGES.IMAGE_READY;
 
         updatePanelState(imagePanel, selectedFile);
-        imagePanel.accordionStep2.open = false;
-        imagePanel.accordionStep3.open = true;
+
+        if (!imagePanel.accordionStep3.disabled) {
+          imagePanel.accordionStep2.open = false;
+          imagePanel.accordionStep3.open = true;
+        }
       };
       reader.readAsDataURL(file);
     } else {
@@ -169,8 +177,13 @@ export function initializeImagePanel(isMockMode) {
     if (!imagePanel.accordionStep2.disabled) {
         imagePanel.accordionStep1.open = false;
         imagePanel.accordionStep2.open = true;
+    } else {
+        imagePanel.accordionStep1.open = true;
+        imagePanel.accordionStep2.open = false;
+        imagePanel.accordionStep3.open = false;
     }
   };
+  
   imagePanel.countrySelect.addEventListener("change", handleStep1Change);
   imagePanel.businessTypeSelect.addEventListener("change", handleStep1Change);
   imagePanel.otherBusinessInput.addEventListener("input", handleStep1Change);
