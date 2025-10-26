@@ -7,8 +7,29 @@ class ApiError extends Error {
     }
 }
 
-const API_BASE_URL = "https://ethno-lens-ai.onrender.com";
-// const API_BASE_URL = "http://localhost:3000";
+// const API_BASE_URL = "https://ethno-lens-ai.onrender.com";
+const API_BASE_URL = "http://localhost:3000";
+
+/**
+ * Gets information about the user's limit usage.
+ * @param {string} userId - User ID.
+ * @returns {Promise<{used: number, limit: number}>}
+ */
+export async function getUserUsage(userId) {
+    const response = await fetch(`${API_BASE_URL}/usage/${userId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new ApiError(errorData.error || 'Failed to get user usage', response.status);
+    }
+
+    return await response.json();
+}
 
 export async function analyzeDesign(prompt, userId) {
     const response = await fetch(`${API_BASE_URL}/analyze`, {

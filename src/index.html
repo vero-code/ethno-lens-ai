@@ -287,6 +287,12 @@
 
             <!-- FOOTER: Dev Controls -->
             <div class="addon-footer" id="devControls">
+                <!-- Usage Limit Display -->
+                <div id="usageLimitFooter" style="margin-top: 16px; padding: 12px; background: var(--spectrum-global-color-gray-100); border-radius: 4px;">
+                    <sp-field-label size="s">
+                        Free tier: <span id="usageCount">--</span> / <span id="usageLimit">20</span> checks used
+                    </sp-field-label>
+                </div>
                 <sp-checkbox id="mockDataToggle">Use Mock Data</sp-checkbox>
             </div>
             <!-- Toast Notifications Region -->
