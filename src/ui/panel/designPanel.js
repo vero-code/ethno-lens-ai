@@ -2,6 +2,7 @@
 import { renderMarkdown, handleBusinessTypeChange, showPremiumUpsell, handlePremiumClick } from '../utils.js';
 import { analyzeDesign, logPremiumInterest } from "../api.js";
 import { getUserId } from '../user.js';
+import { updateUsageDisplay } from '../usageLimit.js';
 
 // --- CONSTANTS ---
 const MESSAGES = {
@@ -212,6 +213,8 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
 
       designPanel.followUpChat.classList.add('visible');
 
+      await updateUsageDisplay();
+
       // Show toast notification with 6 second timeout
       designPanel.chatAvailableToast.open = true;
       setTimeout(() => {
@@ -225,7 +228,10 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
         ? MESSAGES.PREMIUM_LIMIT_REACHED
         : `Error: ${error.message}`;
       showDesignError(designPanel, errorMessage);
-      if (error.status === 429) { showPremiumUpsell(designPanel, 'scan', MESSAGES); }
+      if (error.status === 429) {
+        await updateUsageDisplay();
+        showPremiumUpsell(designPanel, 'scan', MESSAGES);
+      }
     } finally {
       designPanel.spinner.style.display = "none";
       setButtonsState(designPanel, false);
@@ -268,6 +274,8 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
       renderMarkdown(designPanel.chat.responseContent, data.result, `<b>AI responds:</b><br>`);
       designPanel.chat.input.value = "";
 
+      await updateUsageDisplay();
+
       designPanel.premiumUpsellChat.style.display = 'none';
     } catch (err) {
       const isLimitError = err.status === 429;
@@ -276,11 +284,14 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
         : `Error: ${err.message}`;
       designPanel.chat.error.innerHTML = `<span class="error">${errorMessage}</span>`;
       designPanel.chat.error.style.display = "block";
-      if (err.status === 429) { showPremiumUpsell(designPanel, 'chat', MESSAGES); }
+      if (err.status === 429) {
+        await updateUsageDisplay();
+        showPremiumUpsell(designPanel, 'chat', MESSAGES);
+      }
     } finally {
       designPanel.chat.spinner.style.display = "none";
       setButtonsState(designPanel, false);
-      designPanel.resetButton.disabled = false;
+      updateDesignPanelState(designPanel);
     }
   });
 

@@ -2,6 +2,7 @@
 import { renderMarkdown, handleBusinessTypeChange, handlePremiumClick, showPremiumUpsell } from '../utils.js';
 import { analyzeImage, logPremiumInterest } from "../api.js";
 import { getUserId } from '../user.js';
+import { updateUsageDisplay } from '../usageLimit.js';
 
 // --- CONSTANTS ---
 const MESSAGES = {
@@ -286,6 +287,7 @@ export function initializeImagePanel(isMockMode) {
       }
 
       renderMarkdown(imagePanel.resultContent, data.result, "<b>AI Image Analysis</b><br>");
+      await updateUsageDisplay();
       imagePanel.premiumUpsellImage.style.display = 'none';
     } catch (err) {
       const isLimitError = err.status === 429;
@@ -293,11 +295,14 @@ export function initializeImagePanel(isMockMode) {
         ? MESSAGES.PREMIUM_LIMIT_REACHED
         : `Error analyzing image: ${err.message}`;
       showImageError(imagePanel, errorMessage);
-      if (isLimitError) { showPremiumUpsell(imagePanel, 'image', MESSAGES); }
+      if (isLimitError) {
+        await updateUsageDisplay();
+        showPremiumUpsell(imagePanel, 'image', MESSAGES);
+      }
     } finally { 
       imagePanel.spinner.style.display = "none";
       setButtonsState(imagePanel, false);
-      imagePanel.resetButton.disabled = false;
+      updatePanelState(imagePanel, selectedFile);
     }
   });
 
