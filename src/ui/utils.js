@@ -10,10 +10,6 @@ export const renderMarkdown = (targetElement, markdownText, prefix = "") => {
     }
 };
 
-export const enableResetOnInput = (button) => {
-    button.disabled = false;
-};
-
 export function handleBusinessTypeChange(selectElement, containerElement) {
   if (selectElement.value === "Other...") {
     containerElement.style.display = "block";

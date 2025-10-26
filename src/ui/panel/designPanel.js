@@ -1,5 +1,5 @@
 // src/ui/panel/designPanel.js
-import { renderMarkdown, enableResetOnInput, handleBusinessTypeChange, showPremiumUpsell, handlePremiumClick } from '../utils.js';
+import { renderMarkdown, handleBusinessTypeChange, showPremiumUpsell, handlePremiumClick } from '../utils.js';
 import { analyzeDesign, logPremiumInterest } from "../api.js";
 import { getUserId } from '../user.js';
 
@@ -25,6 +25,7 @@ const setButtonsState = (designPanel, disabled) => {
   designPanel.scanButton.disabled = disabled;
   designPanel.countrySelect.disabled = disabled;
   designPanel.businessSelect.disabled = disabled;
+  designPanel.otherBusinessInput.disabled = disabled;
   designPanel.chat.input.disabled = disabled;
   designPanel.chat.sendButton.disabled = disabled;
 };
@@ -34,6 +35,32 @@ const showDesignError = (designPanel, message) => {
   designPanel.content.innerHTML = `<span class="error">${message}</span>`;
   setButtonsState(designPanel, false);
   designPanel.resetButton.disabled = false;
+};
+
+/**
+ * Checks the state of all inputs and updates the accordion and buttons.
+ * @param {object} designPanel - The panel elements.
+ */
+const updateDesignPanelState = (designPanel) => {
+    const country = designPanel.countrySelect.value;
+    const countryIsValid = country && country !== '-- Select a country --';
+
+    let businessType = designPanel.businessSelect.value;
+    let businessIsValid = false;
+
+    if (businessType === OTHER_OPTION_VALUE) {
+        businessIsValid = !!designPanel.otherBusinessInput.value.trim();
+    } else {
+        businessIsValid = businessType && businessType !== '-- Select a business type --';
+    }
+    
+    const step1Complete = countryIsValid && businessIsValid;
+
+    designPanel.accordionStep2.disabled = !step1Complete;
+    designPanel.scanButton.disabled = !step1Complete;
+
+    const hasAnyInput = countryIsValid || businessIsValid;
+    designPanel.resetButton.disabled = !hasAnyInput;
 };
 
 // --- MAIN INITIALIZATION FUNCTION ---
@@ -61,7 +88,12 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     premiumUpsellScan: document.getElementById("premiumUpsellScan"),
     notifyPremiumButtonScan: document.getElementById("notifyPremiumButtonScan"),
     premiumUpsellChat: document.getElementById("premiumUpsellChat"),
-    notifyPremiumButtonChat: document.getElementById("notifyPremiumButtonChat")
+    notifyPremiumButtonChat: document.getElementById("notifyPremiumButtonChat"),
+
+    accordionStep1: document.getElementById("design-step1"),
+    accordionStep2: document.getElementById("design-step2"),
+    confirmResetButton: document.getElementById("confirm-design-reset"),
+    cancelResetButton: document.getElementById("cancel-design-reset")
   };
 
   let lastPromptContext = "";
@@ -86,21 +118,41 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     setButtonsState(designPanel, false);
     designPanel.premiumUpsellScan.style.display = 'none';
     designPanel.premiumUpsellChat.style.display = 'none';
+
+    designPanel.accordionStep1.open = true;
+    designPanel.accordionStep2.open = false;
+    updateDesignPanelState(designPanel);
+  };
+
+  const handleStep1Change = () => {
+    handleBusinessTypeChange(designPanel.businessSelect, designPanel.otherBusinessTypeContainer);
+    updateDesignPanelState(designPanel);
+
+    if (!designPanel.accordionStep2.disabled) {
+      designPanel.accordionStep1.open = false;
+      designPanel.accordionStep2.open = true;
+    } 
+    else {
+      designPanel.accordionStep1.open = true;
+      designPanel.accordionStep2.open = false;
+    }
   };
 
   // --- EVENT LISTENERS ---
-  designPanel.countrySelect.addEventListener("change", () => enableResetOnInput(designPanel.resetButton));
-  designPanel.businessSelect.addEventListener("change", () => {
-    handleBusinessTypeChange(designPanel.businessSelect, designPanel.otherBusinessTypeContainer);
-    enableResetOnInput(designPanel.resetButton);
+  designPanel.countrySelect.addEventListener("change", handleStep1Change);
+  designPanel.businessSelect.addEventListener("change", handleStep1Change);
+  designPanel.otherBusinessInput.addEventListener("input", handleStep1Change);
+  
+  designPanel.cancelResetButton.addEventListener("click", () => {
+    designPanel.resetButton.closest('overlay-trigger').open = false;
   });
-  designPanel.chat.input.addEventListener("input", () => {
-    if (designPanel.chat.input.value.trim() !== "") {
-      enableResetOnInput(designPanel.resetButton);
-    }
-  });
-  designPanel.resetButton.addEventListener("click", resetDesignPanel);
 
+  designPanel.confirmResetButton.addEventListener("click", () => {
+    resetDesignPanel();
+    designPanel.resetButton.closest('overlay-trigger').open = false;
+  });
+
+  // Premium listeners
   designPanel.notifyPremiumButtonScan.addEventListener("click", async () => {
     if (!userId) userId = await getUserId();
     handlePremiumClick(designPanel.notifyPremiumButtonScan, userId, logPremiumInterest, MESSAGES);
@@ -177,7 +229,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     } finally {
       designPanel.spinner.style.display = "none";
       setButtonsState(designPanel, false);
-      designPanel.resetButton.disabled = false;
+      updateDesignPanelState(designPanel);
     }
   });
 
