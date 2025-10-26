@@ -4,8 +4,8 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import multer from "multer";
-import { supabase } from './db/client.js';
-import { checkUserLimit } from './db/limits.js';
+import { supabase } from './src/db/client.js';
+import { checkUserLimit, getUserUsage } from './src/db/limits.js';
 
 dotenv.config();
 const app = express();
@@ -24,6 +24,22 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 app.get("/", (req, res) => {
     res.send("EthnoLens AI Server is running!");
+});
+
+app.get("/usage/:userId", async (req, res) => {
+    const { userId } = req.params;
+
+    if (!userId) {
+        return res.status(400).json({ error: "User ID is required" });
+    }
+
+    try {
+        const usage = await getUserUsage(supabase, userId);
+        res.json(usage);
+    } catch (err) {
+        console.error("Error getting user usage:", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
 });
 
 // --- REQUEST HANDLERS ---

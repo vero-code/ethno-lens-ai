@@ -1,4 +1,4 @@
-// src/supabase/limits.js
+// src/db/limits.js
 
 const MESSAGES = {
   PREMIUM_LIMIT_REACHED: "Free limit reached. Premium coming soon.", // also need to change in designPanel.js
@@ -60,4 +60,29 @@ export async function checkUserLimit(supabase, userId) {
     if (updateError) throw new Error(`Supabase update error: ${updateError.message}`);
 
     return { allowed: true };
+}
+
+export async function getUserUsage(supabase, userId) {
+    let { data: user, error } = await supabase
+        .from('users')
+        .select('check_count, reset_date')
+        .eq('user_id_hash', userId)
+        .single();
+
+    if (error && error.code !== 'PGRST116') {
+        throw new Error(`Supabase query error: ${error.message}`);
+    }
+
+    if (!user) {
+        return { used: 0, limit: FREE_TIER_LIMIT };
+    }
+
+    const today = new Date();
+    const resetDate = new Date(user.reset_date);
+
+    if (today > resetDate) {
+        return { used: 0, limit: FREE_TIER_LIMIT };
+    } else {
+        return { used: user.check_count, limit: FREE_TIER_LIMIT };
+    }
 }
