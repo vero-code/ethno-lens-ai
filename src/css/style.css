@@ -89,7 +89,7 @@ sp-button-group sp-button {
     flex: 1;
 }
 
-#resetImage {
+#resetDesign, #resetImage {
     width: 100%;
 }
 

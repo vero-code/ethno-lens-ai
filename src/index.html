@@ -21,97 +21,139 @@
     <body>
         <sp-theme scale="medium" color="light" theme="express">
             <div class="addon-body">
-                <sp-tabs selected="tab-analyze-image">
+                <sp-tabs selected="tab-scan-design">
                     <sp-tab value="tab-scan-design" label="Design"></sp-tab>
                     <sp-tab value="tab-analyze-image" label="Image"></sp-tab>
 
                     <!-- Panel 1: Design -->
                     <sp-tab-panel value="tab-scan-design">
                         <div class="tab-panel-content">
-                            <!-- Country Select -->
-                            <div>
-                                <sp-field-label size="l" for="countrySelect" required>Select country</sp-field-label>
-                                <sp-picker id="countrySelect" label="Choose a country">
-                                    <sp-menu-item>Loading countries...</sp-menu-item>
-                                </sp-picker>
-                            </div>
-                            
-                            <!-- Business Type Select -->
-                            <div>
-                                <sp-field-label size="l" for="businessType" required>Business type</sp-field-label>
-                                <sp-picker id="businessType" label="Choose a business type">
-                                    <sp-menu-item>Loading business types...</sp-menu-item>
-                                </sp-picker>
-                                <sp-help-text id="help-text">
-                                    Enter your type of business by selecting "Other"
-                                </sp-help-text>
-                            </div>
+                            <sp-accordion>
+                                <sp-accordion-item open label="Step 1: Set Context" id="design-step1">
+                                    <div>
+                                        <!-- Country Select -->
+                                        <div>
+                                            <sp-field-label size="l" for="countrySelect" required>Select country</sp-field-label>
+                                            <sp-picker id="countrySelect" label="Choose a country">
+                                                <sp-menu-item>Loading countries...</sp-menu-item>
+                                            </sp-picker>
+                                        </div>
+                                        
+                                        <!-- Business Type Select -->
+                                        <div>
+                                            <sp-field-label size="l" for="businessType" required>Business type</sp-field-label>
+                                            <sp-picker id="businessType" label="Choose a business type">
+                                                <sp-menu-item>Loading business types...</sp-menu-item>
+                                            </sp-picker>
+                                            <sp-help-text id="help-text">
+                                                Enter your type of business by selecting "Other"
+                                            </sp-help-text>
+                                        </div>
 
-                            <!-- Other Business Type Input -->
-                            <div id="otherBusinessTypeContainer">
-                                <sp-field-label size="l" for="otherBusinessType" required>Own business type</sp-field-label>
-                                <sp-textfield 
-                                    id="otherBusinessType" 
-                                    placeholder="Please specify your business type">
-                                </sp-textfield>
-                            </div>
-                            
-                            <!-- Action Buttons -->
-                            <sp-button-group>
-                                <sp-button id="scanDesign">Scan</sp-button>
-                                <sp-button id="resetDesign">Reset</sp-button>
-                            </sp-button-group>
+                                        <!-- Other Business Type Input -->
+                                        <div id="otherBusinessTypeContainer">
+                                            <sp-field-label size="l" for="otherBusinessType" required>Own business type</sp-field-label>
+                                            <sp-textfield 
+                                                id="otherBusinessType" 
+                                                placeholder="Please specify your business type">
+                                            </sp-textfield>
+                                        </div>
+                                    </div>
+                                </sp-accordion-item>
+                                <sp-accordion-item label="Step 2: Get Analysis" id="design-step2" disabled>
+                                    <!-- Action Buttons -->
+                                    <sp-button-group>
+                                        <sp-button id="scanDesign">Scan</sp-button>
+                                        <sp-button id="resetDesign">Reset</sp-button>
+                                    </sp-button-group>
 
-                            <!-- Score Box -->
-                            <div id="scoreBox">
-                                <h3>Cultural Sensitivity Score</h3>
-                                <p id="scoreValue">--</p>
-                            </div>
+                                    <!-- Score Box -->
+                                    <div id="scoreBox">
+                                        <h3>Cultural Sensitivity Score</h3>
+                                        <p id="scoreValue">--</p>
+                                    </div>
 
-                            <!-- Result Box -->
-                            <div id="resultBox">
-                                <sp-progress-circle id="scanDesignSpinner" indeterminate></sp-progress-circle>
-                                <div id="scanDesignContent">No issues detected yet.</div>
-                            </div>
+                                    <!-- Result Box -->
+                                    <div id="resultBox">
+                                        <sp-progress-circle id="scanDesignSpinner" indeterminate></sp-progress-circle>
+                                        <div id="scanDesignContent">No issues detected yet.</div>
+                                    </div>
 
-                            <!-- Premium Upsell -->
-                            <div id="premiumUpsellScan">
-                                <sp-button id="notifyPremiumButtonScan" variant="primary">
-                                    I'm interested in Premium
+                                    <!-- Premium Upsell -->
+                                    <div id="premiumUpsellScan">
+                                        <sp-button id="notifyPremiumButtonScan" variant="primary">
+                                            I'm interested in Premium
+                                        </sp-button>
+                                    </div>
+
+                                    <!-- Follow-up Chat -->
+                                    <div id="followUpChat">
+                                        <sp-divider size="m"></sp-divider>
+                                        <h3>Ask the AI</h3>
+                                        <sp-field-label for="chatInput" required>Ask a follow-up question</sp-field-label>
+                                        <sp-textfield 
+                                            id="chatInput" 
+                                            multiline
+                                            placeholder="What text would work better?"
+                                            pattern=".{0,500}"
+                                        >
+                                            <sp-help-text slot="help-text">500 character limit</sp-help-text>
+                                            <sp-help-text slot="negative-help-text">
+                                                Exceeded 500 character limit
+                                            </sp-help-text>
+                                        </sp-textfield>
+
+                                        <sp-button id="chatSend">Send</sp-button>
+
+                                        <div id="chatResponse">
+                                            <sp-progress-circle id="chatSpinner" indeterminate></sp-progress-circle>
+                                            <div id="chatResponseContent">AI conversation not started yet.</div>
+                                            <div id="chatError"></div>
+                                        </div>
+
+                                        <div id="premiumUpsellChat">
+                                            <sp-button id="notifyPremiumButtonChat" variant="primary">
+                                                I'm interested in Premium
+                                            </sp-button>
+                                        </div>
+                                    </div>
+                                </sp-accordion-item>
+                            </sp-accordion>
+                            <overlay-trigger type="modal">
+                                <sp-dialog-base underlay slot="click-content">
+                                    <sp-alert-dialog
+                                        role="alertdialog"
+                                        aria-labelledby="reset-design-heading"
+                                        aria-describedby="reset-design-message"
+                                        variant="destructive"
+                                    >
+                                        <h2 id="reset-design-heading" slot="heading">Confirm Reset</h2>
+                                        <p id="reset-design-message">
+                                            Are you sure you want to clear all fields and reset the analysis?
+                                        </p>
+                                        <sp-button
+                                            slot="button"
+                                            variant="secondary"
+                                            treatment="outline"
+                                            id="cancel-design-reset"
+                                        >
+                                            Cancel
+                                        </sp-button>
+                                        <sp-button
+                                            slot="button"
+                                            variant="accent"
+                                            treatment="fill"
+                                            id="confirm-design-reset"
+                                        >
+                                            Yes, Reset All
+                                        </sp-button>
+                                    </sp-alert-dialog>
+                                </sp-dialog-base>
+                                
+                                <sp-button id="resetDesign" slot="trigger" disabled>
+                                    Reset All
                                 </sp-button>
-                            </div>
-
-                            <!-- Follow-up Chat -->
-                            <div id="followUpChat">
-                                <sp-divider size="m"></sp-divider>
-                                <h3>Ask the AI</h3>
-                                <sp-field-label for="chatInput" required>Ask a follow-up question</sp-field-label>
-                                <sp-textfield 
-                                    id="chatInput" 
-                                    multiline
-                                    placeholder="What text would work better?"
-                                    pattern=".{0,500}"
-                                >
-                                    <sp-help-text slot="help-text">500 character limit</sp-help-text>
-                                    <sp-help-text slot="negative-help-text">
-                                        Exceeded 500 character limit
-                                    </sp-help-text>
-                                </sp-textfield>
-
-                                <sp-button id="chatSend">Send</sp-button>
-
-                                <div id="chatResponse">
-                                    <sp-progress-circle id="chatSpinner" indeterminate></sp-progress-circle>
-                                    <div id="chatResponseContent">AI conversation not started yet.</div>
-                                    <div id="chatError"></div>
-                                </div>
-
-                                <div id="premiumUpsellChat">
-                                    <sp-button id="notifyPremiumButtonChat" variant="primary">
-                                        I'm interested in Premium
-                                    </sp-button>
-                                </div>
-                            </div>
+                            </overlay-trigger>
                         </div>
                     </sp-tab-panel>
 
