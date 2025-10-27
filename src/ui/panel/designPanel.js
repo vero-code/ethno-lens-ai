@@ -174,6 +174,8 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     designPanel.content.innerHTML = "";
     designPanel.chat.error.innerHTML = "";
     designPanel.chat.responseContent.innerHTML = MESSAGES.AI_CONVERSATION_START;
+    designPanel.scoreBox.style.display = 'none';
+    designPanel.scoreValue.textContent = '--';
 
     try {
       if (!userId) userId = await getUserId();
