@@ -83,7 +83,11 @@
 
                                         <!-- Result Box -->
                                         <div id="resultBox">
-                                            <sp-progress-circle id="scanDesignSpinner" indeterminate></sp-progress-circle>
+                                            <sp-progress-circle
+                                                id="scanDesignSpinner"
+                                                label="Analyzing design for cultural sensitivity"
+                                                indeterminate
+                                            ></sp-progress-circle>
                                             <div id="scanDesignContent"></div>
                                         </div>
 
@@ -126,7 +130,11 @@
                                         </sp-button>
 
                                         <div id="chatResponse">
-                                            <sp-progress-circle id="chatSpinner" indeterminate></sp-progress-circle>
+                                            <sp-progress-circle
+                                                id="chatSpinner"
+                                                label="Processing your question"
+                                                indeterminate
+                                            ></sp-progress-circle>
                                             <div id="chatResponseContent">AI conversation not started yet.</div>
                                             <div id="chatError"></div>
                                         </div>
@@ -265,7 +273,11 @@
 
                                         <!-- Result Box -->
                                         <div id="imageResultBox">
-                                            <sp-progress-circle id="imageSpinner" indeterminate></sp-progress-circle>
+                                            <sp-progress-circle
+                                                id="imageSpinner"
+                                                label="Analyzing image for cultural appropriateness"
+                                                indeterminate
+                                            ></sp-progress-circle>
                                             <div id="imageResultContent"></div>
                                             <div id="imageError"></div>
                                         </div>

@@ -115,6 +115,7 @@ sp-button-group sp-button {
 /* === SPINNERS === */
 sp-progress-circle {
     display: none;
+    margin: 0 auto;
 }
 
 sp-progress-circle[style*="display: block"] {
