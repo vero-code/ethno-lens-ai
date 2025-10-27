@@ -77,7 +77,6 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     otherBusinessTypeContainer: document.getElementById("otherBusinessTypeContainer"),
     resetButton: document.getElementById("resetDesign"),
     scoreBox: document.getElementById("scoreBox"),
-    scoreValue: document.getElementById("scoreValue"),
     followUpChat: document.getElementById("followUpChat"),
     chatAvailableToast: document.getElementById("chatAvailableToast"),
     scrollToChatButton: document.getElementById("scrollToChatButton"),
@@ -107,7 +106,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     designPanel.businessSelect.value = "";
     designPanel.content.innerHTML = MESSAGES.SCAN_PROMPT;
     designPanel.scoreBox.style.display = 'none';
-    designPanel.scoreValue.textContent = '--';
+    designPanel.scoreBox.progress = 0;
     designPanel.spinner.style.display = "none";
     designPanel.followUpChat.classList.remove('visible');
     designPanel.chat.input.value = "";
@@ -182,7 +181,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     designPanel.chat.error.innerHTML = "";
     designPanel.chat.responseContent.innerHTML = MESSAGES.AI_CONVERSATION_START;
     designPanel.scoreBox.style.display = 'none';
-    designPanel.scoreValue.textContent = '--';
+    designPanel.scoreBox.progress = 0;
 
     try {
       if (!userId) userId = await getUserId();
@@ -214,10 +213,21 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
 
       // Display both text and rating
       renderMarkdown(designPanel.content, data.result, "<b>AI Response</b><br>");
+
+      // Meter
       if (data.score !== null) {
-          designPanel.scoreValue.textContent = data.score;
-          designPanel.scoreBox.style.display = 'block';
+          designPanel.scoreBox.progress = data.score;
+          designPanel.scoreBox.style.display = 'flex';
+          
+          if (data.score >= 70) {
+              designPanel.scoreBox.variant = 'positive';
+          } else if (data.score >= 40) {
+              designPanel.scoreBox.variant = 'warning';
+          } else {
+              designPanel.scoreBox.variant = 'negative';
+          }
       }
+      
       lastPromptContext = prompt;
 
       designPanel.followUpChat.classList.add('visible');

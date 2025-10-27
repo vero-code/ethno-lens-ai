@@ -92,15 +92,15 @@ sp-button-group sp-button {
 
 /* === SCORE BOX === */
 #scoreBox {
-    display: none;
-    padding: 16px;
-    border: 1px solid #ccc;
+    width: 100%;
+    padding: 0 16px 16px 16px;
+    background: #f5f5f5;
     border-radius: 8px;
+    box-sizing: border-box;
 }
 
-#scoreValue {
-    font-size: 24px;
-    font-weight: bold;
+#scoreBox::part(label) {
+    margin-top: 8px;
 }
 
 /* === RESULT BOXES === */
