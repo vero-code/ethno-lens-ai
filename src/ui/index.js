@@ -13,9 +13,8 @@ addOnUISdk.ready.then(async () => {
     const sandboxProxy = await runtime.apiProxy("documentSandbox");
 
     const mockDataToggle = document.getElementById("mockDataToggle");
-    const devControls = document.getElementById("devControls");
     if (!IS_DEV_MODE) {
-        devControls.style.display = 'none';
+        mockDataToggle.style.display = 'none';
     }
     
     const isMockMode = () => IS_DEV_MODE && mockDataToggle?.checked === true;

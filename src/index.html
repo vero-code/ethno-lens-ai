@@ -88,8 +88,7 @@
                                     <!-- Follow-up Chat -->
                                     <div id="followUpChat">
                                         <sp-divider size="m"></sp-divider>
-                                        <h3>Ask the AI</h3>
-                                        <sp-field-label for="chatInput" required>Ask a follow-up question</sp-field-label>
+                                        <h3>Ask a follow-up question</h3>
                                         <sp-textfield 
                                             id="chatInput" 
                                             multiline
@@ -285,8 +284,8 @@
                 </sp-tabs>
             </div>
 
-            <!-- FOOTER: Dev Controls -->
-            <div class="addon-footer" id="devControls">
+            <!-- FOOTER -->
+            <div class="addon-footer">
                 <!-- Usage Limit Display -->
                 <div id="usageLimitFooter" style="margin-top: 16px; padding: 12px; background: var(--spectrum-global-color-gray-100); border-radius: 4px;">
                     <sp-field-label size="s">
@@ -295,6 +294,7 @@
                 </div>
                 <sp-checkbox id="mockDataToggle">Use Mock Data</sp-checkbox>
             </div>
+
             <!-- Toast Notifications Region -->
             <div role="region" aria-label="Toast Notifications" id="toastContainer">
                 <sp-toast id="chatAvailableToast" variant="info">
