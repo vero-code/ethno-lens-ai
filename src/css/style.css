@@ -55,12 +55,6 @@ sp-theme {
     align-items: center;
 }
 
-/* === HEADINGS === */
-h1 {}
-
-/* === TABS === */
-sp-tabs {}
-
 /* === TAB PANELS === */
 .tab-panel-content {
     display: flex;
@@ -71,7 +65,7 @@ sp-tabs {}
 }
 
 /* === ACCORDION STEP CONTENT === */
-sp-accordion-item > div, sp-accordion-item > text {
+.step-content {
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -134,11 +128,18 @@ sp-progress-circle[style*="display: block"] {
     display: none;
 }
 
+#notifyPremiumButtonScan,
+#notifyPremiumButtonChat,
+#notifyPremiumButtonImage {
+    width: 100%;
+}
+
 /* === CHAT === */
 #followUpChat {
     display: none;
     flex-direction: column;
     gap: 16px;
+    margin-top: 16px;
 }
 
 #followUpChat.visible {

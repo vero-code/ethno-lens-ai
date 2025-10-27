@@ -14,7 +14,7 @@ const MESSAGES = {
     SELECT_BUSINESS_TYPE: "Please select a business type.",
     USER_ID_ERROR: "Could not identify user. Please try again.",
 
-    PREMIUM_LIMIT_REACHED: "Free limit reached. Premium coming soon.",
+    PREMIUM_LIMIT_REACHED: "Limit reached. Premium coming soon.",
     PREMIUM_BUTTON_PROMPT: "I'm interested in Premium",
     PREMIUM_BUTTON_THANKS: "Thanks! Your interest has been noted.",
 };

@@ -12,10 +12,11 @@ const MESSAGES = {
   SELECT_BUSINESS_TYPE: "Please select a business type before scanning.",
   SELECT_ELEMENT: "Please select a design element on the canvas first.",
   ENTER_MESSAGE: "Please enter a message before sending.",
+  SCAN_PROMPT: "Please select a design element and click 'Scan' to begin.",
   SCAN_FIRST: "Please scan a design before asking follow-up questions.",
   USER_ID_ERROR: "Could not identify user. Please try again.",
 
-  PREMIUM_LIMIT_REACHED: "Free limit reached. Premium coming soon.", // same as db/limits.js
+  PREMIUM_LIMIT_REACHED: "Limit reached. Premium coming soon.", // same as db/limits.js
   PREMIUM_BUTTON_PROMPT: "I'm interested in Premium",
   PREMIUM_BUTTON_THANKS: "Thanks! Your interest has been noted.",
 };
@@ -104,7 +105,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
   const resetDesignPanel = () => {
     designPanel.countrySelect.value = "";
     designPanel.businessSelect.value = "";
-    designPanel.content.innerHTML = MESSAGES.NO_ISSUES;
+    designPanel.content.innerHTML = MESSAGES.SCAN_PROMPT;
     designPanel.scoreBox.style.display = 'none';
     designPanel.scoreValue.textContent = '--';
     designPanel.spinner.style.display = "none";

@@ -30,7 +30,7 @@
                         <div class="tab-panel-content">
                             <sp-accordion>
                                 <sp-accordion-item open label="Step 1: Set Context" id="design-step1">
-                                    <div>
+                                    <div class="step-content">
                                         <!-- Country Select -->
                                         <div>
                                             <sp-field-label size="l" for="countrySelect" required>Select country</sp-field-label>
@@ -61,28 +61,42 @@
                                     </div>
                                 </sp-accordion-item>
                                 <sp-accordion-item label="Step 2: Get Analysis" id="design-step2" disabled>
-                                    <!-- Action Buttons -->
-                                    <sp-button-group>
-                                        <sp-button id="scanDesign">Scan</sp-button>
-                                    </sp-button-group>
+                                    <div class="step-content">
+                                        <!-- Action Buttons -->
+                                        <sp-button-group>
+                                            <sp-button id="scanDesign">
+                                                Scan
+                                                <sp-overlay trigger="scanDesign@hover" placement="bottom">
+                                                    <sp-tooltip>
+                                                        Analyze selected element for cultural relevance.
+                                                    </sp-tooltip>
+                                                </sp-overlay>
+                                            </sp-button>
+                                        </sp-button-group>
 
-                                    <!-- Score Box -->
-                                    <div id="scoreBox">
-                                        <h3>Cultural Sensitivity Score</h3>
-                                        <p id="scoreValue">--</p>
-                                    </div>
+                                        <!-- Score Box -->
+                                        <div id="scoreBox">
+                                            <h3>Cultural Sensitivity Score</h3>
+                                            <p id="scoreValue">--</p>
+                                        </div>
 
-                                    <!-- Result Box -->
-                                    <div id="resultBox">
-                                        <sp-progress-circle id="scanDesignSpinner" indeterminate></sp-progress-circle>
-                                        <div id="scanDesignContent">No issues detected yet.</div>
-                                    </div>
+                                        <!-- Result Box -->
+                                        <div id="resultBox">
+                                            <sp-progress-circle id="scanDesignSpinner" indeterminate></sp-progress-circle>
+                                            <div id="scanDesignContent"></div>
+                                        </div>
 
-                                    <!-- Premium Upsell -->
-                                    <div id="premiumUpsellScan">
-                                        <sp-button id="notifyPremiumButtonScan" variant="primary">
-                                            I'm interested in Premium
-                                        </sp-button>
+                                        <!-- Premium Upsell -->
+                                        <div id="premiumUpsellScan">
+                                            <sp-button id="notifyPremiumButtonScan" variant="primary">
+                                                I'm interested in Premium
+                                            </sp-button>
+                                            <sp-overlay trigger="notifyPremiumButtonScan@hover" placement="bottom">
+                                                <sp-tooltip>
+                                                    Click to show your interest in premium features.
+                                                </sp-tooltip>
+                                            </sp-overlay>
+                                        </div>
                                     </div>
 
                                     <!-- Follow-up Chat -->
@@ -101,7 +115,14 @@
                                             </sp-help-text>
                                         </sp-textfield>
 
-                                        <sp-button id="chatSend">Send</sp-button>
+                                        <sp-button id="chatSend">
+                                            Send
+                                            <sp-overlay trigger="chatSend@hover" placement="bottom">
+                                                <sp-tooltip>
+                                                    Send your follow-up question to the AI.
+                                                </sp-tooltip>
+                                            </sp-overlay>
+                                        </sp-button>
 
                                         <div id="chatResponse">
                                             <sp-progress-circle id="chatSpinner" indeterminate></sp-progress-circle>
@@ -150,6 +171,11 @@
                                 
                                 <sp-button id="resetDesign" slot="trigger" disabled>
                                     Reset All
+                                    <sp-overlay trigger="resetDesign@hover" placement="bottom">
+                                        <sp-tooltip>
+                                            Clear all fields and reset the analysis.
+                                        </sp-tooltip>
+                                    </sp-overlay>
                                 </sp-button>
                             </overlay-trigger>
                         </div>
@@ -160,7 +186,7 @@
                         <div class="tab-panel-content">
                             <sp-accordion>
                                 <sp-accordion-item open label="Step 1: Set Context" id="step1">
-                                    <div>
+                                    <div class="step-content">
                                         <!-- Country Select -->
                                         <div>
                                             <sp-field-label size="l" for="imageCountrySelect" required>Select country</sp-field-label>
@@ -191,7 +217,7 @@
                                     </div>
                                 </sp-accordion-item>
                                 <sp-accordion-item label="Step 2: Upload Image" id="step2" disabled>
-                                    <div>
+                                    <div class="step-content">
                                         <!-- Image Upload Dropzone -->
                                         <sp-field-label size="l">Upload your design to analyze its cultural relevance for the selected market.</sp-field-label>
                                         <sp-dropzone id="imageUpload" style="position: relative;">
@@ -223,10 +249,17 @@
                                     </div>
                                 </sp-accordion-item>
                                 <sp-accordion-item label="Step 3: Get Analysis" id="step3" disabled>
-                                    <div>
+                                    <div class="step-content">
                                         <!-- Action Buttons -->
                                         <sp-button-group>
-                                            <sp-button size="l" id="analyzeImage" disabled>Analyze Cultural Fit</sp-button>
+                                            <sp-button size="l" id="analyzeImage" disabled>
+                                                Analyze Cultural Fit
+                                                <sp-overlay trigger="analyzeImage@hover" placement="bottom">
+                                                    <sp-tooltip>
+                                                        Analyze the uploaded image for cultural relevance.
+                                                    </sp-tooltip>
+                                                </sp-overlay>
+                                            </sp-button>
                                         </sp-button-group>
 
                                         <!-- Result Box -->
@@ -241,6 +274,11 @@
                                             <sp-button id="notifyPremiumButtonImage" variant="primary">
                                                 I'm interested in Premium
                                             </sp-button>
+                                            <sp-overlay trigger="notifyPremiumButtonImage@hover" placement="bottom">
+                                                <sp-tooltip>
+                                                    Click to show your interest in premium features.
+                                                </sp-tooltip>
+                                            </sp-overlay>
                                         </div>
                                     </div>
                                 </sp-accordion-item>
@@ -277,6 +315,11 @@
                                 </sp-dialog-base>
                                 <sp-button id="resetImage" slot="trigger" disabled>
                                     Reset All
+                                    <sp-overlay trigger="resetImage@hover" placement="bottom">
+                                        <sp-tooltip>
+                                            Clear all fields and reset the analysis.
+                                        </sp-tooltip>
+                                    </sp-overlay>
                                 </sp-button>
                             </overlay-trigger>
                         </div>
