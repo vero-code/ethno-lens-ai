@@ -298,7 +298,14 @@
             <!-- Toast Notifications Region -->
             <div role="region" aria-label="Toast Notifications" id="toastContainer">
                 <sp-toast id="chatAvailableToast" variant="info">
-                    You can now ask follow-up questions about your design!
+                    More questions? 👇
+                    <sp-button
+                        slot="action"
+                        variant="overBackground"
+                        id="scrollToChatButton"
+                    >
+                        Ask follow-up
+                    </sp-button>
                 </sp-toast>
             </div>
             

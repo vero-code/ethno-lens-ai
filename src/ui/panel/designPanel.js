@@ -79,6 +79,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     scoreValue: document.getElementById("scoreValue"),
     followUpChat: document.getElementById("followUpChat"),
     chatAvailableToast: document.getElementById("chatAvailableToast"),
+    scrollToChatButton: document.getElementById("scrollToChatButton"),
     chat: {
       input: document.getElementById("chatInput"),
       sendButton: document.getElementById("chatSend"),
@@ -151,6 +152,11 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
   designPanel.confirmResetButton.addEventListener("click", () => {
     resetDesignPanel();
     designPanel.resetButton.closest('overlay-trigger').open = false;
+  });
+
+  designPanel.scrollToChatButton.addEventListener("click", () => {
+    designPanel.followUpChat.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    designPanel.chatAvailableToast.open = false;
   });
 
   // Premium listeners
