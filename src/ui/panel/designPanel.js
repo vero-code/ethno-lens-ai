@@ -99,6 +99,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
   };
 
   let lastPromptContext = "";
+  let lastAIResponse = "";
   let userId = null;
 
   const resetDesignPanel = () => {
@@ -209,6 +210,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
         };
       } else {
         data = await analyzeDesign(prompt, userId);
+        lastAIResponse = data.result;
       }
 
       // Display both text and rating
@@ -286,7 +288,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
           result: "This is a **mock chat response**. The real API call was not made."
         };
       } else {
-        const fullFollowUpPrompt = `${lastPromptContext}\n\nThe user now asks: "${followUp}"`;
+        const fullFollowUpPrompt = `Based on your previous analysis which was: "${lastAIResponse}". The user now asks a follow-up question: "${followUp}"`;
         data = await analyzeDesign(fullFollowUpPrompt, userId);
       }
 

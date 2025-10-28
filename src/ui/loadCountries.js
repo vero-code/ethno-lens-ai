@@ -54,9 +54,6 @@ async function loadCountries() {
                 picker.appendChild(menuItem);
             });
         });
-        
-        console.log('✅ Countries loaded successfully');
-        
     } catch (err) {
         console.error("Failed to load countries", err);
         allCountryPickers.forEach(picker => {

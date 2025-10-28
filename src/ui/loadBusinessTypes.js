@@ -71,8 +71,6 @@ async function loadBusinessTypes() {
             picker.appendChild(menuItem);
         });
     });
-    
-    console.log('✅ Business types loaded successfully');
 }
 
 loadBusinessTypes();
