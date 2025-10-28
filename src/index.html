@@ -16,6 +16,7 @@
 
         <script src="https://jspm.dev/@spectrum-web-components/dropzone/sp-dropzone.js" type="module"></script>
         <script src="https://jspm.dev/@spectrum-web-components/illustrated-message/sp-illustrated-message.js" type="module"></script>
+        <script src="https://jspm.dev/@spectrum-web-components/icons-workflow@1.9.0" type="module"></script>
         <link rel="stylesheet" href="css/style.css" />
     </head>
     <body>
@@ -342,13 +343,25 @@
 
             <!-- FOOTER -->
             <div class="addon-footer">
-                <!-- Usage Limit Display -->
-                <div id="usageLimitFooter" style="margin-top: 16px; padding: 12px; background: var(--spectrum-global-color-gray-100); border-radius: 4px;">
+                <div class="usage-limit-footer">
                     <sp-field-label size="s">
                         Free tier: <span id="usageCount">--</span> / <span id="usageLimit">20</span> checks used
                     </sp-field-label>
+
+                    <sp-action-button quiet icon-only id="helpTrigger">
+                        <sp-icon-info slot="icon"></sp-icon-info>
+                    </sp-action-button>
+
+                    <sp-overlay trigger="helpTrigger@click" placement="top-start">
+                        <sp-popover dialog style="padding: 12px; max-width: 220px;">
+                            <h3 class="spectrum-ContextualHelp-heading">About the Free Tier</h3>
+                            <p class="spectrum-ContextualHelp-body">
+                                Your free quota resets monthly. Upgrade options coming soon.
+                            </p>
+                        </sp-popover>
+                    </sp-overlay>
                 </div>
-                <sp-checkbox id="mockDataToggle">Use Mock Data</sp-checkbox>
+                <sp-checkbox id="mockDataToggle" size="s">Mock Data</sp-checkbox>
             </div>
 
             <!-- Toast Notifications Region -->

@@ -15,8 +15,6 @@ export async function getUserId() {
     try {
         const currentUser = addOnUISdk.app.currentUser;
         userIdHash = await currentUser.userId();
-        
-        console.log("User ID Hash received:", userIdHash);
         return userIdHash;
     } catch (error) {
         console.error("Could not get user ID hash:", error);

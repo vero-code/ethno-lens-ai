@@ -11,8 +11,6 @@ export async function updateUsageDisplay() {
         }
 
         const usage = await getUserUsage(userId);
-        console.log('Usage loaded:', usage);
-        
         const usageCount = document.getElementById('usageCount');
         const usageLimit = document.getElementById('usageLimit');
 

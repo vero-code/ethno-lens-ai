@@ -41,7 +41,7 @@ sp-theme {
     pointer-events: auto;
 }
 
-/* Footer for dev controls */
+/* Footer */
 .addon-footer {
     position: sticky;
     bottom: 0;
@@ -53,6 +53,16 @@ sp-theme {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 16px;
+}
+
+.usage-limit-footer {
+    padding: 12px;
+    background: var(--spectrum-global-color-gray-100);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 /* === TAB PANELS === */
