@@ -21,6 +21,8 @@ Built for global creators. Powered by Gemini. Designed for Adobe Express.
 
 - 🖼️ **Image analysis** — Upload images for cultural and ethical review.
 
+- 📊 **Usage Limits (Free Tier)** — Provides free analysis checks per month per user.
+
 ### 🛠️ Design Analysis Tools
 
 - 🔍 **Smart element scanning** — Detects text, colors, and shapes.
@@ -29,28 +31,32 @@ Built for global creators. Powered by Gemini. Designed for Adobe Express.
 
 - ⚙️ **Easy to extend** — Built for future element types and features.
 
-### 📐 Output & UI Features
+### 📐 UI & UX Features
 
-- 💯 **Cultural Sensitivity Score** — Get a clear 0-100 score to quickly assess cultural fitness.
-
-- 🧾 **Clean markdown output** — Neatly formatted AI replies.
-
-- ⏳ **Built-in loading indicator** — Shows AI activity status.
-
-- 🛡️ **Helpful error messages** — Alerts if something’s missing or wrong.
+- ✨ **Spectrum Design System** — Modern interface built with Adobe's Spectrum Web Components (Express system).
+- 💯 **Cultural Sensitivity Score** — Get a clear 0-100 score (visualized with `sp-meter`) to quickly assess cultural fitness.
+- 📄 **Clean Markdown Output** — Neatly formatted AI replies.
+- 🚶 **Guided Steps** — Accordion layout guides users through analysis steps.
+- 🖼️ **Image Preview** — See uploaded images directly in the dropzone.
+- ⏳ **Loading Indicators** — Clear `sp-progress-circle` shows AI activity status.
+- 💡 **Info Tooltips** — Helpful hints on buttons and key features.
+- 📊 **Usage Limit Display** — Clearly shows remaining checks for the month.
+- ⚠️ **Helpful Error Messages** — Alerts if something’s missing or wrong.
+- 📢 **Premium Interest Tracking** — Button to gauge user interest in future premium features.
 
 ## Tools
 
-This project has been created with _@adobe/create-ccweb-add-on_ and is designed to run inside **Adobe Express**.
-
-- HTML, CSS
-- JavaScript, Node.js
-- Adobe Express Add-on API
-- Gemini 2.5 Flash
+* **Frontend:** HTML, CSS, JavaScript, Adobe Express Add-on API, Spectrum Web Components
+* **Backend:** Node.js, Express.js
+* **AI Model:** Google Gemini API (Flash model)
+* **Database:** Supabase (for user limits)
+* **Hosting:** Render (for backend server)
+* **CI/CD:** GitHub Actions (manual deployment trigger)
+* **Build Tool:** @adobe/create-ccweb-add-on
 
 ## Setup
 
-This project consists of two parts: a frontend add-on and a backend server. Both must be running simultaneously.
+This project consists of two parts: a frontend add-on and a backend server. Both must be running simultaneously for local development.
 
 **Prerequisites**
 
@@ -72,9 +78,9 @@ This project consists of two parts: a frontend add-on and a backend server. Both
     npm install
     ```
 
-3.  **Setup your API Key:**
+3.  **Setup environment variables:**
   -  Create a `.env` file in the project root.
-  -  Add your Gemini API key to it: `GEMINI_API_KEY=YOUR_API_KEY_HERE`
+  -  Add your API keys and credentials (see `.env.example` file).
 
 ### Running Locally
 
@@ -95,6 +101,12 @@ _Your backend is now running at `http://localhost:3000`._
   ```
 
 _Your add-on is now hosted and can be sideloaded in Adobe Express._
+
+## Deployment
+
+The backend server is configured for deployment on Render.
+* The `deploy-render.yml` workflow in `.github/workflows` allows for manual deployment triggering via GitHub Actions ("Actions" tab -> "Deploy to Render" -> "Run workflow").
+* Ensure necessary environment variables are set in the Render service settings.
 
 ## 📜 License
 

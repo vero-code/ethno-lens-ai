@@ -4,7 +4,7 @@ import { initializeDesignPanel } from './panel/designPanel.js';
 import { initializeImagePanel } from './panel/imagePanel.js';
 import { updateUsageDisplay } from './usageLimit.js';
 
-const IS_DEV_MODE = true;
+const IS_DEV_MODE = false;
 
 addOnUISdk.ready.then(async () => {
     console.log("addOnUISdk is ready for use.");
