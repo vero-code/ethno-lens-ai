@@ -13,17 +13,16 @@
         <script src="https://jspm.dev/@spectrum-web-components/bundle/elements.js" type="module"></script>
         <script src="https://jspm.dev/@spectrum-web-components/theme@0.40.1/express/theme-light.js" type="module"></script>
         <script src="https://jspm.dev/@spectrum-web-components/theme@0.40.1/express/scale-medium.js" type="module"></script>
-
-        <script src="https://jspm.dev/@spectrum-web-components/dropzone/sp-dropzone.js" type="module"></script>
-        <script src="https://jspm.dev/@spectrum-web-components/illustrated-message/sp-illustrated-message.js" type="module"></script>
-        <script src="https://jspm.dev/@spectrum-web-components/icons-workflow@1.9.0" type="module"></script>
         <link rel="stylesheet" href="css/style.css" />
     </head>
     <body>
         <sp-theme scale="medium" color="light" theme="express">
             <div class="addon-body">
+                <header class="addon-header">
+                    <sp-detail>Make your creative connect across cultures.</sp-detail>
+                </header>
                 <sp-tabs selected="tab-scan-design">
-                    <sp-tab value="tab-scan-design" label="Design"></sp-tab>
+                    <sp-tab value="tab-scan-design" label="Element"></sp-tab>
                     <sp-tab value="tab-analyze-image" label="Image"></sp-tab>
 
                     <!-- Panel 1: Design -->
@@ -229,7 +228,6 @@
                                 <sp-accordion-item label="Step 2: Upload Image" id="step2" disabled>
                                     <div class="step-content">
                                         <!-- Image Upload Dropzone -->
-                                        <sp-field-label size="l">Upload your design to analyze its cultural relevance for the selected market.</sp-field-label>
                                         <sp-dropzone id="imageUpload" style="position: relative;">
                                             <sp-clear-button
                                                 id="clearImageButton"
