@@ -108,6 +108,10 @@ The backend server is configured for deployment on Render.
 * The `deploy-render.yml` workflow in `.github/workflows` allows for manual deployment triggering via GitHub Actions ("Actions" tab -> "Deploy to Render" -> "Run workflow").
 * Ensure necessary environment variables are set in the Render service settings.
 
+## Support & Help
+
+If you encounter a bug or have a feature request, please [open an issue](https://github.com/vero-code/ethno-lens-ai/issues) on this GitHub repository.
+
 ## 📜 License
 
 This project is open-source under the MIT License — meaning you’re free to use, change, and share it, even in commercial projects. Just keep the original [LICENSE](LICENSE) info.
