@@ -35,3 +35,6 @@ We may update this policy. We will notify you of any changes by posting the new 
 ## Contact Us
 
 If you have any questions about this Privacy Policy, please [open an issue](https://github.com/vero-code/ethno-lens-ai/issues) on our GitHub repository.
+
+---
+*Adobe and Adobe Express are either registered trademarks or trademarks of Adobe in the United States and/or other countries.*
