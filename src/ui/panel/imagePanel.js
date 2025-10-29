@@ -238,15 +238,10 @@ export function initializeImagePanel(isMockMode) {
 
   // --- Drag and Drop для sp-dropzone ---
   imagePanel.uploadInput.addEventListener("drop", (event) => {
-    console.log("Drop event triggered");
-    
     const files = event.dataTransfer?.files;
     
     if (files && files.length > 0) {
-      console.log("File dropped:", files[0].name);
       handleFileSelect(files[0]);
-    } else {
-      console.log("No files found in drop event");
     }
   });
 
@@ -275,7 +270,6 @@ export function initializeImagePanel(isMockMode) {
 
       let data;
       if (isMockMode()) {
-        console.log("Image API call is OFF. Using mock data for Image Panel.");
         data = { result: "This is a **mock response** for the image panel. The real API call was not made." };
       } else {
         const formData = new FormData();

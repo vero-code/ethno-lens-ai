@@ -22,7 +22,6 @@ export async function checkUserLimit(supabase, userId) {
     
     // 2. If the user is not found
     if (!user) {
-        console.log("New user, creating record:", userId);
         const nextResetDate = new Date();
         nextResetDate.setDate(today.getDate() + 30);
 
@@ -37,7 +36,6 @@ export async function checkUserLimit(supabase, userId) {
     // 3. If the user is found
     const resetDate = new Date(user.reset_date);
     if (today > resetDate) {
-        console.log("Resetting count for user:", userId);
         const nextResetDate = new Date();
         nextResetDate.setDate(today.getDate() + 30);
         const { error: updateError } = await supabase
@@ -49,7 +47,6 @@ export async function checkUserLimit(supabase, userId) {
     }
 
     if (user.check_count >= FREE_TIER_LIMIT) {
-        console.log("Limit reached for user:", userId);
         return { allowed: false, message: MESSAGES.PREMIUM_LIMIT_REACHED };
     }
     

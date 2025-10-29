@@ -203,7 +203,6 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
 
       let data;
       if (isMockMode()) {
-        console.log("API call is OFF. Using mock data for Design Panel.");
         data = {
             result: "This is a **mock response** for testing the UI. The real API call was not made.",
             score: 75
@@ -283,7 +282,6 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     try {
       let data;
       if (isMockMode()) {
-        console.log("Chat API call is OFF. Using mock data for Design Panel (Ask the AI).");
         data = {
           result: "This is a **mock chat response**. The real API call was not made."
         };

@@ -7,8 +7,6 @@ import { updateUsageDisplay } from './usageLimit.js';
 const IS_DEV_MODE = false;
 
 addOnUISdk.ready.then(async () => {
-    console.log("addOnUISdk is ready for use.");
-
     const { runtime } = addOnUISdk.instance;
     const sandboxProxy = await runtime.apiProxy("documentSandbox");
 

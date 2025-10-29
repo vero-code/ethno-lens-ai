@@ -55,7 +55,6 @@ app.post("/analyze", async (req, res) => {
             return res.status(429).json({ error: limitCheck.message });
         }
 
-        console.log(`User ${userId} has checks remaining, calling Gemini for text...`);
         const fullPrompt = `${personaPrompt}\n\n${prompt}\n\nFinally, on a new line at the very end, provide a "Cultural Sensitivity Score" from 0 (very high risk) to 100 (very low risk) based on your analysis. The line must start with "SCORE:" followed by the number. For example: SCORE: 85`;
 
         const result = await model.generateContent(fullPrompt);
@@ -91,7 +90,6 @@ app.post("/analyze-image", upload.single("image"), async (req, res) => {
             return res.status(429).json({ error: limitCheck.message });
         }
 
-        console.log(`User ${userId} has checks remaining, calling Gemini for image...`);
         const base64Image = req.file.buffer.toString("base64");
         const promptText = `${personaPrompt}\n\nAnalyze the provided image for potential cultural, symbolic or ethical issues. This image is intended for ${country} with a business type of "${businessType}". Identify any culturally insensitive or inappropriate elements and suggest changes to promote inclusive visual solutions suitable for a diverse international audience, with a focus on cultural appropriateness for ${country}. In the first sentence, give a short answer whether this element should be used in the selected country.`;
 
