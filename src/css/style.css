@@ -192,3 +192,17 @@ sp-dropzone {
 .visible {
     display: block !important;
 }
+
+/* === DISCLAIMER === */
+.ai-disclaimer {
+    display: none;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.disclaimer-box {
+    padding: 12px;
+    background: var(--spectrum-global-color-gray-100);
+    border-radius: 4px;
+    border-left: 3px solid var(--spectrum-global-color-blue-600);
+}

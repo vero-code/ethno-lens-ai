@@ -96,6 +96,7 @@ export function initializeImagePanel(isMockMode) {
     analyzeButton: document.getElementById("analyzeImage"),
     resultContent: document.getElementById("imageResultContent"),
     error: document.getElementById("imageError"),
+    imageDisclaimer: document.getElementById("imageDisclaimer"),
     resetButton: document.getElementById("resetImage"),
     spinner: document.getElementById("imageSpinner"),
     countrySelect: document.getElementById("imageCountrySelect"),
@@ -130,6 +131,7 @@ export function initializeImagePanel(isMockMode) {
     setButtonsState(imagePanel, false);
     imagePanel.uploadInput.disabled = false;
     imagePanel.premiumUpsellImage.style.display = 'none';
+    imagePanel.imageDisclaimer.style.display = 'none';
 
     imagePanel.accordionStep1.open = true;
     imagePanel.accordionStep2.open = false;
@@ -252,6 +254,7 @@ export function initializeImagePanel(isMockMode) {
     imagePanel.spinner.style.display = "block";
     imagePanel.resultContent.innerHTML = "";
     imagePanel.error.style.display = "none";
+    imagePanel.imageDisclaimer.style.display = 'none';
 
     try {
       if (!userId) userId = await getUserId();
@@ -281,6 +284,8 @@ export function initializeImagePanel(isMockMode) {
       }
 
       renderMarkdown(imagePanel.resultContent, data.result, "<b>AI Image Analysis</b><br>");
+      imagePanel.imageDisclaimer.style.display = 'block';
+      
       await updateUsageDisplay();
       imagePanel.premiumUpsellImage.style.display = 'none';
     } catch (err) {

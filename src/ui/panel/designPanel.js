@@ -77,6 +77,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     otherBusinessTypeContainer: document.getElementById("otherBusinessTypeContainer"),
     resetButton: document.getElementById("resetDesign"),
     scoreBox: document.getElementById("scoreBox"),
+    scanDisclaimer: document.getElementById("scanDisclaimer"),
     followUpChat: document.getElementById("followUpChat"),
     chatAvailableToast: document.getElementById("chatAvailableToast"),
     scrollToChatButton: document.getElementById("scrollToChatButton"),
@@ -84,6 +85,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
       input: document.getElementById("chatInput"),
       sendButton: document.getElementById("chatSend"),
       responseContent: document.getElementById("chatResponseContent"),
+      chatDisclaimer: document.getElementById("chatDisclaimer"),
       error: document.getElementById("chatError"),
       spinner: document.getElementById("chatSpinner")
     },
@@ -121,6 +123,8 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     setButtonsState(designPanel, false);
     designPanel.premiumUpsellScan.style.display = 'none';
     designPanel.premiumUpsellChat.style.display = 'none';
+    designPanel.scanDisclaimer.style.display = 'none';
+    designPanel.chat.chatDisclaimer.style.display = 'none';
 
     designPanel.accordionStep1.open = true;
     designPanel.accordionStep2.open = false;
@@ -183,6 +187,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     designPanel.chat.responseContent.innerHTML = MESSAGES.AI_CONVERSATION_START;
     designPanel.scoreBox.style.display = 'none';
     designPanel.scoreBox.progress = 0;
+    designPanel.scanDisclaimer.style.display = 'none';
 
     try {
       if (!userId) userId = await getUserId();
@@ -214,6 +219,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
 
       // Display both text and rating
       renderMarkdown(designPanel.content, data.result, "<b>AI Response</b><br>");
+      designPanel.scanDisclaimer.style.display = 'block';
 
       // Meter
       if (data.score !== null) {
@@ -259,7 +265,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     }
   });
 
-  // Design - Ask the AI - Send
+  // Design - Follow-up
   designPanel.chat.sendButton.addEventListener("click", async () => {
     const followUp = designPanel.chat.input.value.trim();
     if (!followUp) {
@@ -278,6 +284,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     designPanel.chat.spinner.style.display = "block";
     designPanel.chat.responseContent.innerHTML = "";
     designPanel.chat.error.style.display = "none";
+    designPanel.chat.chatDisclaimer.style.display = 'none';
 
     try {
       let data;
@@ -290,7 +297,8 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
         data = await analyzeDesign(fullFollowUpPrompt, userId);
       }
 
-      renderMarkdown(designPanel.chat.responseContent, data.result, `<b>AI responds:</b><br>`);
+      renderMarkdown(designPanel.chat.responseContent, data.result, `<b>AI Follow-up</b><br>`);
+      designPanel.chat.chatDisclaimer.style.display = 'block';
       designPanel.chat.input.value = "";
 
       await updateUsageDisplay();

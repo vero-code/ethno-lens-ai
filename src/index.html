@@ -81,6 +81,13 @@
                                             progress="0"
                                         >Cultural Sensitivity Score</sp-meter>
 
+                                        <!-- Disclaimer -->
+                                        <div id="scanDisclaimer" class="ai-disclaimer disclaimer-box">
+                                            <sp-field-label size="s">
+                                                ⚠️ AI-generated insights are advisory only. Consult cultural experts before decisions.
+                                            </sp-field-label>
+                                        </div>
+
                                         <!-- Result Box -->
                                         <div id="resultBox">
                                             <sp-progress-circle
@@ -128,6 +135,13 @@
                                                 </sp-tooltip>
                                             </sp-overlay>
                                         </sp-button>
+
+                                        <!-- Disclaimer -->
+                                        <div id="chatDisclaimer" class="ai-disclaimer disclaimer-box">
+                                            <sp-field-label size="s">
+                                                ⚠️ AI-generated insights are advisory only. Consult cultural experts before decisions.
+                                            </sp-field-label>
+                                        </div>
 
                                         <div id="chatResponse">
                                             <sp-progress-circle
@@ -178,7 +192,7 @@
                                     </sp-alert-dialog>
                                 </sp-dialog-base>
                                 
-                                <sp-button id="resetDesign" slot="trigger" disabled>
+                                <sp-button id="resetDesign" slot="trigger" variant="secondary" disabled>
                                     Reset All
                                     <sp-overlay trigger="resetDesign@hover" placement="bottom">
                                         <sp-tooltip>
@@ -270,6 +284,13 @@
                                             </sp-button>
                                         </sp-button-group>
 
+                                        <!-- Disclaimer -->
+                                        <div id="imageDisclaimer" class="ai-disclaimer disclaimer-box">
+                                            <sp-field-label size="s">
+                                                ⚠️ AI-generated insights are advisory only. Consult cultural experts before decisions.
+                                            </sp-field-label>
+                                        </div>
+
                                         <!-- Result Box -->
                                         <div id="imageResultBox">
                                             <sp-progress-circle
@@ -325,7 +346,7 @@
                                         </sp-button>
                                     </sp-alert-dialog>
                                 </sp-dialog-base>
-                                <sp-button id="resetImage" slot="trigger" disabled>
+                                <sp-button id="resetImage" slot="trigger" variant="secondary" disabled>
                                     Reset All
                                     <sp-overlay trigger="resetImage@hover" placement="bottom">
                                         <sp-tooltip>
