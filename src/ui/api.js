@@ -4,6 +4,7 @@ class ApiError extends Error {
     constructor(message, status) {
         super(message);
         this.status = status;
+        this.name = 'ApiError';
     }
 }
 
@@ -13,14 +14,16 @@ const API_BASE_URL = "https://ethno-lens-ai.onrender.com";
 /**
  * Gets information about the user's limit usage.
  * @param {string} userId - User ID.
+ * @param {AbortSignal} [signal] - AbortSignal to cancel the request.
  * @returns {Promise<{used: number, limit: number}>}
  */
-export async function getUserUsage(userId) {
+export async function getUserUsage(userId, signal) {
     const response = await fetch(`${API_BASE_URL}/usage/${userId}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
-        }
+        },
+        signal: signal
     });
 
     if (!response.ok) {
@@ -31,13 +34,21 @@ export async function getUserUsage(userId) {
     return await response.json();
 }
 
-export async function analyzeDesign(prompt, userId) {
+/**
+ * Analyzes design element.
+ * @param {string} prompt - The prompt for analysis.
+ * @param {string} userId - User ID.
+ * @param {AbortSignal} [signal] - AbortSignal to cancel the request.
+ * @returns {Promise<any>}
+ */
+export async function analyzeDesign(prompt, userId, signal) {
     const response = await fetch(`${API_BASE_URL}/analyze`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ prompt, userId })
+        body: JSON.stringify({ prompt, userId }),
+        signal: signal
     });
     if (!response.ok) {
         const errorData = await response.json();
@@ -46,10 +57,17 @@ export async function analyzeDesign(prompt, userId) {
     return response.json();
 }
 
-export async function analyzeImage(formData) {
+/**
+ * Analyzes an image.
+ * @param {FormData} formData - The form data containing the image and other fields.
+ * @param {AbortSignal} [signal] - AbortSignal to cancel the request.
+ * @returns {Promise<any>}
+ */
+export async function analyzeImage(formData, signal) {
     const response = await fetch(`${API_BASE_URL}/analyze-image`, {
         method: "POST",
-        body: formData
+        body: formData,
+        signal: signal
     });
     if (!response.ok) {
         const errorData = await response.json();

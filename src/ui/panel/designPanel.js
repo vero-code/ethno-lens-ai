@@ -15,6 +15,8 @@ const MESSAGES = {
   SCAN_PROMPT: "Please select a design element and click 'Scan' to begin.",
   SCAN_FIRST: "Please scan a design before asking follow-up questions.",
   USER_ID_ERROR: "Could not identify user. Please try again.",
+  SCAN_CANCELLED: "Scan cancelled by user.",
+  CHAT_CANCELLED: "Chat cancelled by user.",
 
   PREMIUM_LIMIT_REACHED: "Limit reached. Premium coming soon.", // same as db/limits.js
   PREMIUM_BUTTON_PROMPT: "I'm interested in Premium",
@@ -66,9 +68,10 @@ const updateDesignPanelState = (designPanel) => {
 };
 
 // --- MAIN INITIALIZATION FUNCTION ---
-export function initializeDesignPanel(sandboxProxy, isMockMode) {
+export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
   const designPanel = {
     scanButton: document.getElementById("scanDesign"),
+    cancelScanButton: document.getElementById("cancelScan"),
     content: document.getElementById("scanDesignContent"),
     spinner: document.getElementById("scanDesignSpinner"),
     countrySelect: document.getElementById("countrySelect"),
@@ -84,6 +87,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     chat: {
       input: document.getElementById("chatInput"),
       sendButton: document.getElementById("chatSend"),
+      cancelChatButton: document.getElementById("cancelChat"),
       responseContent: document.getElementById("chatResponseContent"),
       chatDisclaimer: document.getElementById("chatDisclaimer"),
       error: document.getElementById("chatError"),
@@ -103,8 +107,20 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
   let lastPromptContext = "";
   let lastAIResponse = "";
   let userId = null;
+  let scanAbortController = null;
+  let chatAbortController = null;
 
   const resetDesignPanel = () => {
+    // Abort any ongoing requests
+    if (scanAbortController) {
+        scanAbortController.abort();
+        scanAbortController = null;
+    }
+    if (chatAbortController) {
+        chatAbortController.abort();
+        chatAbortController = null;
+    }
+
     designPanel.countrySelect.value = "";
     designPanel.businessSelect.value = "";
     designPanel.content.innerHTML = MESSAGES.SCAN_PROMPT;
@@ -125,6 +141,12 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     designPanel.premiumUpsellChat.style.display = 'none';
     designPanel.scanDisclaimer.style.display = 'none';
     designPanel.chat.chatDisclaimer.style.display = 'none';
+
+    // Reset button visibility
+    designPanel.scanButton.style.display = 'inline-flex';
+    designPanel.cancelScanButton.style.display = 'none';
+    designPanel.chat.sendButton.style.display = 'inline-flex';
+    designPanel.chat.cancelChatButton.style.display = 'none';
 
     designPanel.accordionStep1.open = true;
     designPanel.accordionStep2.open = false;
@@ -189,6 +211,11 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     designPanel.scoreBox.progress = 0;
     designPanel.scanDisclaimer.style.display = 'none';
 
+    // Show cancel button
+    designPanel.scanButton.style.display = 'none';
+    designPanel.cancelScanButton.style.display = 'inline-flex';
+    scanAbortController = new AbortController();
+
     try {
       if (!userId) userId = await getUserId();
       if (!userId) return showDesignError(designPanel, MESSAGES.USER_ID_ERROR);
@@ -213,7 +240,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
             score: 75
         };
       } else {
-        data = await analyzeDesign(prompt, userId);
+        data = await analyzeDesign(prompt, userId, scanAbortController.signal);
         lastAIResponse = data.result;
       }
 
@@ -249,19 +276,35 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
       
       designPanel.premiumUpsellScan.style.display = 'none';
     } catch (error) {
-      const isLimitError = error.status === 429;
-      const errorMessage = isLimitError
-        ? MESSAGES.PREMIUM_LIMIT_REACHED
-        : `Error: ${error.message}`;
-      showDesignError(designPanel, errorMessage);
-      if (error.status === 429) {
-        await updateUsageDisplay();
-        showPremiumUpsell(designPanel, 'scan', MESSAGES);
+      if (error.name === 'AbortError') {
+        designPanel.content.innerHTML = `<span class="info">${MESSAGES.SCAN_CANCELLED}</span>`;
+      } else {
+        const isLimitError = error.status === 429;
+        const errorMessage = isLimitError
+          ? MESSAGES.PREMIUM_LIMIT_REACHED
+          : `Error: ${error.message}`;
+        showDesignError(designPanel, errorMessage);
+        if (error.status === 429) {
+          await updateUsageDisplay();
+          showPremiumUpsell(designPanel, 'scan', MESSAGES);
+        }
       }
     } finally {
       designPanel.spinner.style.display = "none";
+      // Hide cancel button
+      designPanel.scanButton.style.display = 'inline-flex';
+      designPanel.cancelScanButton.style.display = 'none';
+      scanAbortController = null;
+
       setButtonsState(designPanel, false);
       updateDesignPanelState(designPanel);
+    }
+  });
+
+  // Design - Cancel Scan
+  designPanel.cancelScanButton.addEventListener("click", () => {
+    if (scanAbortController) {
+        scanAbortController.abort();
     }
   });
 
@@ -286,6 +329,11 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
     designPanel.chat.error.style.display = "none";
     designPanel.chat.chatDisclaimer.style.display = 'none';
 
+    // Show cancel button
+    designPanel.chat.sendButton.style.display = 'none';
+    designPanel.chat.cancelChatButton.style.display = 'inline-flex';
+    chatAbortController = new AbortController();
+
     try {
       let data;
       if (isMockMode()) {
@@ -294,7 +342,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
         };
       } else {
         const fullFollowUpPrompt = `Based on your previous analysis which was: "${lastAIResponse}". The user now asks a follow-up question: "${followUp}"`;
-        data = await analyzeDesign(fullFollowUpPrompt, userId);
+        data = await analyzeDesign(fullFollowUpPrompt, userId, chatAbortController.signal);
       }
 
       renderMarkdown(designPanel.chat.responseContent, data.result, `<b>AI Follow-up</b><br>`);
@@ -305,20 +353,36 @@ export function initializeDesignPanel(sandboxProxy, isMockMode) {
 
       designPanel.premiumUpsellChat.style.display = 'none';
     } catch (err) {
-      const isLimitError = err.status === 429;
-      const errorMessage = isLimitError
-        ? MESSAGES.PREMIUM_LIMIT_REACHED
-        : `Error: ${err.message}`;
-      designPanel.chat.error.innerHTML = `<span class="error">${errorMessage}</span>`;
-      designPanel.chat.error.style.display = "block";
-      if (err.status === 429) {
-        await updateUsageDisplay();
-        showPremiumUpsell(designPanel, 'chat', MESSAGES);
+      if (err.name === 'AbortError') {
+        designPanel.chat.responseContent.innerHTML = `<span class="info">${MESSAGES.CHAT_CANCELLED}</span>`;
+      } else {
+        const isLimitError = err.status === 429;
+        const errorMessage = isLimitError
+          ? MESSAGES.PREMIUM_LIMIT_REACHED
+          : `Error: ${err.message}`;
+        designPanel.chat.error.innerHTML = `<span class="error">${errorMessage}</span>`;
+        designPanel.chat.error.style.display = "block";
+        if (err.status === 429) {
+          await updateUsageDisplay();
+          showPremiumUpsell(designPanel, 'chat', MESSAGES);
+        }
       }
     } finally {
       designPanel.chat.spinner.style.display = "none";
+      // Hide cancel button
+      designPanel.chat.sendButton.style.display = 'inline-flex';
+      designPanel.chat.cancelChatButton.style.display = 'none';
+      chatAbortController = null;
+
       setButtonsState(designPanel, false);
       updateDesignPanelState(designPanel);
+    }
+  });
+
+  // Design - Cancel Chat
+  designPanel.chat.cancelChatButton.addEventListener("click", () => {
+    if (chatAbortController) {
+        chatAbortController.abort();
     }
   });
 
