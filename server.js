@@ -5,7 +5,7 @@ import cors from "cors";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import multer from "multer";
 import { supabase } from './src/db/client.js';
-import { checkUserLimit, getUserUsage } from './src/db/limits.js';
+import { checkUserAccess, recordUserUsage, getUserUsage } from './src/db/limits.js';
 
 dotenv.config();
 const app = express();
@@ -44,15 +44,19 @@ app.get("/usage/:userId", async (req, res) => {
 
 // --- REQUEST HANDLERS ---
 app.post("/analyze", async (req, res) => {
+  console.log("3. SERVER: server.js -> /analyze");
     const { prompt, userId } = req.body;
 
     if (!prompt) return res.status(400).json({ error: "Prompt is required" });
     if (!userId) return res.status(400).json({ error: "User ID is required" });
 
+    let limitCheckData;
+
     try {
-        const limitCheck = await checkUserLimit(supabase, userId);
-        if (!limitCheck.allowed) {
-            return res.status(429).json({ error: limitCheck.message });
+        // Checking limits
+        limitCheckData = await checkUserAccess(supabase, userId);
+        if (!limitCheckData.allowed) {
+            return res.status(429).json({ error: limitCheckData.message });
         }
 
         const fullPrompt = `${personaPrompt}\n\n${prompt}\n\nFinally, on a new line at the very end, provide a "Cultural Sensitivity Score" from 0 (very high risk) to 100 (very low risk) based on your analysis. The line must start with "SCORE:" followed by the number. For example: SCORE: 85`;
@@ -60,6 +64,9 @@ app.post("/analyze", async (req, res) => {
         const result = await model.generateContent(fullPrompt);
         const response = await result.response;
         const text = response.text();
+
+        // Write-off of limits
+        await recordUserUsage(supabase, userId, limitCheckData);
 
         let analysisText = text;
         let score = null;

@@ -6,6 +6,87 @@ const MESSAGES = {
 
 const FREE_TIER_LIMIT = 20;
 
+/**
+ * STEP 1: Access Guard (Read-only)
+ * Checks if the user is allowed to perform the request.
+ */
+export async function checkUserAccess(supabase, userId) {
+    console.log("4. SERVER: limits.js -> checkUserAccess");
+    
+    // Find user by ID
+    let { data: user, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('user_id_hash', userId)
+        .single();
+
+    if (error && error.code !== 'PGRST116') {
+        throw new Error(`Supabase query error: ${error.message}`);
+    }
+
+    // User not found — first request
+    if (!user) {
+        return { allowed: true, isNewUser: true };
+    }
+
+    // Existing user
+    const today = new Date();
+    const resetDate = new Date(user.reset_date);
+
+    if (today > resetDate) {
+        // Limit period expired — reset required
+        return { allowed: true, needsReset: true, user: user };
+    }
+
+    if (user.check_count >= FREE_TIER_LIMIT) {
+        // Limit exceeded
+        return { allowed: false, message: MESSAGES.PREMIUM_LIMIT_REACHED };
+    }
+    
+    // Within limit
+    return { allowed: true, user: user };
+}
+
+/**
+ * STEP 2: Usage Recorder (Write-only)
+ * Records successful service usage.
+ */
+export async function recordUserUsage(supabase, userId, limitCheckData) {
+    console.log("5. SERVER: limits.js -> recordUserUsage");
+    const today = new Date();
+
+    // New user
+    if (limitCheckData.isNewUser) {
+        const nextResetDate = new Date();
+        nextResetDate.setDate(today.getDate() + 30);
+        
+        await supabase
+            .from('users')
+            .insert({ user_id_hash: userId, check_count: 1, reset_date: nextResetDate.toISOString() });
+        return;
+    }
+
+    // Reset required
+    if (limitCheckData.needsReset) {
+        const nextResetDate = new Date();
+        nextResetDate.setDate(today.getDate() + 30);
+
+        await supabase
+            .from('users')
+            .update({ check_count: 1, reset_date: nextResetDate.toISOString() })
+            .eq('user_id_hash', userId);
+        return;
+    }
+
+    // Increment usage counter
+    if (limitCheckData.user) {
+        await supabase
+            .from('users')
+            .update({ check_count: limitCheckData.user.check_count + 1 })
+            .eq('user_id_hash', userId);
+    }
+}
+
 export async function checkUserLimit(supabase, userId) {
     // 1. Looking for a user
     let { data: user, error } = await supabase
