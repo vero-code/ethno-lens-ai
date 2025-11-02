@@ -11,8 +11,6 @@ const FREE_TIER_LIMIT = 20;
  * Checks if the user is allowed to perform the request.
  */
 export async function checkUserAccess(supabase, userId) {
-  console.log('5. SERVER: limits.js -> checkUserAccess');
-
   // Find user by ID
   let { data: user, error } = await supabase
     .from('users')
@@ -43,11 +41,6 @@ export async function checkUserAccess(supabase, userId) {
     return { allowed: false, message: MESSAGES.PREMIUM_LIMIT_REACHED };
   }
 
-  console.log(
-    '6. SERVER: limits.js -> before return, check_count=',
-    user.check_count,
-  );
-
   // Within limit
   return { allowed: true, user: user };
 }
@@ -57,7 +50,7 @@ export async function checkUserAccess(supabase, userId) {
  * Records successful service usage.
  */
 export async function recordUserUsage(supabase, userId, limitCheckData) {
-  console.log('9. SERVER: limits.js -> recordUserUsage');
+  console.log('5. SERVER 3: limits.js -> recordUserUsage');
   const today = new Date();
 
   // New user

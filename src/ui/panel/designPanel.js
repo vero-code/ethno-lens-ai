@@ -5,7 +5,7 @@ import {
   showPremiumUpsell,
   handlePremiumClick,
 } from '../utils.js';
-import { analyzeDesign, logPremiumInterest } from '../api.js';
+import { analyzeDesign, logPremiumInterest, confirmUsage } from '../api.js';
 import { getUserId } from '../user.js';
 import { updateUsageDisplay } from '../usageLimit.js';
 
@@ -224,7 +224,6 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
 
   // Design - Scan
   designPanel.scanButton.addEventListener('click', async () => {
-    console.log('1. FRONT: designPanel.js -> click scanButton');
     setButtonsState(designPanel, true);
     designPanel.resetButton.disabled = true;
     designPanel.spinner.style.display = 'block';
@@ -298,7 +297,15 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
 
       designPanel.followUpChat.classList.add('visible');
 
+      if (!isMockMode() && data.opId) {
+        try {
+          await confirmUsage(data.opId, userId);
+        } catch (e) {
+          console.warn('Usage confirm failed:', e);
+        }
+      }
       await updateUsageDisplay();
+      console.log('6. FRONT 3: designPanel.js -> final');
 
       // Show toast notification with 6 second timeout
       designPanel.chatAvailableToast.open = true;

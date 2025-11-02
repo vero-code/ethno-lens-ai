@@ -45,7 +45,7 @@ export async function getUserUsage(userId, signal) {
  * @returns {Promise<any>}
  */
 export async function analyzeDesign(prompt, userId, signal) {
-  console.log('2. FRONT: api.js -> analyzeDesign');
+  console.log('1. FRONT 1: api.js -> analyzeDesign');
   const response = await fetch(`${API_BASE_URL}/analyze`, {
     method: 'POST',
     headers: {
@@ -92,4 +92,27 @@ export async function logPremiumInterest(userId) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ userId }),
   });
+}
+
+/**
+ * Confirms recorded usage for a user operation.
+ * @param {string} opId - Operation ID.
+ * @param {string} userId - User ID.
+ * @param {AbortSignal} [signal] - AbortSignal to cancel the request.
+ * @returns {Promise<{ok: true}>}
+ */
+export async function confirmUsage(opId, userId, signal) {
+  console.log('3. FRONT 2: api.js -> confirmUsage');
+  const res = await fetch(`${API_BASE_URL}/usage/confirm`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ opId, userId }),
+    signal
+  });
+  if (!res.ok) {
+    let err;
+    try { err = await res.json(); } catch {}
+    throw new ApiError(err?.error || `Failed to confirm usage (${res.status})`, res.status);
+  }
+  return res.json();
 }
