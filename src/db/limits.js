@@ -50,7 +50,6 @@ export async function checkUserAccess(supabase, userId) {
  * Records successful service usage.
  */
 export async function recordUserUsage(supabase, userId, limitCheckData) {
-  console.log('5. SERVER 3: limits.js -> recordUserUsage');
   const today = new Date();
 
   // New user

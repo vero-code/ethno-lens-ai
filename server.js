@@ -12,7 +12,7 @@ import {
   recordUserUsage,
   getUserUsage,
 } from './src/db/limits.js';
-import crypto from 'crypto';
+import { createPendingOp, consumePendingOp } from './src/db/pendingOps.js';
 
 dotenv.config();
 const app = express();
@@ -33,22 +33,6 @@ const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 const personaPrompt = `You are a Senior Cultural Inclusivity & Design Ethics Specialist at a global creative agency. Your expertise lies in ensuring visual materials are impeccably inclusive and free from cultural insensitivity. You proactively identify inappropriate elements and propose constructive solutions for global brand perception.`;
 
 const upload = multer({ storage: multer.memoryStorage() });
-
-const pending = new Map(); // opId -> { userId, createdAt }
-
-// helper
-function genOpId() {
-  return crypto.randomUUID ? crypto.randomUUID() : crypto.randomBytes(16).toString('hex');
-}
-
-setInterval(() => {
-  const now = Date.now();
-  for (const [opId, v] of pending.entries()) {
-    if (now - v.createdAt > 15 * 60 * 1000) { // 15 min TTL
-      pending.delete(opId);
-    }
-  }
-}, 5 * 60 * 1000);
 
 app.get('/', (req, res) => {
   res.send('EthnoLens AI Server is running!');
@@ -80,17 +64,17 @@ app.post('/analyze', async (req, res) => {
     // 1) Check limits
     const limit = await checkUserAccess(supabase, userId);
     if (!limit.allowed) return res.status(429).json({ error: limit.message });
-    console.log(
-      '2. SERVER 1: server.js -> /analyze -> user limit =',
-      limit.user?.check_count,
-    );
+    // console.log(
+    //   '➡️ 1. SERVER 1: server.js -> /analyze -> user limit =',
+    //   limit.user?.check_count,
+    // );
 
     // 2) Call AI
     const fullPrompt = `${personaPrompt}\n\n${prompt}\n\nFinally, on a new line at the very end, provide a "Cultural Sensitivity Score" from 0 (very high risk) to 100 (very low risk) based on your analysis. The line must start with "SCORE:" followed by the number. For example: SCORE: 85`;
     const result = await model.generateContent(fullPrompt);
     const text = await result.response.text();
 
-    // const text = 'Test';
+    //const text = 'Test';
     //await new Promise(r => setTimeout(r, 5000));
 
     // 3) Answer
@@ -103,8 +87,11 @@ app.post('/analyze', async (req, res) => {
     }
 
     // 4) Register pending confirmation
-    const opId = genOpId();
-    pending.set(opId, { userId, createdAt: Date.now(), limitSnapshot: limit });
+    const opId = await createPendingOp(supabase, userId);
+    // console.log(
+    //   '➡️ 2. SERVER 2: server.js -> /analyze -> opId =',
+    //   opId,
+    // );
 
     // 5) Return result and opId; the limit is not written off
     return res.json({ result: analysisText, score, opId, usageCommitted: false });
@@ -174,22 +161,22 @@ app.post('/log-premium-click', async (req, res) => {
 });
 
 app.post('/usage/confirm', async (req, res) => {
-  console.log('4. SERVER 2: server.js -> /usage/confirm');
   const { userId, opId } = req.body || {};
   if (!userId || !opId) return res.status(400).json({ error: 'userId and opId are required' });
 
-  const entry = pending.get(opId);
-  if (!entry) return res.status(404).json({ error: 'Operation not found or expired' });
-  if (entry.userId !== userId) return res.status(403).json({ error: 'Operation does not belong to this user' });
-
   try {
-    // Write off the limit exactly once
-    await recordUserUsage(supabase, userId, entry.limitSnapshot);
-    pending.delete(opId);
+    const limitSnapshot = await checkUserAccess(supabase, userId);
+    // console.log(
+    //   '➡️ 5. SERVER 3: server.js -> /usage/confirm -> limitSnapshot =',
+    //   limitSnapshot,
+    // );
+
+    await consumePendingOp(supabase, userId, opId, limitSnapshot, recordUserUsage);
+
     return res.json({ ok: true });
   } catch (e) {
-    console.error('Error committing usage:', e);
-    return res.status(500).json({ error: 'Failed to commit usage' });
+    console.error('Confirmation error:', e);
+    return res.status(404).json({ error: 'Operation not found or expired' });
   }
 });
 

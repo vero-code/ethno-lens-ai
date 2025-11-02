@@ -45,7 +45,6 @@ export async function getUserUsage(userId, signal) {
  * @returns {Promise<any>}
  */
 export async function analyzeDesign(prompt, userId, signal) {
-  console.log('1. FRONT 1: api.js -> analyzeDesign');
   const response = await fetch(`${API_BASE_URL}/analyze`, {
     method: 'POST',
     headers: {
@@ -102,7 +101,6 @@ export async function logPremiumInterest(userId) {
  * @returns {Promise<{ok: true}>}
  */
 export async function confirmUsage(opId, userId, signal) {
-  console.log('3. FRONT 2: api.js -> confirmUsage');
   const res = await fetch(`${API_BASE_URL}/usage/confirm`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

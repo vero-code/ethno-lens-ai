@@ -269,6 +269,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
       } else {
         data = await analyzeDesign(prompt, userId, scanAbortController.signal);
         lastAIResponse = data.result;
+        // console.log('➡️ 3. FRONT 1: designPanel -> /analyze -> lastAIResponse =', lastAIResponse);
       }
 
       // Display both text and rating
@@ -299,13 +300,14 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
 
       if (!isMockMode() && data.opId) {
         try {
+          // console.log('➡️ 4. FRONT 2: designPanel -> data.opId exists');
           await confirmUsage(data.opId, userId);
         } catch (e) {
           console.warn('Usage confirm failed:', e);
         }
       }
       await updateUsageDisplay();
-      console.log('6. FRONT 3: designPanel.js -> final');
+      // console.log('6. FRONT 3: designPanel -> final');
 
       // Show toast notification with 6 second timeout
       designPanel.chatAvailableToast.open = true;
@@ -350,16 +352,16 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
 
   // Design - Cancel Scan
   designPanel.cancelScanButton.addEventListener('click', () => {
-    console.log(
-      "CLIENT: The 'Cancel' button is pressed. Calling abort()...",
-      scanAbortController,
-    );
+    // console.log(
+    //   "CLIENT: The 'Cancel' button is pressed. Calling abort()...",
+    //   scanAbortController,
+    // );
     if (scanAbortController) {
       scanAbortController.abort();
-      console.log(
-        "CLIENT: Abort() called. 'signal' is now:",
-        scanAbortController.signal,
-      );
+      // console.log(
+      //   "CLIENT: Abort() called. 'signal' is now:",
+      //   scanAbortController.signal,
+      // );
     }
   });
 
