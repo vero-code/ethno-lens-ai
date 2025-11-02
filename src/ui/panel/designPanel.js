@@ -1,28 +1,33 @@
 // src/ui/panel/designPanel.js
-import { renderMarkdown, handleBusinessTypeChange, showPremiumUpsell, handlePremiumClick } from '../utils.js';
-import { analyzeDesign, logPremiumInterest } from "../api.js";
+import {
+  renderMarkdown,
+  handleBusinessTypeChange,
+  showPremiumUpsell,
+  handlePremiumClick,
+} from '../utils.js';
+import { analyzeDesign, logPremiumInterest } from '../api.js';
 import { getUserId } from '../user.js';
 import { updateUsageDisplay } from '../usageLimit.js';
 
 // --- CONSTANTS ---
 const MESSAGES = {
-  NO_ISSUES: "No issues detected yet.",
-  AI_CONVERSATION_START: "AI conversation not started yet.",
-  SELECT_COUNTRY: "Please select a country before scanning.",
-  SELECT_BUSINESS_TYPE: "Please select a business type before scanning.",
-  SELECT_ELEMENT: "Please select a design element on the canvas first.",
-  ENTER_MESSAGE: "Please enter a message before sending.",
+  NO_ISSUES: 'No issues detected yet.',
+  AI_CONVERSATION_START: 'AI conversation not started yet.',
+  SELECT_COUNTRY: 'Please select a country before scanning.',
+  SELECT_BUSINESS_TYPE: 'Please select a business type before scanning.',
+  SELECT_ELEMENT: 'Please select a design element on the canvas first.',
+  ENTER_MESSAGE: 'Please enter a message before sending.',
   SCAN_PROMPT: "Please select a design element and click 'Scan' to begin.",
-  SCAN_FIRST: "Please scan a design before asking follow-up questions.",
-  USER_ID_ERROR: "Could not identify user. Please try again.",
-  SCAN_CANCELLED: "Scan cancelled by user.",
-  CHAT_CANCELLED: "Chat cancelled by user.",
+  SCAN_FIRST: 'Please scan a design before asking follow-up questions.',
+  USER_ID_ERROR: 'Could not identify user. Please try again.',
+  SCAN_CANCELLED: 'Scan cancelled by user.',
+  CHAT_CANCELLED: 'Chat cancelled by user.',
 
-  PREMIUM_LIMIT_REACHED: "Limit reached. Premium coming soon.", // same as db/limits.js
+  PREMIUM_LIMIT_REACHED: 'Limit reached. Premium coming soon.', // same as db/limits.js
   PREMIUM_BUTTON_PROMPT: "I'm interested in Premium",
-  PREMIUM_BUTTON_THANKS: "Thanks! Your interest has been noted.",
+  PREMIUM_BUTTON_THANKS: 'Thanks! Your interest has been noted.',
 };
-const OTHER_OPTION_VALUE = "Other...";
+const OTHER_OPTION_VALUE = 'Other...';
 
 // --- HELPER FUNCTIONS ---
 const setButtonsState = (designPanel, disabled) => {
@@ -35,7 +40,7 @@ const setButtonsState = (designPanel, disabled) => {
 };
 
 const showDesignError = (designPanel, message) => {
-  designPanel.spinner.style.display = "none";
+  designPanel.spinner.style.display = 'none';
   designPanel.content.innerHTML = `<span class="error">${message}</span>`;
   setButtonsState(designPanel, false);
   designPanel.resetButton.disabled = false;
@@ -46,66 +51,69 @@ const showDesignError = (designPanel, message) => {
  * @param {object} designPanel - The panel elements.
  */
 const updateDesignPanelState = (designPanel) => {
-    const country = designPanel.countrySelect.value;
-    const countryIsValid = country && country !== '-- Select a country --';
+  const country = designPanel.countrySelect.value;
+  const countryIsValid = country && country !== '-- Select a country --';
 
-    let businessType = designPanel.businessSelect.value;
-    let businessIsValid = false;
+  let businessType = designPanel.businessSelect.value;
+  let businessIsValid = false;
 
-    if (businessType === OTHER_OPTION_VALUE) {
-        businessIsValid = !!designPanel.otherBusinessInput.value.trim();
-    } else {
-        businessIsValid = businessType && businessType !== '-- Select a business type --';
-    }
-    
-    const step1Complete = countryIsValid && businessIsValid;
+  if (businessType === OTHER_OPTION_VALUE) {
+    businessIsValid = !!designPanel.otherBusinessInput.value.trim();
+  } else {
+    businessIsValid =
+      businessType && businessType !== '-- Select a business type --';
+  }
 
-    designPanel.accordionStep2.disabled = !step1Complete;
-    designPanel.scanButton.disabled = !step1Complete;
+  const step1Complete = countryIsValid && businessIsValid;
 
-    const hasAnyInput = countryIsValid || businessIsValid;
-    designPanel.resetButton.disabled = !hasAnyInput;
+  designPanel.accordionStep2.disabled = !step1Complete;
+  designPanel.scanButton.disabled = !step1Complete;
+
+  const hasAnyInput = countryIsValid || businessIsValid;
+  designPanel.resetButton.disabled = !hasAnyInput;
 };
 
 // --- MAIN INITIALIZATION FUNCTION ---
 export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
   const designPanel = {
-    scanButton: document.getElementById("scanDesign"),
-    cancelScanButton: document.getElementById("cancelScan"),
-    content: document.getElementById("scanDesignContent"),
-    spinner: document.getElementById("scanDesignSpinner"),
-    countrySelect: document.getElementById("countrySelect"),
-    businessSelect: document.getElementById("businessType"),
-    otherBusinessInput: document.getElementById("otherBusinessType"),
-    otherBusinessTypeContainer: document.getElementById("otherBusinessTypeContainer"),
-    resetButton: document.getElementById("resetDesign"),
-    scoreBox: document.getElementById("scoreBox"),
-    scanDisclaimer: document.getElementById("scanDisclaimer"),
-    followUpChat: document.getElementById("followUpChat"),
-    chatAvailableToast: document.getElementById("chatAvailableToast"),
-    scrollToChatButton: document.getElementById("scrollToChatButton"),
+    scanButton: document.getElementById('scanDesign'),
+    cancelScanButton: document.getElementById('cancelScan'),
+    content: document.getElementById('scanDesignContent'),
+    spinner: document.getElementById('scanDesignSpinner'),
+    countrySelect: document.getElementById('countrySelect'),
+    businessSelect: document.getElementById('businessType'),
+    otherBusinessInput: document.getElementById('otherBusinessType'),
+    otherBusinessTypeContainer: document.getElementById(
+      'otherBusinessTypeContainer',
+    ),
+    resetButton: document.getElementById('resetDesign'),
+    scoreBox: document.getElementById('scoreBox'),
+    scanDisclaimer: document.getElementById('scanDisclaimer'),
+    followUpChat: document.getElementById('followUpChat'),
+    chatAvailableToast: document.getElementById('chatAvailableToast'),
+    scrollToChatButton: document.getElementById('scrollToChatButton'),
     chat: {
-      input: document.getElementById("chatInput"),
-      sendButton: document.getElementById("chatSend"),
-      cancelChatButton: document.getElementById("cancelChat"),
-      responseContent: document.getElementById("chatResponseContent"),
-      chatDisclaimer: document.getElementById("chatDisclaimer"),
-      error: document.getElementById("chatError"),
-      spinner: document.getElementById("chatSpinner")
+      input: document.getElementById('chatInput'),
+      sendButton: document.getElementById('chatSend'),
+      cancelChatButton: document.getElementById('cancelChat'),
+      responseContent: document.getElementById('chatResponseContent'),
+      chatDisclaimer: document.getElementById('chatDisclaimer'),
+      error: document.getElementById('chatError'),
+      spinner: document.getElementById('chatSpinner'),
     },
-    premiumUpsellScan: document.getElementById("premiumUpsellScan"),
-    notifyPremiumButtonScan: document.getElementById("notifyPremiumButtonScan"),
-    premiumUpsellChat: document.getElementById("premiumUpsellChat"),
-    notifyPremiumButtonChat: document.getElementById("notifyPremiumButtonChat"),
+    premiumUpsellScan: document.getElementById('premiumUpsellScan'),
+    notifyPremiumButtonScan: document.getElementById('notifyPremiumButtonScan'),
+    premiumUpsellChat: document.getElementById('premiumUpsellChat'),
+    notifyPremiumButtonChat: document.getElementById('notifyPremiumButtonChat'),
 
-    accordionStep1: document.getElementById("design-step1"),
-    accordionStep2: document.getElementById("design-step2"),
-    confirmResetButton: document.getElementById("confirm-design-reset"),
-    cancelResetButton: document.getElementById("cancel-design-reset")
+    accordionStep1: document.getElementById('design-step1'),
+    accordionStep2: document.getElementById('design-step2'),
+    confirmResetButton: document.getElementById('confirm-design-reset'),
+    cancelResetButton: document.getElementById('cancel-design-reset'),
   };
 
-  let lastPromptContext = "";
-  let lastAIResponse = "";
+  let lastPromptContext = '';
+  let lastAIResponse = '';
   let userId = null;
   let scanAbortController = null;
   let chatAbortController = null;
@@ -113,28 +121,28 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
   const resetDesignPanel = () => {
     // Abort any ongoing requests
     if (scanAbortController) {
-        scanAbortController.abort();
-        scanAbortController = null;
+      scanAbortController.abort();
+      scanAbortController = null;
     }
     if (chatAbortController) {
-        chatAbortController.abort();
-        chatAbortController = null;
+      chatAbortController.abort();
+      chatAbortController = null;
     }
 
-    designPanel.countrySelect.value = "";
-    designPanel.businessSelect.value = "";
+    designPanel.countrySelect.value = '';
+    designPanel.businessSelect.value = '';
     designPanel.content.innerHTML = MESSAGES.SCAN_PROMPT;
     designPanel.scoreBox.style.display = 'none';
     designPanel.scoreBox.progress = 0;
-    designPanel.spinner.style.display = "none";
+    designPanel.spinner.style.display = 'none';
     designPanel.followUpChat.classList.remove('visible');
-    designPanel.chat.input.value = "";
+    designPanel.chat.input.value = '';
     designPanel.chat.responseContent.innerHTML = MESSAGES.AI_CONVERSATION_START;
-    designPanel.chat.spinner.style.display = "none";
-    designPanel.chat.error.style.display = "none";
-    designPanel.otherBusinessTypeContainer.style.display = "none";
-    designPanel.otherBusinessInput.value = "";
-    lastPromptContext = "";
+    designPanel.chat.spinner.style.display = 'none';
+    designPanel.chat.error.style.display = 'none';
+    designPanel.otherBusinessTypeContainer.style.display = 'none';
+    designPanel.otherBusinessInput.value = '';
+    lastPromptContext = '';
     designPanel.resetButton.disabled = true;
     setButtonsState(designPanel, false);
     designPanel.premiumUpsellScan.style.display = 'none';
@@ -154,58 +162,74 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
   };
 
   const handleStep1Change = () => {
-    handleBusinessTypeChange(designPanel.businessSelect, designPanel.otherBusinessTypeContainer);
+    handleBusinessTypeChange(
+      designPanel.businessSelect,
+      designPanel.otherBusinessTypeContainer,
+    );
     updateDesignPanelState(designPanel);
 
     if (!designPanel.accordionStep2.disabled) {
       designPanel.accordionStep1.open = false;
       designPanel.accordionStep2.open = true;
-    } 
-    else {
+    } else {
       designPanel.accordionStep1.open = true;
       designPanel.accordionStep2.open = false;
     }
   };
 
   // --- EVENT LISTENERS ---
-  designPanel.countrySelect.addEventListener("change", handleStep1Change);
-  designPanel.businessSelect.addEventListener("change", handleStep1Change);
-  designPanel.otherBusinessInput.addEventListener("input", handleStep1Change);
-  
-  designPanel.cancelResetButton.addEventListener("click", () => {
+  designPanel.countrySelect.addEventListener('change', handleStep1Change);
+  designPanel.businessSelect.addEventListener('change', handleStep1Change);
+  designPanel.otherBusinessInput.addEventListener('input', handleStep1Change);
+
+  designPanel.cancelResetButton.addEventListener('click', () => {
     designPanel.resetButton.closest('overlay-trigger').open = false;
   });
 
-  designPanel.confirmResetButton.addEventListener("click", () => {
+  designPanel.confirmResetButton.addEventListener('click', () => {
     resetDesignPanel();
     designPanel.resetButton.closest('overlay-trigger').open = false;
   });
 
-  designPanel.scrollToChatButton.addEventListener("click", () => {
-    designPanel.followUpChat.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  designPanel.scrollToChatButton.addEventListener('click', () => {
+    designPanel.followUpChat.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
     designPanel.chatAvailableToast.open = false;
   });
 
   // Premium listeners
-  designPanel.notifyPremiumButtonScan.addEventListener("click", async () => {
+  designPanel.notifyPremiumButtonScan.addEventListener('click', async () => {
     if (!userId) userId = await getUserId();
-    handlePremiumClick(designPanel.notifyPremiumButtonScan, userId, logPremiumInterest, MESSAGES);
+    handlePremiumClick(
+      designPanel.notifyPremiumButtonScan,
+      userId,
+      logPremiumInterest,
+      MESSAGES,
+    );
   });
 
-  designPanel.notifyPremiumButtonChat.addEventListener("click", async () => {
+  designPanel.notifyPremiumButtonChat.addEventListener('click', async () => {
     if (!userId) userId = await getUserId();
-    handlePremiumClick(designPanel.notifyPremiumButtonChat, userId, logPremiumInterest, MESSAGES);
+    handlePremiumClick(
+      designPanel.notifyPremiumButtonChat,
+      userId,
+      logPremiumInterest,
+      MESSAGES,
+    );
   });
 
   // --- ACTION BUTTON LISTENERS ---
-  
+
   // Design - Scan
-  designPanel.scanButton.addEventListener("click", async () => {
+  designPanel.scanButton.addEventListener('click', async () => {
+    console.log('1. FRONT: designPanel.js -> click scanButton');
     setButtonsState(designPanel, true);
     designPanel.resetButton.disabled = true;
-    designPanel.spinner.style.display = "block";
-    designPanel.content.innerHTML = "";
-    designPanel.chat.error.innerHTML = "";
+    designPanel.spinner.style.display = 'block';
+    designPanel.content.innerHTML = '';
+    designPanel.chat.error.innerHTML = '';
     designPanel.chat.responseContent.innerHTML = MESSAGES.AI_CONVERSATION_START;
     designPanel.scoreBox.style.display = 'none';
     designPanel.scoreBox.progress = 0;
@@ -224,20 +248,24 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
       const country = designPanel.countrySelect.value;
       let businessType = designPanel.businessSelect.value;
       if (businessType === OTHER_OPTION_VALUE) {
-          businessType = designPanel.otherBusinessInput.value.trim();
+        businessType = designPanel.otherBusinessInput.value.trim();
       }
 
-      if (!country) return showDesignError(designPanel, MESSAGES.SELECT_COUNTRY);
-      if (!businessType) return showDesignError(designPanel, MESSAGES.SELECT_BUSINESS_TYPE);
-      if (description.includes("No elements selected")) return showDesignError(designPanel, MESSAGES.SELECT_ELEMENT);
+      if (!country)
+        return showDesignError(designPanel, MESSAGES.SELECT_COUNTRY);
+      if (!businessType)
+        return showDesignError(designPanel, MESSAGES.SELECT_BUSINESS_TYPE);
+      if (description.includes('No elements selected'))
+        return showDesignError(designPanel, MESSAGES.SELECT_ELEMENT);
 
       const prompt = `Analyze the provided visual design. The design includes ${description} and is intended for ${country}. The business type is "${businessType}". Identify any culturally insensitive or inappropriate elements and suggest changes to promote inclusive visual solutions that are suitable for a diverse international audience, with a focus on cultural appropriateness for ${country}. In the first sentence, give a short answer whether this element should be used in the selected country.`;
 
       let data;
       if (isMockMode()) {
         data = {
-            result: "This is a **mock response** for testing the UI. The real API call was not made.",
-            score: 75
+          result:
+            'This is a **mock response** for testing the UI. The real API call was not made.',
+          score: 75,
         };
       } else {
         data = await analyzeDesign(prompt, userId, scanAbortController.signal);
@@ -245,23 +273,27 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
       }
 
       // Display both text and rating
-      renderMarkdown(designPanel.content, data.result, "<b>AI Response</b><br>");
+      renderMarkdown(
+        designPanel.content,
+        data.result,
+        '<b>AI Response</b><br>',
+      );
       designPanel.scanDisclaimer.style.display = 'block';
 
       // Meter
       if (data.score !== null) {
-          designPanel.scoreBox.progress = data.score;
-          designPanel.scoreBox.style.display = 'flex';
-          
-          if (data.score >= 70) {
-              designPanel.scoreBox.variant = 'positive';
-          } else if (data.score >= 40) {
-              designPanel.scoreBox.variant = 'warning';
-          } else {
-              designPanel.scoreBox.variant = 'negative';
-          }
+        designPanel.scoreBox.progress = data.score;
+        designPanel.scoreBox.style.display = 'flex';
+
+        if (data.score >= 70) {
+          designPanel.scoreBox.variant = 'positive';
+        } else if (data.score >= 40) {
+          designPanel.scoreBox.variant = 'warning';
+        } else {
+          designPanel.scoreBox.variant = 'negative';
+        }
       }
-      
+
       lastPromptContext = prompt;
 
       designPanel.followUpChat.classList.add('visible');
@@ -273,10 +305,18 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
       setTimeout(() => {
         designPanel.chatAvailableToast.open = false;
       }, 6000);
-      
+
       designPanel.premiumUpsellScan.style.display = 'none';
     } catch (error) {
+      console.log(
+        "CLIENT: 'fetch' was interrupted! An error was caught:",
+        error.name,
+        error.message,
+      );
       if (error.name === 'AbortError') {
+        console.log(
+          "CLIENT: This is 'AbortError'. The cancellation was successful.",
+        );
         designPanel.content.innerHTML = `<span class="info">${MESSAGES.SCAN_CANCELLED}</span>`;
       } else {
         const isLimitError = error.status === 429;
@@ -290,7 +330,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
         }
       }
     } finally {
-      designPanel.spinner.style.display = "none";
+      designPanel.spinner.style.display = 'none';
       // Hide cancel button
       designPanel.scanButton.style.display = 'inline-flex';
       designPanel.cancelScanButton.style.display = 'none';
@@ -302,31 +342,39 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
   });
 
   // Design - Cancel Scan
-  designPanel.cancelScanButton.addEventListener("click", () => {
+  designPanel.cancelScanButton.addEventListener('click', () => {
+    console.log(
+      "CLIENT: The 'Cancel' button is pressed. Calling abort()...",
+      scanAbortController,
+    );
     if (scanAbortController) {
-        scanAbortController.abort();
+      scanAbortController.abort();
+      console.log(
+        "CLIENT: Abort() called. 'signal' is now:",
+        scanAbortController.signal,
+      );
     }
   });
 
   // Design - Follow-up
-  designPanel.chat.sendButton.addEventListener("click", async () => {
+  designPanel.chat.sendButton.addEventListener('click', async () => {
     const followUp = designPanel.chat.input.value.trim();
     if (!followUp) {
       designPanel.chat.error.innerHTML = MESSAGES.ENTER_MESSAGE;
-      designPanel.chat.error.style.display = "block";
+      designPanel.chat.error.style.display = 'block';
       return;
     }
     if (!lastPromptContext) {
       designPanel.chat.error.innerHTML = MESSAGES.SCAN_FIRST;
-      designPanel.chat.error.style.display = "block";
+      designPanel.chat.error.style.display = 'block';
       return;
     }
 
     setButtonsState(designPanel, true);
     designPanel.resetButton.disabled = true;
-    designPanel.chat.spinner.style.display = "block";
-    designPanel.chat.responseContent.innerHTML = "";
-    designPanel.chat.error.style.display = "none";
+    designPanel.chat.spinner.style.display = 'block';
+    designPanel.chat.responseContent.innerHTML = '';
+    designPanel.chat.error.style.display = 'none';
     designPanel.chat.chatDisclaimer.style.display = 'none';
 
     // Show cancel button
@@ -338,16 +386,25 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
       let data;
       if (isMockMode()) {
         data = {
-          result: "This is a **mock chat response**. The real API call was not made."
+          result:
+            'This is a **mock chat response**. The real API call was not made.',
         };
       } else {
         const fullFollowUpPrompt = `Based on your previous analysis which was: "${lastAIResponse}". The user now asks a follow-up question: "${followUp}"`;
-        data = await analyzeDesign(fullFollowUpPrompt, userId, chatAbortController.signal);
+        data = await analyzeDesign(
+          fullFollowUpPrompt,
+          userId,
+          chatAbortController.signal,
+        );
       }
 
-      renderMarkdown(designPanel.chat.responseContent, data.result, `<b>AI Follow-up</b><br>`);
+      renderMarkdown(
+        designPanel.chat.responseContent,
+        data.result,
+        `<b>AI Follow-up</b><br>`,
+      );
       designPanel.chat.chatDisclaimer.style.display = 'block';
-      designPanel.chat.input.value = "";
+      designPanel.chat.input.value = '';
 
       await updateUsageDisplay();
 
@@ -361,14 +418,14 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
           ? MESSAGES.PREMIUM_LIMIT_REACHED
           : `Error: ${err.message}`;
         designPanel.chat.error.innerHTML = `<span class="error">${errorMessage}</span>`;
-        designPanel.chat.error.style.display = "block";
+        designPanel.chat.error.style.display = 'block';
         if (err.status === 429) {
           await updateUsageDisplay();
           showPremiumUpsell(designPanel, 'chat', MESSAGES);
         }
       }
     } finally {
-      designPanel.chat.spinner.style.display = "none";
+      designPanel.chat.spinner.style.display = 'none';
       // Hide cancel button
       designPanel.chat.sendButton.style.display = 'inline-flex';
       designPanel.chat.cancelChatButton.style.display = 'none';
@@ -380,14 +437,14 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
   });
 
   // Design - Cancel Chat
-  designPanel.chat.cancelChatButton.addEventListener("click", () => {
+  designPanel.chat.cancelChatButton.addEventListener('click', () => {
     if (chatAbortController) {
-        chatAbortController.abort();
+      chatAbortController.abort();
     }
   });
 
-  designPanel.chat.input.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") designPanel.chat.sendButton.click();
+  designPanel.chat.input.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') designPanel.chat.sendButton.click();
   });
 
   // Initial state setup
