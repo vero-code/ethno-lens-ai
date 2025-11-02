@@ -11,7 +11,7 @@ const FREE_TIER_LIMIT = 20;
  * Checks if the user is allowed to perform the request.
  */
 export async function checkUserAccess(supabase, userId) {
-  console.log('6. SERVER: limits.js -> checkUserAccess');
+  console.log('5. SERVER: limits.js -> checkUserAccess');
 
   // Find user by ID
   let { data: user, error } = await supabase
@@ -19,8 +19,6 @@ export async function checkUserAccess(supabase, userId) {
     .select('*')
     .eq('user_id_hash', userId)
     .single();
-
-  console.log('7. SERVER: limits.js -> after finding user by ID');
 
   if (error && error.code !== 'PGRST116') {
     throw new Error(`Supabase query error: ${error.message}`);
@@ -46,7 +44,7 @@ export async function checkUserAccess(supabase, userId) {
   }
 
   console.log(
-    '8. SERVER: limits.js -> before return, check_count=',
+    '6. SERVER: limits.js -> before return, check_count=',
     user.check_count,
   );
 
@@ -59,7 +57,7 @@ export async function checkUserAccess(supabase, userId) {
  * Records successful service usage.
  */
 export async function recordUserUsage(supabase, userId, limitCheckData) {
-  console.log('SERVER: limits.js -> recordUserUsage');
+  console.log('9. SERVER: limits.js -> recordUserUsage');
   const today = new Date();
 
   // New user

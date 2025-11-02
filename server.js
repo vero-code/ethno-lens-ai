@@ -61,50 +61,36 @@ app.post('/analyze', async (req, res) => {
   if (!prompt) return res.status(400).json({ error: 'Prompt is required' });
   if (!userId) return res.status(400).json({ error: 'User ID is required' });
 
-  let limitCheckData;
-
-  console.log('4. SERVER: server.js -> before clientClosedPromise');
-  const clientClosedPromise = new Promise((_, reject) => {
-    req.on('close', () => {
-      console.log('SERVER: Connection was closed.');
-      reject(new Error('Client-side connection closed'));
-    });
+  let aborted = false;
+  req.on('aborted', () => {
+    aborted = true;
+    console.warn('SERVER: request aborted by client');
   });
 
   try {
-    console.log('5. SERVER: server.js -> before checkUserAccess');
-    // Checking limits
-    limitCheckData = await Promise.race([
-      checkUserAccess(supabase, userId),
-      clientClosedPromise,
-    ]);
+    console.log('4. SERVER: server.js -> before checkUserAccess');
 
-    if (!limitCheckData.allowed) {
-      return res.status(429).json({ error: limitCheckData.message });
-    }
-    console.log('9. SERVER: server.js -> after limitCheckData');
+    // 1) Check limits
+    const limit = await checkUserAccess(supabase, userId);
+    if (!limit.allowed) return res.status(429).json({ error: limit.message });
+    if (aborted) return;
 
+    console.log('7. SERVER: server.js -> after checkUserAccess');
+
+    // 2) Call AI
     const fullPrompt = `${personaPrompt}\n\n${prompt}\n\nFinally, on a new line at the very end, provide a "Cultural Sensitivity Score" from 0 (very high risk) to 100 (very low risk) based on your analysis. The line must start with "SCORE:" followed by the number. For example: SCORE: 85`;
+    // const result = await model.generateContent(fullPrompt);
+    // const text = await result.response.text();
+    const text = 'Test';
+    if (aborted) return;
 
-    const aiCallPromise = (async () => {
-      console.log('10. SERVER: server.js -> starting call to AI....');
-      // const result = await model.generateContent(fullPrompt);
-      // const response = await result.response;
-      // const text = response.text();
-      const text = 'Test';
-      return text;
-    })();
+    console.log('8. SERVER: server.js -> after calling the AI');
 
-    console.log('11. SERVER: server.js -> after aiCallPromise');
+    // 3) Write off the limit ONLY if it is not cancelled
+    recordUserUsage(supabase, userId, limit);
+    if (aborted) return;
 
-    const text = await Promise.race([aiCallPromise, clientClosedPromise]);
-
-    // Write-off of limits
-    await Promise.race([
-      recordUserUsage(supabase, userId, limitCheckData),
-      clientClosedPromise,
-    ]);
-
+    // 4) Answer
     let analysisText = text;
     let score = null;
     const scoreMatch = text.match(/SCORE:\s*(\d+)/);
