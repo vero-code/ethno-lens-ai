@@ -9,7 +9,7 @@ class ApiError extends Error {
 }
 
 // const API_BASE_URL = "https://ethno-lens-ai.onrender.com";
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'https://localhost:3000';
 
 /**
  * Gets information about the user's limit usage.

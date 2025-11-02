@@ -1,4 +1,6 @@
 // server.js
+import fs from 'fs';
+import https from 'https';
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
@@ -14,7 +16,12 @@ import {
 dotenv.config();
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: ['https://localhost:5241'],
+  credentials: true,
+  methods: ['GET','POST','PUT','PATCH','DELETE'],
+  allowedHeaders: ['Content-Type','Authorization']
+}));
 app.use(express.json());
 
 // --- Initializing clients ---
@@ -180,7 +187,11 @@ app.post('/log-premium-click', async (req, res) => {
   }
 });
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
+
+// HTTPS server
+const key  = fs.readFileSync('./localhost-key.pem');
+const cert = fs.readFileSync('./localhost.pem');
+
+https.createServer({ key, cert }, app).listen(3000, () => {
+  console.log('API listening on https://localhost:3000');
 });

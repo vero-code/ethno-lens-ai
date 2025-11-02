@@ -20,4 +20,12 @@ Thumbs.db
 # Certificate-related
 .devcert/
 
+# local TLS certs
+localhost.pem
+localhost-key.pem
+*.pem
+*.key
+*.crt
+*.cer
+
 .env
