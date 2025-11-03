@@ -9,12 +9,14 @@ EthnoLens AI ("we," "us," or "our") is committed to protecting your privacy. Thi
 To provide and manage the service, we collect and store the following:
 
 1.  **Anonymous User Identifier:** An anonymized, non-reversible identifier provided by Adobe to distinguish users. We **do not** store your name, email, or other directly identifiable personal information.
-2.  **Service Usage Data:** Information related to your use of the Add-on, such as the number of analysis checks you perform, to manage service quotas.
+
+2.  **Service Usage Data:** Information related to your use of the Add-on, such as the number of analysis checks you perform and events like cancellation of an in-progress request, to manage service quotas and system stability.
+
 3.  **Voluntary Feedback:** Information you provide, such as clicks on a button to express interest in future features.
 
 ## How We Use Your Information
 
-* **To Provide the Service:** We use your identifier and usage data to manage and reset your monthly free quota.
+* **To Provide the Service:** We use your identifier and usage data (including request initiation and cancellation events) to manage and reset your monthly free quota and ensure proper system functioning.
 * **To Improve the Product:** We use aggregated, anonymous data (like feature interest) to understand user needs and prioritize future development.
 
 ## Third-Party Services (Data Sharing)

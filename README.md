@@ -54,6 +54,13 @@ Built for global creators. Powered by Gemini. Designed for Adobe Express.
 * **CI/CD:** GitHub Actions (manual deployment trigger)
 * **Build Tool:** @adobe/create-ccweb-add-on
 
+## ✅ Reliability & Quota Handling
+
+- 🛑 Cancelable AI requests — no wasted quota on aborted runs
+- ⚙️ Two-phase usage confirmation (pending → confirmed) to ensure accurate quota billing
+- 🧾 Atomic usage tracking in Supabase (no double-charge edge cases)
+- 🌐 Graceful handling of network interruptions
+
 ## Setup
 
 This project consists of two parts: a frontend add-on and a backend server. Both must be running simultaneously for local development.
