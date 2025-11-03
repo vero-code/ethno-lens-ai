@@ -11,93 +11,93 @@ class ApiError extends Error {
 // const API_BASE_URL = "https://ethno-lens-ai.onrender.com";
 const API_BASE_URL = 'https://localhost:3000';
 
+// --- helpers ---
+async function parseJsonSafe(res) {
+  try {
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Gets information about the user's limit usage.
- * @param {string} userId - User ID.
- * @param {AbortSignal} [signal] - AbortSignal to cancel the request.
+ * @param {string} userId
+ * @param {AbortSignal} [signal]
  * @returns {Promise<{used: number, limit: number}>}
  */
 export async function getUserUsage(userId, signal) {
-  const response = await fetch(`${API_BASE_URL}/usage/${userId}`, {
+  const res = await fetch(`${API_BASE_URL}/usage/${userId}`, {
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    signal: signal,
+    headers: { 'Content-Type': 'application/json' },
+    signal,
   });
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new ApiError(
-      errorData.error || 'Failed to get user usage',
-      response.status,
-    );
+  if (!res.ok) {
+    const err = await parseJsonSafe(res);
+    throw new ApiError(err?.error || 'Failed to get user usage', res.status);
   }
-
-  return await response.json();
+  return await res.json();
 }
 
 /**
- * Analyzes design element.
- * @param {string} prompt - The prompt for analysis.
- * @param {string} userId - User ID.
- * @param {AbortSignal} [signal] - AbortSignal to cancel the request.
- * @returns {Promise<any>}
+ * Analyze design element (returns { result, score?, opId? }).
+ * @param {string} prompt
+ * @param {string} userId
+ * @param {AbortSignal} [signal]
  */
 export async function analyzeDesign(prompt, userId, signal) {
-  const response = await fetch(`${API_BASE_URL}/analyze`, {
+  const res = await fetch(`${API_BASE_URL}/analyze`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ prompt, userId }),
-    signal: signal,
+    signal,
   });
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new ApiError(
-      errorData.error || `Server error: ${response.status}`,
-      response.status,
-    );
+  
+  if (!res.ok) {
+    const err = await parseJsonSafe(res);
+    throw new ApiError(err?.error || `Server error: ${res.status}`, res.status);
   }
-  return response.json();
+  return await res.json();
 }
 
 /**
- * Analyzes an image.
- * @param {FormData} formData - The form data containing the image and other fields.
- * @param {AbortSignal} [signal] - AbortSignal to cancel the request.
- * @returns {Promise<any>}
+ * Analyzes an image (returns { result, opId? }).
+ * @param {FormData} formData
+ * @param {AbortSignal} [signal]
  */
 export async function analyzeImage(formData, signal) {
-  const response = await fetch(`${API_BASE_URL}/analyze-image`, {
+  const res = await fetch(`${API_BASE_URL}/analyze-image`, {
     method: 'POST',
     body: formData,
-    signal: signal,
+    signal,
   });
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new ApiError(
-      errorData.error || `Server error: ${response.status}`,
-      response.status,
-    );
+  if (!res.ok) {
+    const err = await parseJsonSafe(res);
+    throw new ApiError(err?.error || `Server error: ${res.status}`, res.status);
   }
-  return response.json();
+  return await res.json();
 }
 
+/**
+ * Log Premium interest.
+ * @param {string} userId
+ */
 export async function logPremiumInterest(userId) {
-  await fetch(`${API_BASE_URL}/log-premium-click`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId }),
-  });
+  try {
+    await fetch(`${API_BASE_URL}/log-premium-click`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId }),
+    });
+  } catch {}
 }
 
 /**
  * Confirms recorded usage for a user operation.
- * @param {string} opId - Operation ID.
- * @param {string} userId - User ID.
- * @param {AbortSignal} [signal] - AbortSignal to cancel the request.
+ * @param {string} opId
+ * @param {string} userId
+ * @param {AbortSignal} [signal]
  * @returns {Promise<{ok: true}>}
  */
 export async function confirmUsage(opId, userId, signal) {
@@ -105,12 +105,12 @@ export async function confirmUsage(opId, userId, signal) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ opId, userId }),
-    signal
+    signal,
   });
+  
   if (!res.ok) {
-    let err;
-    try { err = await res.json(); } catch {}
+    const err = await parseJsonSafe(res);
     throw new ApiError(err?.error || `Failed to confirm usage (${res.status})`, res.status);
   }
-  return res.json();
+  return await res.json();
 }
