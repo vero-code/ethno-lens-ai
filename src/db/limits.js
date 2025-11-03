@@ -88,66 +88,6 @@ export async function recordUserUsage(supabase, userId, limitCheckData) {
   }
 }
 
-export async function checkUserLimit(supabase, userId) {
-  // 1. Looking for a user
-  let { data: user, error } = await supabase
-    .from('users')
-    .select('*')
-    .eq('user_id_hash', userId)
-    .single();
-
-  if (error && error.code !== 'PGRST116') {
-    throw new Error(`Supabase query error: ${error.message}`);
-  }
-
-  const today = new Date();
-
-  // 2. If the user is not found
-  if (!user) {
-    const nextResetDate = new Date();
-    nextResetDate.setDate(today.getDate() + 30);
-
-    const { error: insertError } = await supabase
-      .from('users')
-      .insert({
-        user_id_hash: userId,
-        check_count: 1,
-        reset_date: nextResetDate.toISOString(),
-      });
-
-    if (insertError)
-      throw new Error(`Supabase insert error: ${insertError.message}`);
-    return { allowed: true };
-  }
-
-  // 3. If the user is found
-  const resetDate = new Date(user.reset_date);
-  if (today > resetDate) {
-    const nextResetDate = new Date();
-    nextResetDate.setDate(today.getDate() + 30);
-    const { error: updateError } = await supabase
-      .from('users')
-      .update({ check_count: 1, reset_date: nextResetDate.toISOString() })
-      .eq('user_id_hash', userId);
-    if (updateError)
-      throw new Error(`Supabase update error: ${updateError.message}`);
-    return { allowed: true };
-  }
-
-  if (user.check_count >= FREE_TIER_LIMIT) {
-    return { allowed: false, message: MESSAGES.PREMIUM_LIMIT_REACHED };
-  }
-
-  const { error: updateError } = await supabase
-    .from('users')
-    .update({ check_count: user.check_count + 1 })
-    .eq('user_id_hash', userId);
-  if (updateError)
-    throw new Error(`Supabase update error: ${updateError.message}`);
-
-  return { allowed: true };
-}
-
 export async function getUserUsage(supabase, userId) {
   let { data: user, error } = await supabase
     .from('users')
