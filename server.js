@@ -61,15 +61,9 @@ app.post('/analyze', async (req, res) => {
   if (!userId) return res.status(400).json({ error: 'User ID is required' });
 
   try {
-    // 1) Check limits
     const limit = await checkUserAccess(supabase, userId);
     if (!limit.allowed) return res.status(429).json({ error: limit.message });
-    // console.log(
-    //   '➡️ 1. SERVER 1: server.js -> /analyze -> user limit =',
-    //   limit.user?.check_count,
-    // );
 
-    // 2) Call AI
     const fullPrompt = `${personaPrompt}\n\n${prompt}\n\nFinally, on a new line at the very end, provide a "Cultural Sensitivity Score" from 0 (very high risk) to 100 (very low risk) based on your analysis. The line must start with "SCORE:" followed by the number. For example: SCORE: 85`;
     const result = await model.generateContent(fullPrompt);
     const text = await result.response.text();
@@ -77,7 +71,6 @@ app.post('/analyze', async (req, res) => {
     //const text = 'Test';
     //await new Promise(r => setTimeout(r, 5000));
 
-    // 3) Answer
     let analysisText = text;
     let score = null;
     const scoreMatch = text.match(/SCORE:\s*(\d+)/);
@@ -86,14 +79,8 @@ app.post('/analyze', async (req, res) => {
       analysisText = text.replace(/SCORE:\s*(\d+)/, '').trim();
     }
 
-    // 4) Register pending confirmation
     const opId = await createPendingOp(supabase, userId);
-    // console.log(
-    //   '➡️ 2. SERVER 2: server.js -> /analyze -> opId =',
-    //   opId,
-    // );
 
-    // 5) Return result and opId; the limit is not written off
     return res.json({ result: analysisText, score, opId, usageCommitted: false });
   } catch (err) {
     console.error('Server error during /analyze:', err);
@@ -107,16 +94,12 @@ app.post('/analyze-image', upload.single('image'), async (req, res) => {
   const { country, businessType, userId } = req.body;
 
   if (!country || !businessType)
-    return res
-      .status(400)
-      .json({ error: 'Country and business type are required.' });
+    return res.status(400).json({ error: 'Country and business type are required.' });
   if (!userId) return res.status(400).json({ error: 'User ID is required.' });
 
   try {
-    const limitCheck = await checkUserLimit(supabase, userId);
-    if (!limitCheck.allowed) {
-      return res.status(429).json({ error: limitCheck.message });
-    }
+    const limit = await checkUserAccess(supabase, userId);
+    if (!limit.allowed)return res.status(429).json({ error: limit.message });
 
     const base64Image = req.file.buffer.toString('base64');
     const promptText = `${personaPrompt}\n\nAnalyze the provided image for potential cultural, symbolic or ethical issues. This image is intended for ${country} with a business type of "${businessType}". Identify any culturally insensitive or inappropriate elements and suggest changes to promote inclusive visual solutions suitable for a diverse international audience, with a focus on cultural appropriateness for ${country}. In the first sentence, give a short answer whether this element should be used in the selected country.`;
@@ -131,12 +114,17 @@ app.post('/analyze-image', upload.single('image'), async (req, res) => {
       },
     ];
 
-    const result = await model.generateContent(parts);
-    const text = result.response.text();
-    res.json({ result: text });
+    // const result = await model.generateContent(parts);
+    // const text = await result.response.text();
+    const text = 'Test';
+    await new Promise(r => setTimeout(r, 5000));
+
+    const opId = await createPendingOp(supabase, userId);
+
+    return res.json({ result: text, opId, usageCommitted: false });
   } catch (err) {
     console.error('Server error during image analysis:', err);
-    res.status(500).json({ error: 'An internal server error occurred.' });
+    return res.status(500).json({ error: 'An internal server error occurred.' });
   }
 });
 
@@ -166,10 +154,6 @@ app.post('/usage/confirm', async (req, res) => {
 
   try {
     const limitSnapshot = await checkUserAccess(supabase, userId);
-    // console.log(
-    //   '➡️ 5. SERVER 3: server.js -> /usage/confirm -> limitSnapshot =',
-    //   limitSnapshot,
-    // );
 
     await consumePendingOp(supabase, userId, opId, limitSnapshot, recordUserUsage);
 
