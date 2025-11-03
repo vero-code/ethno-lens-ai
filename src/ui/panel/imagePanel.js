@@ -289,6 +289,8 @@ export function initializeImagePanel(isMockMode) {
         formData.append("businessType", businessType);
         formData.append("userId", userId);
         data = await analyzeImage(formData, imageAbortController.signal);
+        imagePanel.cancelAnalyzeButton.disabled = true;
+        imagePanel.spinner.style.display = "none";
       }
 
       renderMarkdown(imagePanel.resultContent, data.result, "<b>AI Image Analysis</b><br>");
@@ -320,7 +322,9 @@ export function initializeImagePanel(isMockMode) {
       }
       
     } finally { 
-      imagePanel.spinner.style.display = "none";
+      if (imagePanel.spinner.style.display !== "none") {
+        imagePanel.spinner.style.display = "none";
+      }
 
       imagePanel.analyzeButton.style.display = 'inline-flex';
       imagePanel.cancelAnalyzeButton.style.display = 'none';
