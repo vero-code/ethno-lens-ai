@@ -17,13 +17,22 @@ import { createPendingOp, consumePendingOp } from './src/db/pendingOps.js';
 dotenv.config();
 const app = express();
 
+const PORT = process.env.PORT || 3000;
+const IS_RENDER = !!process.env.RENDER;
+const LOCAL_HTTPS = process.env.LOCAL_HTTPS === 'true' && !IS_RENDER;
+const corsOrigins = (process.env.CORS_ORIGINS || 'https://localhost:5241')
+  .split(',')
+  .map(s => s.trim())
+  .filter(Boolean);
+
+app.set('trust proxy', 1);
 app.use(cors({
-  origin: ['https://localhost:5241'],
+  origin: corsOrigins,
   credentials: true,
   methods: ['GET','POST','PUT','PATCH','DELETE'],
   allowedHeaders: ['Content-Type','Authorization']
 }));
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 // --- Initializing clients ---
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -33,6 +42,10 @@ const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 const personaPrompt = `You are a Senior Cultural Inclusivity & Design Ethics Specialist at a global creative agency. Your expertise lies in ensuring visual materials are impeccably inclusive and free from cultural insensitivity. You proactively identify inappropriate elements and propose constructive solutions for global brand perception.`;
 
 const upload = multer({ storage: multer.memoryStorage() });
+
+// --- Health & warmup ---
+app.get('/healthz', (_req, res) => res.status(200).json({ ok: true }));
+app.get('/warmup', (_req, res) => res.status(200).send('ok'));
 
 app.get('/', (req, res) => {
   res.send('EthnoLens AI Server is running!');
@@ -114,10 +127,10 @@ app.post('/analyze-image', upload.single('image'), async (req, res) => {
       },
     ];
 
-    // const result = await model.generateContent(parts);
-    // const text = await result.response.text();
-    const text = 'Test';
-    await new Promise(r => setTimeout(r, 5000));
+    const result = await model.generateContent(parts);
+    const text = await result.response.text();
+    //const text = 'Test';
+    //await new Promise(r => setTimeout(r, 5000));
 
     const opId = await createPendingOp(supabase, userId);
 
@@ -164,11 +177,26 @@ app.post('/usage/confirm', async (req, res) => {
   }
 });
 
+function startServer() {
+  if (LOCAL_HTTPS) {
+    const keyPath = './localhost-key.pem';
+    const certPath = './localhost.pem';
 
-// HTTPS server
-const key  = fs.readFileSync('./localhost-key.pem');
-const cert = fs.readFileSync('./localhost.pem');
+    if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
+      const key  = fs.readFileSync(keyPath);
+      const cert = fs.readFileSync(certPath);
+      https.createServer({ key, cert }, app).listen(PORT, () => {
+        console.log(`API listening (LOCAL HTTPS) on https://localhost:${PORT}`);
+      });
+      return;
+    } else {
+      console.warn('[WARN] LOCAL_HTTPS=true, but no local certificates were found. Falling back to HTTP.');
+    }
+  }
 
-https.createServer({ key, cert }, app).listen(3000, () => {
-  console.log('API listening on https://localhost:3000');
-});
+  app.listen(PORT, () => {
+    console.log(`API listening on http://0.0.0.0:${PORT} (HTTP${IS_RENDER ? ' via Render proxy TLS' : ''})`);
+  });
+}
+
+startServer();
