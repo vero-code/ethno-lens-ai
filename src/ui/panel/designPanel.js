@@ -269,7 +269,6 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
       } else {
         data = await analyzeDesign(prompt, userId, scanAbortController.signal);
         lastAIResponse = data.result;
-        // console.log('➡️ 3. FRONT 1: designPanel -> /analyze -> lastAIResponse =', lastAIResponse);
       }
 
       // Display both text and rating
@@ -300,14 +299,12 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
 
       if (!isMockMode() && data.opId) {
         try {
-          // console.log('➡️ 4. FRONT 2: designPanel -> data.opId exists');
           await confirmUsage(data.opId, userId);
         } catch (e) {
           console.warn('Usage confirm failed:', e);
         }
       }
       await updateUsageDisplay();
-      // console.log('6. FRONT 3: designPanel -> final');
 
       // Show toast notification with 6 second timeout
       designPanel.chatAvailableToast.open = true;
@@ -317,15 +314,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
 
       designPanel.premiumUpsellScan.style.display = 'none';
     } catch (error) {
-      console.log(
-        "CLIENT: 'fetch' was interrupted! An error was caught:",
-        error.name,
-        error.message,
-      );
       if (error.name === 'AbortError') {
-        console.log(
-          "CLIENT: This is 'AbortError'. The cancellation was successful.",
-        );
         designPanel.content.innerHTML = `<span class="info">${MESSAGES.SCAN_CANCELLED}</span>`;
       } else {
         const isLimitError = error.status === 429;
@@ -352,16 +341,8 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
 
   // Design - Cancel Scan
   designPanel.cancelScanButton.addEventListener('click', () => {
-    // console.log(
-    //   "CLIENT: The 'Cancel' button is pressed. Calling abort()...",
-    //   scanAbortController,
-    // );
     if (scanAbortController) {
       scanAbortController.abort();
-      // console.log(
-      //   "CLIENT: Abort() called. 'signal' is now:",
-      //   scanAbortController.signal,
-      // );
     }
   });
 
@@ -405,6 +386,8 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
           userId,
           chatAbortController.signal,
         );
+        designPanel.chat.cancelChatButton.disabled = true;
+        designPanel.chat.spinner.style.display = 'none';
       }
 
       renderMarkdown(
@@ -414,6 +397,14 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
       );
       designPanel.chat.chatDisclaimer.style.display = 'block';
       designPanel.chat.input.value = '';
+
+      if (!isMockMode() && data.opId) {
+        try {
+          await confirmUsage(data.opId, userId);
+        } catch (e) {
+          console.warn('Chat usage confirm failed:', e);
+        }
+      }
 
       await updateUsageDisplay();
 
@@ -434,10 +425,13 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
         }
       }
     } finally {
-      designPanel.chat.spinner.style.display = 'none';
+      if (designPanel.chat.spinner.style.display !== 'none') {
+        designPanel.chat.spinner.style.display = 'none';
+      }
       // Hide cancel button
       designPanel.chat.sendButton.style.display = 'inline-flex';
       designPanel.chat.cancelChatButton.style.display = 'none';
+      designPanel.chat.cancelChatButton.disabled = false;
       chatAbortController = null;
 
       setButtonsState(designPanel, false);
