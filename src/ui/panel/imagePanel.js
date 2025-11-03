@@ -1,6 +1,6 @@
 // src/ui/panel/imagePanel.js
 import { renderMarkdown, handleBusinessTypeChange, handlePremiumClick, showPremiumUpsell } from '../utils.js';
-import { analyzeImage, logPremiumInterest } from "../api.js";
+import { analyzeImage, logPremiumInterest, confirmUsage } from "../api.js";
 import { getUserId } from '../user.js';
 import { updateUsageDisplay } from '../usageLimit.js';
 
@@ -13,6 +13,7 @@ const MESSAGES = {
     SELECT_COUNTRY: "Please select a country.",
     SELECT_BUSINESS_TYPE: "Please select a business type.",
     USER_ID_ERROR: "Could not identify user. Please try again.",
+    IMAGE_CANCELLED: "Image analysis cancelled by user.",
 
     PREMIUM_LIMIT_REACHED: "Limit reached. Premium coming soon.",
     PREMIUM_BUTTON_PROMPT: "I'm interested in Premium",
@@ -94,6 +95,7 @@ export function initializeImagePanel(isMockMode) {
     uploadInput: document.getElementById("imageUpload"),
     browseButton: document.getElementById("browseButton"),
     analyzeButton: document.getElementById("analyzeImage"),
+    cancelAnalyzeButton: document.getElementById("cancelAnalyzeImage"),
     resultContent: document.getElementById("imageResultContent"),
     error: document.getElementById("imageError"),
     imageDisclaimer: document.getElementById("imageDisclaimer"),
@@ -115,6 +117,7 @@ export function initializeImagePanel(isMockMode) {
 
   let userId = null;
   let selectedFile = null;
+  let imageAbortController = null;
 
   const resetImagePanel = () => {
     selectedFile = null;
@@ -123,6 +126,7 @@ export function initializeImagePanel(isMockMode) {
     if (imagePanel.clearImageButton) imagePanel.clearImageButton.style.display = 'none';
     imagePanel.resultContent.innerHTML = MESSAGES.NO_IMAGE_ANALYZED;
     imagePanel.spinner.style.display = "none";
+    if (imagePanel.cancelAnalyzeButton) imagePanel.cancelAnalyzeButton.style.display = 'none';
     imagePanel.error.style.display = "none";
     imagePanel.imageOtherBusinessTypeContainer.style.display = "none";
     imagePanel.otherBusinessInput.value = "";
@@ -256,6 +260,10 @@ export function initializeImagePanel(isMockMode) {
     imagePanel.error.style.display = "none";
     imagePanel.imageDisclaimer.style.display = 'none';
 
+    imagePanel.analyzeButton.style.display = 'none';
+    imagePanel.cancelAnalyzeButton.style.display = 'inline-flex';
+    imageAbortController = new AbortController();
+
     try {
       if (!userId) userId = await getUserId();
       if (!userId) return showImageError(imagePanel, MESSAGES.USER_ID_ERROR);
@@ -280,28 +288,53 @@ export function initializeImagePanel(isMockMode) {
         formData.append("country", country);
         formData.append("businessType", businessType);
         formData.append("userId", userId);
-        data = await analyzeImage(formData);
+        data = await analyzeImage(formData, imageAbortController.signal);
       }
 
       renderMarkdown(imagePanel.resultContent, data.result, "<b>AI Image Analysis</b><br>");
       imagePanel.imageDisclaimer.style.display = 'block';
       
+      if (!isMockMode() && data.opId) {
+        try {
+          await confirmUsage(data.opId, userId);
+        } catch (e) {
+          console.warn('Image usage confirm failed:', e);
+        }
+      }
+
       await updateUsageDisplay();
       imagePanel.premiumUpsellImage.style.display = 'none';
     } catch (err) {
-      const isLimitError = err.status === 429;
-      const errorMessage = isLimitError
-        ? MESSAGES.PREMIUM_LIMIT_REACHED
-        : `Error analyzing image: ${err.message}`;
-      showImageError(imagePanel, errorMessage);
-      if (isLimitError) {
-        await updateUsageDisplay();
-        showPremiumUpsell(imagePanel, 'image', MESSAGES);
+      if (err.name === 'AbortError') {
+        imagePanel.resultContent.innerHTML = `<span class="info">${MESSAGES.IMAGE_CANCELLED}</span>`;
+      } else {
+        const isLimitError = err.status === 429;
+        const errorMessage = isLimitError
+          ? MESSAGES.PREMIUM_LIMIT_REACHED
+          : `Error analyzing image: ${err.message}`;
+        showImageError(imagePanel, errorMessage);
+        if (isLimitError) {
+          await updateUsageDisplay();
+          showPremiumUpsell(imagePanel, 'image', MESSAGES);
+        }
       }
+      
     } finally { 
       imagePanel.spinner.style.display = "none";
+
+      imagePanel.analyzeButton.style.display = 'inline-flex';
+      imagePanel.cancelAnalyzeButton.style.display = 'none';
+      imageAbortController = null;
+
       setButtonsState(imagePanel, false);
       updatePanelState(imagePanel, selectedFile);
+    }
+  });
+
+  // Image - Cancel Analyze
+  imagePanel.cancelAnalyzeButton.addEventListener('click', () => {
+    if (imageAbortController) {
+      imageAbortController.abort();
     }
   });
 
