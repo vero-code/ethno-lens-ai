@@ -22,34 +22,30 @@ const IS_RENDER = !!process.env.RENDER;
 const LOCAL_HTTPS = process.env.LOCAL_HTTPS === 'true' && !IS_RENDER;
 
 app.set('trust proxy', 1);
-app.use(cors({
-  origin: (origin, callback) => {
-    console.log('🔍 Request from origin:', origin);
-    
-    const allowedOrigins = [
-      'https://express.adobe.com',
-      'https://new.express.adobe.com',
-    ];
-    
-    const isAdobeAddons = origin && /^https:\/\/[a-z0-9]+\.wxp\.adobe-addons\.com$/.test(origin);
-    
-    const isLocalhost = origin && origin.startsWith('https://localhost:');
-    
-    // for test
-    const isNullOrigin = !origin;
-    
-    if (allowedOrigins.includes(origin) || isAdobeAddons || isLocalhost || isNullOrigin) {
-      callback(null, true);
-    } else {
-      console.log('CORS BLOCKED origin:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET','POST','PUT','PATCH','DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type','Authorization']
-}));
-app.options('*', cors());
+app.use((req, res, next) => {
+  const origin = req.headers.origin;  
+  const allowedOrigins = [
+    'https://express.adobe.com',
+    'https://new.express.adobe.com',
+  ];
+  
+  const isAdobeAddons = origin && /^https:\/\/[a-z0-9]+\.wxp\.adobe-addons\.com$/.test(origin);
+  const isLocalhost = origin && origin.startsWith('https://localhost:');
+  const isNullOrigin = !origin || origin === 'null';
+  
+  if (isNullOrigin || allowedOrigins.includes(origin) || isAdobeAddons || isLocalhost) {
+    res.header('Access-Control-Allow-Origin', origin && origin !== 'null' ? origin : '*');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+
+    if (origin && origin !== 'null') { res.header('Access-Control-Allow-Credentials', 'true'); }
+    if (req.method === 'OPTIONS') return res.sendStatus(204);
+    return next();
+  }
+
+  return res.status(403).json({ error: 'Origin not allowed' });
+});
+
 app.use(express.json({ limit: '10mb' }));
 
 // --- Initializing clients ---
