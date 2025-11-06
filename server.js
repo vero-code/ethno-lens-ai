@@ -41,7 +41,7 @@ app.use(cors({
     if (allowedOrigins.includes(origin) || isAdobeAddons || isLocalhost || isNullOrigin) {
       callback(null, true);
     } else {
-      console.log('❌ CORS BLOCKED origin:', origin);
+      console.log('CORS BLOCKED origin:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
