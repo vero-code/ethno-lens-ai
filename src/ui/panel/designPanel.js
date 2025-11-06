@@ -278,6 +278,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
         '<b>AI Response</b><br>',
       );
       designPanel.scanDisclaimer.style.display = 'block';
+      designPanel.spinner.style.display = 'none';
 
       // Meter
       if (data.score !== null) {
@@ -314,6 +315,8 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
 
       designPanel.premiumUpsellScan.style.display = 'none';
     } catch (error) {
+      designPanel.spinner.style.display = 'none';
+
       if (error.name === 'AbortError') {
         designPanel.content.innerHTML = `<span class="info">${MESSAGES.SCAN_CANCELLED}</span>`;
       } else {
@@ -328,8 +331,6 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
         }
       }
     } finally {
-      designPanel.spinner.style.display = 'none';
-      // Hide cancel button
       designPanel.scanButton.style.display = 'inline-flex';
       designPanel.cancelScanButton.style.display = 'none';
       scanAbortController = null;

@@ -20,18 +20,36 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const IS_RENDER = !!process.env.RENDER;
 const LOCAL_HTTPS = process.env.LOCAL_HTTPS === 'true' && !IS_RENDER;
-const corsOrigins = (process.env.CORS_ORIGINS || 'https://localhost:5241')
-  .split(',')
-  .map(s => s.trim())
-  .filter(Boolean);
 
 app.set('trust proxy', 1);
 app.use(cors({
-  origin: corsOrigins,
+  origin: (origin, callback) => {
+    console.log('🔍 Request from origin:', origin);
+    
+    const allowedOrigins = [
+      'https://express.adobe.com',
+      'https://new.express.adobe.com',
+    ];
+    
+    const isAdobeAddons = origin && /^https:\/\/[a-z0-9]+\.wxp\.adobe-addons\.com$/.test(origin);
+    
+    const isLocalhost = origin && origin.startsWith('https://localhost:');
+    
+    // for test
+    const isNullOrigin = !origin;
+    
+    if (allowedOrigins.includes(origin) || isAdobeAddons || isLocalhost || isNullOrigin) {
+      callback(null, true);
+    } else {
+      console.log('❌ CORS BLOCKED origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
-  methods: ['GET','POST','PUT','PATCH','DELETE'],
+  methods: ['GET','POST','PUT','PATCH','DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type','Authorization']
 }));
+app.options('*', cors());
 app.use(express.json({ limit: '10mb' }));
 
 // --- Initializing clients ---
