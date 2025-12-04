@@ -53,7 +53,9 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
 // --- Constants ---
-const personaPrompt = `You are a Senior Cultural Inclusivity & Design Ethics Specialist at a global creative agency. Your expertise lies in ensuring visual materials are impeccably inclusive and free from cultural insensitivity. You proactively identify inappropriate elements and propose constructive solutions for global brand perception.`;
+const personaPrompt = `You are a Senior Cultural Inclusivity & Design Ethics Specialist at a global creative agency. Your expertise lies in ensuring visual materials are impeccably inclusive and free from cultural insensitivity. You proactively identify inappropriate elements and propose constructive solutions for global brand perception.
+
+IMPORTANT CONSTRAINT: Analyze ONLY the specific visual or textual elements explicitly described in the user's prompt. Do NOT assume the presence of images, people, bodies, or faces unless they are clearly mentioned in the description. If the description contains only text, limit your analysis strictly to the semantics, phrasing, and cultural implications of that text alone within the context of the business type.`;
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -84,6 +86,8 @@ app.get('/usage/:userId', async (req, res) => {
 // --- REQUEST HANDLERS ---
 app.post('/analyze', async (req, res) => {
   const { prompt, userId } = req.body;
+  console.log('📥 [DEBUG] Server received prompt:', prompt);
+
   if (!prompt) return res.status(400).json({ error: 'Prompt is required' });
   if (!userId) return res.status(400).json({ error: 'User ID is required' });
 
@@ -92,6 +96,8 @@ app.post('/analyze', async (req, res) => {
     if (!limit.allowed) return res.status(429).json({ error: limit.message });
 
     const fullPrompt = `${personaPrompt}\n\n${prompt}\n\nFinally, on a new line at the very end, provide a "Cultural Sensitivity Score" from 0 (very high risk) to 100 (very low risk) based on your analysis. The line must start with "SCORE:" followed by the number. For example: SCORE: 85`;
+    console.log('🤖 [DEBUG] Full Gemini Input:', fullPrompt);
+
     const result = await model.generateContent(fullPrompt);
     const text = await result.response.text();
 
