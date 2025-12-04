@@ -29,12 +29,12 @@ const MESSAGES = {
 };
 const OTHER_OPTION_VALUE = 'Other...';
 const LOADING_STEPS = [
-  "Connecting to neural network...",
-  "Analyzing design elements...",
-  "Checking cultural symbols...",
-  "Evaluating inclusivity...",
-  "Generating recommendations...",
-  "Finalizing score..."
+  'Connecting to neural network...',
+  'Analyzing design elements...',
+  'Checking cultural symbols...',
+  'Evaluating inclusivity...',
+  'Generating recommendations...',
+  'Finalizing score...',
 ];
 
 // --- HELPER FUNCTIONS ---
@@ -251,7 +251,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
     designPanel.spinner.style.display = 'block';
     let stepIndex = 0;
     designPanel.content.innerHTML = `<div style="text-align:center; margin-top:10px; color:#666;">${LOADING_STEPS[0]}</div>`;
-    
+
     let loadingInterval = setInterval(() => {
       stepIndex = (stepIndex + 1) % LOADING_STEPS.length;
       designPanel.content.innerHTML = `<div style="text-align:center; margin-top:10px; color:#666;">${LOADING_STEPS[stepIndex]}</div>`;
@@ -262,6 +262,24 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
       if (!userId) return showDesignError(designPanel, MESSAGES.USER_ID_ERROR);
 
       const description = await sandboxProxy.getDesignDescription();
+      console.log(
+        '%c 🔍 [DEBUG] Raw Description from Adobe:',
+        'background: #ffeb3b; color: #000',
+        description,
+      );
+
+      const isImage =
+        description.toLowerCase().includes('image') ||
+        description.toLowerCase().includes('media') ||
+        description.toLowerCase().includes('bitmap');
+      if (isImage) {
+        showDesignError(
+          designPanel,
+          "⚠️ You selected an image. Please switch to the 'Image' tab to analyze visuals.",
+        );
+        return;
+      }
+
       const country = designPanel.countrySelect.value;
       let businessType = designPanel.businessSelect.value;
       if (businessType === OTHER_OPTION_VALUE) {
@@ -276,6 +294,12 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
         return showDesignError(designPanel, MESSAGES.SELECT_ELEMENT);
 
       const prompt = `Analyze the provided visual design. The design includes ${description} and is intended for ${country}. The business type is "${businessType}". Identify any culturally insensitive or inappropriate elements and suggest changes to promote inclusive visual solutions that are suitable for a diverse international audience, with a focus on cultural appropriateness for ${country}. In the first sentence, give a short answer whether this element should be used in the selected country.`;
+
+      console.log(
+        '%c 🚀 [DEBUG] Sending Prompt to API:',
+        'background: #4caf50; color: #fff',
+        prompt,
+      );
 
       let data;
       if (isMockMode()) {
