@@ -28,6 +28,14 @@ const MESSAGES = {
   PREMIUM_BUTTON_THANKS: 'Thanks! Your interest has been noted.',
 };
 const OTHER_OPTION_VALUE = 'Other...';
+const LOADING_STEPS = [
+  "Connecting to neural network...",
+  "Analyzing design elements...",
+  "Checking cultural symbols...",
+  "Evaluating inclusivity...",
+  "Generating recommendations...",
+  "Finalizing score..."
+];
 
 // --- HELPER FUNCTIONS ---
 const setButtonsState = (designPanel, disabled) => {
@@ -226,7 +234,7 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
   designPanel.scanButton.addEventListener('click', async () => {
     setButtonsState(designPanel, true);
     designPanel.resetButton.disabled = true;
-    designPanel.spinner.style.display = 'block';
+
     designPanel.content.innerHTML = '';
     designPanel.chat.error.innerHTML = '';
     designPanel.chat.responseContent.innerHTML = MESSAGES.AI_CONVERSATION_START;
@@ -238,6 +246,16 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
     designPanel.scanButton.style.display = 'none';
     designPanel.cancelScanButton.style.display = 'inline-flex';
     scanAbortController = new AbortController();
+
+    // Smart loader
+    designPanel.spinner.style.display = 'block';
+    let stepIndex = 0;
+    designPanel.content.innerHTML = `<div style="text-align:center; margin-top:10px; color:#666;">${LOADING_STEPS[0]}</div>`;
+    
+    let loadingInterval = setInterval(() => {
+      stepIndex = (stepIndex + 1) % LOADING_STEPS.length;
+      designPanel.content.innerHTML = `<div style="text-align:center; margin-top:10px; color:#666;">${LOADING_STEPS[stepIndex]}</div>`;
+    }, 2000);
 
     try {
       if (!userId) userId = await getUserId();
@@ -270,6 +288,9 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
         data = await analyzeDesign(prompt, userId, scanAbortController.signal);
         lastAIResponse = data.result;
       }
+
+      clearInterval(loadingInterval);
+      loadingInterval = null;
 
       // Display both text and rating
       renderMarkdown(
@@ -331,6 +352,8 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
         }
       }
     } finally {
+      if (loadingInterval) clearInterval(loadingInterval);
+
       designPanel.scanButton.style.display = 'inline-flex';
       designPanel.cancelScanButton.style.display = 'none';
       scanAbortController = null;
