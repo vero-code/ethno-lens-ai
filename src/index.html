@@ -1,433 +1,562 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta
-            name="description"
-            content="Get started with Add-on development using JavaScript with Document Sandbox Runtime"
-        />
-        <meta name="keywords" content="Adobe, Express, Add-On, JavaScript, Document Sandbox Runtime" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>EthnoLens AI</title>
-        <!-- Spectrum Bundle и Express theme -->
-        <script src="https://jspm.dev/@spectrum-web-components/bundle/elements.js" type="module"></script>
-        <script src="https://jspm.dev/@spectrum-web-components/theme@0.40.1/express/theme-light.js" type="module"></script>
-        <script src="https://jspm.dev/@spectrum-web-components/theme@0.40.1/express/scale-medium.js" type="module"></script>
-        <link rel="stylesheet" href="css/style.css" />
-    </head>
-    <body>
-        <sp-theme scale="medium" color="light" theme="express">
-            <div class="addon-body">
-                <header class="addon-header">
-                    <sp-detail>Make your creative connect across cultures.</sp-detail>
-                </header>
-                <sp-tabs selected="tab-scan-design">
-                    <sp-tab value="tab-scan-design" label="Element"></sp-tab>
-                    <sp-tab value="tab-analyze-image" label="Image"></sp-tab>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="description"
+      content="Get started with Add-on development using JavaScript with Document Sandbox Runtime"
+    />
+    <meta
+      name="keywords"
+      content="Adobe, Express, Add-On, JavaScript, Document Sandbox Runtime"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EthnoLens AI</title>
+    <!-- Spectrum Bundle и Express theme -->
+    <script
+      src="https://jspm.dev/@spectrum-web-components/bundle/elements.js"
+      type="module"
+    ></script>
+    <script
+      src="https://jspm.dev/@spectrum-web-components/theme@0.40.1/express/theme-light.js"
+      type="module"
+    ></script>
+    <script
+      src="https://jspm.dev/@spectrum-web-components/theme@0.40.1/express/scale-medium.js"
+      type="module"
+    ></script>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <sp-theme scale="medium" color="light" theme="express">
+      <div class="addon-body">
+        <header class="addon-header">
+          <sp-detail>Make your creative connect across cultures.</sp-detail>
+        </header>
+        <sp-tabs selected="tab-scan-design">
+          <sp-tab value="tab-scan-design" label="Element"></sp-tab>
+          <sp-tab value="tab-analyze-image" label="Image"></sp-tab>
 
-                    <!-- Panel 1: Design -->
-                    <sp-tab-panel value="tab-scan-design">
-                        <div class="tab-panel-content">
-                            <sp-accordion>
-                                <sp-accordion-item open label="Step 1: Set Context" id="design-step1">
-                                    <div class="step-content">
-                                        <!-- Country Select -->
-                                        <div>
-                                            <sp-field-label size="l" for="countrySelect" required>Select country</sp-field-label>
-                                            <sp-picker id="countrySelect" label="Choose a country">
-                                                <sp-menu-item>Loading countries...</sp-menu-item>
-                                            </sp-picker>
-                                        </div>
-                                        
-                                        <!-- Business Type Select -->
-                                        <div>
-                                            <sp-field-label size="l" for="businessType" required>Business type</sp-field-label>
-                                            <sp-picker id="businessType" label="Choose a business type">
-                                                <sp-menu-item>Loading business types...</sp-menu-item>
-                                            </sp-picker>
-                                            <sp-help-text id="help-text">
-                                                Enter your type of business by selecting "Other"
-                                            </sp-help-text>
-                                        </div>
-
-                                        <!-- Other Business Type Input -->
-                                        <div id="otherBusinessTypeContainer">
-                                            <sp-field-label size="l" for="otherBusinessType" required>Own business type</sp-field-label>
-                                            <sp-textfield 
-                                                id="otherBusinessType" 
-                                                placeholder="Please specify your business type">
-                                            </sp-textfield>
-                                        </div>
-                                    </div>
-                                </sp-accordion-item>
-                                <sp-accordion-item label="Step 2: Get Analysis" id="design-step2" disabled>
-                                    <div class="step-content">
-                                        <!-- Action Buttons -->
-                                        <sp-button-group>
-                                            <sp-button id="scanDesign">
-                                                Scan
-                                                <sp-overlay trigger="scanDesign@hover" placement="bottom">
-                                                    <sp-tooltip>
-                                                        Analyze selected element for cultural relevance.
-                                                    </sp-tooltip>
-                                                </sp-overlay>
-                                            </sp-button>
-                                            <sp-button 
-                                                id="cancelScan" 
-                                                variant="negative" 
-                                                style="display: none;"
-                                            >
-                                                Cancel
-                                            </sp-button>
-                                        </sp-button-group>
-
-                                        <!-- Score Box -->
-                                        <sp-meter
-                                            id="scoreBox"
-                                            size="l"
-                                            progress="0"
-                                        >Cultural Sensitivity Score</sp-meter>
-
-                                        <!-- Disclaimer -->
-                                        <div id="scanDisclaimer" class="ai-disclaimer disclaimer-box">
-                                            <sp-field-label size="s">
-                                                ⚠️ AI-generated insights are advisory only. Consult cultural experts before decisions.
-                                            </sp-field-label>
-                                        </div>
-
-                                        <!-- Result Box -->
-                                        <div id="resultBox">
-                                            <sp-progress-circle
-                                                id="scanDesignSpinner"
-                                                label="Analyzing design for cultural sensitivity"
-                                                indeterminate
-                                            ></sp-progress-circle>
-                                            <div id="scanDesignContent"></div>
-                                        </div>
-
-                                        <!-- Premium Upsell -->
-                                        <div id="premiumUpsellScan">
-                                            <sp-button id="notifyPremiumButtonScan" variant="primary">
-                                                I'm interested in Premium
-                                            </sp-button>
-                                            <sp-overlay trigger="notifyPremiumButtonScan@hover" placement="bottom">
-                                                <sp-tooltip>
-                                                    Click to show your interest in premium features.
-                                                </sp-tooltip>
-                                            </sp-overlay>
-                                        </div>
-                                    </div>
-
-                                    <!-- Follow-up Chat -->
-                                    <div id="followUpChat">
-                                        <sp-divider size="m"></sp-divider>
-                                        <h3>Ask a follow-up question</h3>
-                                        <sp-textfield 
-                                            id="chatInput" 
-                                            multiline
-                                            placeholder="What text would work better?"
-                                            pattern=".{0,500}"
-                                        >
-                                            <sp-help-text slot="help-text">500 character limit</sp-help-text>
-                                            <sp-help-text slot="negative-help-text">
-                                                Exceeded 500 character limit
-                                            </sp-help-text>
-                                        </sp-textfield>
-
-                                        <sp-button id="chatSend">
-                                            Send
-                                            <sp-overlay trigger="chatSend@hover" placement="bottom">
-                                                <sp-tooltip>
-                                                    Send your follow-up question to the AI.
-                                                </sp-tooltip>
-                                            </sp-overlay>
-                                        </sp-button>
-                                        <sp-button 
-                                            id="cancelChat" 
-                                            variant="negative" 
-                                            style="display: none;"
-                                        >
-                                            Cancel
-                                        </sp-button>
-
-                                        <!-- Disclaimer -->
-                                        <div id="chatDisclaimer" class="ai-disclaimer disclaimer-box">
-                                            <sp-field-label size="s">
-                                                ⚠️ AI-generated insights are advisory only. Consult cultural experts before decisions.
-                                            </sp-field-label>
-                                        </div>
-
-                                        <div id="chatResponse">
-                                            <sp-progress-circle
-                                                id="chatSpinner"
-                                                label="Processing your question"
-                                                indeterminate
-                                            ></sp-progress-circle>
-                                            <div id="chatResponseContent">AI conversation not started yet.</div>
-                                            <div id="chatError"></div>
-                                        </div>
-
-                                        <div id="premiumUpsellChat">
-                                            <sp-button id="notifyPremiumButtonChat" variant="primary">
-                                                I'm interested in Premium
-                                            </sp-button>
-                                        </div>
-                                    </div>
-                                </sp-accordion-item>
-                            </sp-accordion>
-                            <overlay-trigger type="modal">
-                                <sp-dialog-base underlay slot="click-content">
-                                    <sp-alert-dialog
-                                        role="alertdialog"
-                                        aria-labelledby="reset-design-heading"
-                                        aria-describedby="reset-design-message"
-                                        variant="destructive"
-                                    >
-                                        <h2 id="reset-design-heading" slot="heading">Confirm Reset</h2>
-                                        <p id="reset-design-message">
-                                            Are you sure you want to clear all fields and reset the analysis?
-                                        </p>
-                                        <sp-button
-                                            slot="button"
-                                            variant="secondary"
-                                            treatment="outline"
-                                            id="cancel-design-reset"
-                                        >
-                                            Cancel
-                                        </sp-button>
-                                        <sp-button
-                                            slot="button"
-                                            variant="accent"
-                                            treatment="fill"
-                                            id="confirm-design-reset"
-                                        >
-                                            Yes, Reset All
-                                        </sp-button>
-                                    </sp-alert-dialog>
-                                </sp-dialog-base>
-                                
-                                <sp-button id="resetDesign" slot="trigger" variant="secondary" disabled>
-                                    Reset All
-                                    <sp-overlay trigger="resetDesign@hover" placement="bottom">
-                                        <sp-tooltip>
-                                            Clear all fields and reset the analysis.
-                                        </sp-tooltip>
-                                    </sp-overlay>
-                                </sp-button>
-                            </overlay-trigger>
-                        </div>
-                    </sp-tab-panel>
-
-                    <!-- Panel 2: Image Analysis -->
-                    <sp-tab-panel value="tab-analyze-image">
-                        <div class="tab-panel-content">
-                            <sp-accordion>
-                                <sp-accordion-item open label="Step 1: Set Context" id="step1">
-                                    <div class="step-content">
-                                        <!-- Country Select -->
-                                        <div>
-                                            <sp-field-label size="l" for="imageCountrySelect" required>Select country</sp-field-label>
-                                            <sp-picker id="imageCountrySelect" label="Choose a country">
-                                                <sp-menu-item>Loading countries...</sp-menu-item>
-                                            </sp-picker>
-                                        </div>
-
-                                        <!-- Business Type Select -->
-                                        <div>
-                                            <sp-field-label size="l" for="imageBusinessType" required>Business type</sp-field-label>
-                                            <sp-picker id="imageBusinessType" label="Choose a business type">
-                                                <sp-menu-item>Loading business types...</sp-menu-item>
-                                            </sp-picker>
-                                            <sp-help-text id="help-text">
-                                                Enter your type of business by selecting "Other"
-                                            </sp-help-text>
-                                        </div>
-
-                                        <!-- Other Business Type Input -->
-                                        <div id="imageOtherBusinessTypeContainer">
-                                            <sp-field-label size="l" for="imageOtherBusinessType" required>Own business type</sp-field-label>
-                                            <sp-textfield 
-                                                id="imageOtherBusinessType" 
-                                                placeholder="Please specify your business type">
-                                            </sp-textfield>
-                                        </div>
-                                    </div>
-                                </sp-accordion-item>
-                                <sp-accordion-item label="Step 2: Upload Image" id="step2" disabled>
-                                    <div class="step-content">
-                                        <!-- Image Upload Dropzone -->
-                                        <sp-dropzone id="imageUpload" style="position: relative;">
-                                            <sp-clear-button
-                                                id="clearImageButton"
-                                                label="Remove uploaded image" 
-                                                style="position: absolute; top: 10px; right: 10px; z-index: 10; display: none; background-color: rgba(255,255,255,0.7); border-radius: 50%;"
-                                            ></sp-clear-button>
-                                            <sp-illustrated-message
-                                                heading="Drag and drop your ad or banner"
-                                                description="Or browse files on your computer"
-                                            >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 150 103"
-                                                    width="150"
-                                                    height="103"
-                                                >
-                                                    <path
-                                                        d="M133.7,8.5h-118c-1.9,0-3.5,1.6-3.5,3.5v27c0,0.8,0.7,1.5,1.5,1.5s1.5-0.7,1.5-1.5V23.5h119V92c0,0.3-0.2,0.5-0.5,0.5h-118c-0.3,0-0.5-0.2-0.5-0.5V69c0-0.8-0.7-1.5-1.5-1.5s-1.5,0.7-1.5,1.5v23c0,1.9,1.6,3.5,3.5,3.5h118c1.9,0,3.5-1.6,3.5-3.5V12C137.2,10.1,135.6,8.5,133.7,8.5z M15.2,21.5V12c0-0.3,0.2-0.5,0.5-0.5h118c0.3,0,0.5,0.2,0.5,0.5v9.5H15.2z M32.6,16.5c0,0.6-0.4,1-1,1h-10c-0.6,0-1-0.4-1-1s0.4-1,1-1h10C32.2,15.5,32.6,15.9,32.6,16.5z M13.6,56.1l-8.6,8.5C4.8,65,4.4,65.1,4,65.1c-0.4,0-0.8-0.1-1.1-0.4c-0.6-0.6-0.6-1.5,0-2.1l8.6-8.5l-8.6-8.5c-0.6-0.6-0.6-1.5,0-2.1c0.6-0.6,1.5-0.6,2.1,0l8.6,8.5l8.6-8.5c0.6-0.6,1.5-0.6,2.1,0c0.6,0.6,0.6,1.5,0,2.1L15.8,54l8.6,8.5c0.6,0.6,0.6,1.5,0,2.1c-0.3,0.3-0.7,0.4-1.1,0.4c-0.4,0-0.8-0.1-1.1-0.4L13.6,56.1z"
-                                                    ></path>
-                                                </svg>
-                                            </sp-illustrated-message>
-                                            <sp-button variant="accent" id="browseButton">Browse files</sp-button>
-                                        </sp-dropzone>
-                                        <sp-help-text id="help-text">
-                                            Formats: PNG, JPEG, WebP. Maximum size: 7MB.
-                                        </sp-help-text>
-                                    </div>
-                                </sp-accordion-item>
-                                <sp-accordion-item label="Step 3: Get Analysis" id="step3" disabled>
-                                    <div class="step-content">
-                                        <!-- Action Buttons -->
-                                        <sp-button-group>
-                                            <sp-button size="l" id="analyzeImage" disabled>
-                                                Analyze Cultural Fit
-                                                <sp-overlay trigger="analyzeImage@hover" placement="bottom">
-                                                    <sp-tooltip>
-                                                        Analyze the uploaded image for cultural relevance.
-                                                    </sp-tooltip>
-                                                </sp-overlay>
-                                            </sp-button>
-                                            <sp-button id="cancelAnalyzeImage" variant="negative" style="display:none;">
-                                                Cancel
-                                            </sp-button>
-                                        </sp-button-group>
-
-                                        <!-- Disclaimer -->
-                                        <div id="imageDisclaimer" class="ai-disclaimer disclaimer-box">
-                                            <sp-field-label size="s">
-                                                ⚠️ AI-generated insights are advisory only. Consult cultural experts before decisions.
-                                            </sp-field-label>
-                                        </div>
-
-                                        <!-- Result Box -->
-                                        <div id="imageResultBox">
-                                            <sp-progress-circle
-                                                id="imageSpinner"
-                                                label="Analyzing image for cultural appropriateness"
-                                                indeterminate
-                                            ></sp-progress-circle>
-                                            <div id="imageResultContent"></div>
-                                            <div id="imageError"></div>
-                                        </div>
-
-                                        <!-- Premium Upsell -->
-                                        <div id="premiumUpsellImage">
-                                            <sp-button id="notifyPremiumButtonImage" variant="primary">
-                                                I'm interested in Premium
-                                            </sp-button>
-                                            <sp-overlay trigger="notifyPremiumButtonImage@hover" placement="bottom">
-                                                <sp-tooltip>
-                                                    Click to show your interest in premium features.
-                                                </sp-tooltip>
-                                            </sp-overlay>
-                                        </div>
-                                    </div>
-                                </sp-accordion-item>
-                            </sp-accordion>
-                            <overlay-trigger type="modal">
-                                <sp-dialog-base underlay slot="click-content">
-                                    <sp-alert-dialog
-                                        role="alertdialog"
-                                        aria-labelledby="reset-heading"
-                                        aria-describedby="reset-message"
-                                        variant="destructive"
-                                    >
-                                        <h2 id="reset-heading" slot="heading">Confirm Reset</h2>
-                                        <p id="reset-message">
-                                            Are you sure you want to clear all fields and remove the uploaded image?
-                                        </p>
-                                        <sp-button
-                                            slot="button"
-                                            variant="secondary"
-                                            treatment="outline"
-                                            id="cancel-reset"
-                                        >
-                                            Cancel
-                                        </sp-button>
-                                        <sp-button
-                                            slot="button"
-                                            variant="accent"
-                                            treatment="fill"
-                                            id="confirm-reset"
-                                        >
-                                            Yes, Reset All
-                                        </sp-button>
-                                    </sp-alert-dialog>
-                                </sp-dialog-base>
-                                <sp-button id="resetImage" slot="trigger" variant="secondary" disabled>
-                                    Reset All
-                                    <sp-overlay trigger="resetImage@hover" placement="bottom">
-                                        <sp-tooltip>
-                                            Clear all fields and reset the analysis.
-                                        </sp-tooltip>
-                                    </sp-overlay>
-                                </sp-button>
-                            </overlay-trigger>
-                        </div>
-                    </sp-tab-panel>
-                </sp-tabs>
-            </div>
-
-            <!-- FOOTER -->
-            <div class="addon-footer">
-                <div class="usage-limit-footer">
-                    <sp-field-label size="s">
-                        Free tier: <span id="usageCount">--</span> / <span id="usageLimit">20</span> checks used
-                    </sp-field-label>
-
-                    <sp-action-button quiet icon-only id="helpTrigger">
-                        <sp-icon-info slot="icon"></sp-icon-info>
-                    </sp-action-button>
-
-                    <sp-overlay trigger="helpTrigger@click" placement="top-start">
-                        <sp-popover dialog style="padding: 12px; max-width: 220px;">
-                            <h3 class="spectrum-ContextualHelp-heading">About the Free Tier</h3>
-                            <p class="spectrum-ContextualHelp-body">
-                                Your free quota resets monthly. Upgrade options coming soon.
-                            </p>
-                        </sp-popover>
-                    </sp-overlay>
-                </div>
-                
-                <!-- Report -->
-                <sp-link 
-                    size="s" 
-                    href="https://github.com/vero-code/ethno-lens-ai/issues/new?title=AI+Feedback:+Inaccurate+Response&body=**1.+What+was+your+prompt/request?**%0A%0A%0A**2.+What+did+the+AI+respond?**%0A%0A%0A**3.+Why+was+this+response+inaccurate+or+inappropriate?**%0A%0A" 
-                    target="_blank"
+          <!-- Panel 1: Design -->
+          <sp-tab-panel value="tab-scan-design">
+            <div class="tab-panel-content">
+              <sp-accordion>
+                <sp-accordion-item
+                  open
+                  label="Step 1: Set Context"
+                  id="design-step1"
                 >
-                    Report inaccurate AI response
-                </sp-link>
+                  <div class="step-content">
+                    <!-- Country Select -->
+                    <div>
+                      <sp-field-label size="l" for="countrySelect" required
+                        >Select country</sp-field-label
+                      >
+                      <sp-picker id="countrySelect" label="Choose a country">
+                        <sp-menu-item>Loading countries...</sp-menu-item>
+                      </sp-picker>
+                    </div>
 
-                <sp-checkbox id="mockDataToggle" size="s">Mock Data</sp-checkbox>
-            </div>
+                    <!-- Business Type Select -->
+                    <div>
+                      <sp-field-label size="l" for="businessType" required
+                        >Business type</sp-field-label
+                      >
+                      <sp-picker
+                        id="businessType"
+                        label="Choose a business type"
+                      >
+                        <sp-menu-item>Loading business types...</sp-menu-item>
+                      </sp-picker>
+                      <sp-help-text id="help-text">
+                        Enter your type of business by selecting "Other"
+                      </sp-help-text>
+                    </div>
 
-            <!-- Toast Notifications Region -->
-            <div role="region" aria-label="Toast Notifications" id="toastContainer">
-                <sp-toast id="chatAvailableToast" variant="info">
-                    More questions? 👇
-                    <sp-button
-                        slot="action"
-                        variant="overBackground"
-                        id="scrollToChatButton"
+                    <!-- Other Business Type Input -->
+                    <div id="otherBusinessTypeContainer">
+                      <sp-field-label size="l" for="otherBusinessType" required
+                        >Own business type</sp-field-label
+                      >
+                      <sp-textfield
+                        id="otherBusinessType"
+                        placeholder="Please specify your business type"
+                      >
+                      </sp-textfield>
+                    </div>
+                  </div>
+                </sp-accordion-item>
+                <sp-accordion-item
+                  label="Step 2: Get Analysis"
+                  id="design-step2"
+                  disabled
+                >
+                  <div class="step-content">
+                    <!-- Action Buttons -->
+                    <sp-button-group>
+                      <sp-button id="scanDesign">
+                        Scan
+                        <sp-overlay
+                          trigger="scanDesign@hover"
+                          placement="bottom"
+                        >
+                          <sp-tooltip>
+                            Analyze selected element for cultural relevance.
+                          </sp-tooltip>
+                        </sp-overlay>
+                      </sp-button>
+                      <sp-button
+                        id="cancelScan"
+                        variant="negative"
+                        style="display: none"
+                      >
+                        Cancel
+                      </sp-button>
+                    </sp-button-group>
+
+                    <!-- Score Box -->
+                    <sp-meter id="scoreBox" size="l" progress="0"
+                      >Cultural Sensitivity Score</sp-meter
                     >
-                        Ask follow-up
+
+                    <!-- Disclaimer -->
+                    <div
+                      id="scanDisclaimer"
+                      class="ai-disclaimer disclaimer-box"
+                    >
+                      <sp-field-label size="s">
+                        ⚠️ AI-generated insights are advisory only. Consult
+                        cultural experts before decisions.
+                      </sp-field-label>
+                    </div>
+
+                    <!-- Result Box -->
+                    <div id="resultBox">
+                      <sp-progress-circle
+                        id="scanDesignSpinner"
+                        label="Analyzing design for cultural sensitivity"
+                        indeterminate
+                      ></sp-progress-circle>
+                      <div id="scanDesignContent"></div>
+                    </div>
+
+                    <!-- Premium Upsell -->
+                    <div id="premiumUpsellScan">
+                      <sp-button id="notifyPremiumButtonScan" variant="primary">
+                        I'm interested in Premium
+                      </sp-button>
+                      <sp-overlay
+                        trigger="notifyPremiumButtonScan@hover"
+                        placement="bottom"
+                      >
+                        <sp-tooltip>
+                          Click to show your interest in premium features.
+                        </sp-tooltip>
+                      </sp-overlay>
+                    </div>
+                  </div>
+
+                  <!-- Follow-up Chat -->
+                  <div id="followUpChat">
+                    <sp-divider size="m"></sp-divider>
+                    <h3>Ask a follow-up question</h3>
+                    <sp-textfield
+                      id="chatInput"
+                      multiline
+                      placeholder="What text would work better?"
+                      pattern=".{0,500}"
+                    >
+                      <sp-help-text slot="help-text"
+                        >500 character limit</sp-help-text
+                      >
+                      <sp-help-text slot="negative-help-text">
+                        Exceeded 500 character limit
+                      </sp-help-text>
+                    </sp-textfield>
+
+                    <sp-button id="chatSend">
+                      Send
+                      <sp-overlay trigger="chatSend@hover" placement="bottom">
+                        <sp-tooltip>
+                          Send your follow-up question to the AI.
+                        </sp-tooltip>
+                      </sp-overlay>
                     </sp-button>
-                </sp-toast>
+                    <sp-button
+                      id="cancelChat"
+                      variant="negative"
+                      style="display: none"
+                    >
+                      Cancel
+                    </sp-button>
+
+                    <!-- Disclaimer -->
+                    <div
+                      id="chatDisclaimer"
+                      class="ai-disclaimer disclaimer-box"
+                    >
+                      <sp-field-label size="s">
+                        ⚠️ AI-generated insights are advisory only. Consult
+                        cultural experts before decisions.
+                      </sp-field-label>
+                    </div>
+
+                    <div id="chatResponse">
+                      <sp-progress-circle
+                        id="chatSpinner"
+                        label="Processing your question"
+                        indeterminate
+                      ></sp-progress-circle>
+                      <div id="chatResponseContent">
+                        AI conversation not started yet.
+                      </div>
+                      <div id="chatError"></div>
+                    </div>
+
+                    <div id="premiumUpsellChat">
+                      <sp-button id="notifyPremiumButtonChat" variant="primary">
+                        I'm interested in Premium
+                      </sp-button>
+                    </div>
+                  </div>
+                </sp-accordion-item>
+              </sp-accordion>
+              <overlay-trigger type="modal">
+                <sp-dialog-base underlay slot="click-content">
+                  <sp-alert-dialog
+                    role="alertdialog"
+                    aria-labelledby="reset-design-heading"
+                    aria-describedby="reset-design-message"
+                    variant="destructive"
+                  >
+                    <h2 id="reset-design-heading" slot="heading">
+                      Confirm Reset
+                    </h2>
+                    <p id="reset-design-message">
+                      Are you sure you want to clear all fields and reset the
+                      analysis?
+                    </p>
+                    <sp-button
+                      slot="button"
+                      variant="secondary"
+                      treatment="outline"
+                      id="cancel-design-reset"
+                    >
+                      Cancel
+                    </sp-button>
+                    <sp-button
+                      slot="button"
+                      variant="accent"
+                      treatment="fill"
+                      id="confirm-design-reset"
+                    >
+                      Yes, Reset All
+                    </sp-button>
+                  </sp-alert-dialog>
+                </sp-dialog-base>
+
+                <sp-button
+                  id="resetDesign"
+                  slot="trigger"
+                  variant="secondary"
+                  disabled
+                >
+                  Reset All
+                  <sp-overlay trigger="resetDesign@hover" placement="bottom">
+                    <sp-tooltip>
+                      Clear all fields and reset the analysis.
+                    </sp-tooltip>
+                  </sp-overlay>
+                </sp-button>
+              </overlay-trigger>
             </div>
-            
-        </sp-theme>
-        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-        <script type="module" src="ui/loadCountries.js"></script>
-        <script type="module" src="ui/loadBusinessTypes.js"></script>
-        <script type="module" src="ui/index.js"></script>
-    </body>
+          </sp-tab-panel>
+
+          <!-- Panel 2: Image Analysis -->
+          <sp-tab-panel value="tab-analyze-image">
+            <div class="tab-panel-content">
+              <sp-accordion>
+                <sp-accordion-item open label="Step 1: Set Context" id="step1">
+                  <div class="step-content">
+                    <!-- Country Select -->
+                    <div>
+                      <sp-field-label size="l" for="imageCountrySelect" required
+                        >Select country</sp-field-label
+                      >
+                      <sp-picker
+                        id="imageCountrySelect"
+                        label="Choose a country"
+                      >
+                        <sp-menu-item>Loading countries...</sp-menu-item>
+                      </sp-picker>
+                    </div>
+
+                    <!-- Business Type Select -->
+                    <div>
+                      <sp-field-label size="l" for="imageBusinessType" required
+                        >Business type</sp-field-label
+                      >
+                      <sp-picker
+                        id="imageBusinessType"
+                        label="Choose a business type"
+                      >
+                        <sp-menu-item>Loading business types...</sp-menu-item>
+                      </sp-picker>
+                      <sp-help-text id="help-text">
+                        Enter your type of business by selecting "Other"
+                      </sp-help-text>
+                    </div>
+
+                    <!-- Other Business Type Input -->
+                    <div id="imageOtherBusinessTypeContainer">
+                      <sp-field-label
+                        size="l"
+                        for="imageOtherBusinessType"
+                        required
+                        >Own business type</sp-field-label
+                      >
+                      <sp-textfield
+                        id="imageOtherBusinessType"
+                        placeholder="Please specify your business type"
+                      >
+                      </sp-textfield>
+                    </div>
+                  </div>
+                </sp-accordion-item>
+                <sp-accordion-item
+                  label="Step 2: Upload Image"
+                  id="step2"
+                  disabled
+                >
+                  <div class="step-content">
+                    <!-- Image Upload Dropzone -->
+                    <sp-dropzone id="imageUpload" style="position: relative">
+                      <sp-clear-button
+                        id="clearImageButton"
+                        label="Remove uploaded image"
+                        style="
+                          position: absolute;
+                          top: 10px;
+                          right: 10px;
+                          z-index: 10;
+                          display: none;
+                          background-color: rgba(255, 255, 255, 0.7);
+                          border-radius: 50%;
+                        "
+                      ></sp-clear-button>
+                      <sp-illustrated-message
+                        heading="Drag and drop your ad or banner"
+                        description="Or browse files on your computer"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 150 103"
+                          width="150"
+                          height="103"
+                        >
+                          <path
+                            d="M133.7,8.5h-118c-1.9,0-3.5,1.6-3.5,3.5v27c0,0.8,0.7,1.5,1.5,1.5s1.5-0.7,1.5-1.5V23.5h119V92c0,0.3-0.2,0.5-0.5,0.5h-118c-0.3,0-0.5-0.2-0.5-0.5V69c0-0.8-0.7-1.5-1.5-1.5s-1.5,0.7-1.5,1.5v23c0,1.9,1.6,3.5,3.5,3.5h118c1.9,0,3.5-1.6,3.5-3.5V12C137.2,10.1,135.6,8.5,133.7,8.5z M15.2,21.5V12c0-0.3,0.2-0.5,0.5-0.5h118c0.3,0,0.5,0.2,0.5,0.5v9.5H15.2z M32.6,16.5c0,0.6-0.4,1-1,1h-10c-0.6,0-1-0.4-1-1s0.4-1,1-1h10C32.2,15.5,32.6,15.9,32.6,16.5z M13.6,56.1l-8.6,8.5C4.8,65,4.4,65.1,4,65.1c-0.4,0-0.8-0.1-1.1-0.4c-0.6-0.6-0.6-1.5,0-2.1l8.6-8.5l-8.6-8.5c-0.6-0.6-0.6-1.5,0-2.1c0.6-0.6,1.5-0.6,2.1,0l8.6,8.5l8.6-8.5c0.6-0.6,1.5-0.6,2.1,0c0.6,0.6,0.6,1.5,0,2.1L15.8,54l8.6,8.5c0.6,0.6,0.6,1.5,0,2.1c-0.3,0.3-0.7,0.4-1.1,0.4c-0.4,0-0.8-0.1-1.1-0.4L13.6,56.1z"
+                          ></path>
+                        </svg>
+                      </sp-illustrated-message>
+                      <sp-button variant="accent" id="browseButton"
+                        >Browse files</sp-button
+                      >
+                    </sp-dropzone>
+                    <sp-help-text id="help-text">
+                      Formats: PNG, JPEG, WebP. Maximum size: 7MB.
+                    </sp-help-text>
+                  </div>
+                </sp-accordion-item>
+                <sp-accordion-item
+                  label="Step 3: Get Analysis"
+                  id="step3"
+                  disabled
+                >
+                  <div class="step-content">
+                    <!-- Action Buttons -->
+                    <sp-button-group>
+                      <sp-button size="l" id="analyzeImage" disabled>
+                        Analyze Cultural Fit
+                        <sp-overlay
+                          trigger="analyzeImage@hover"
+                          placement="bottom"
+                        >
+                          <sp-tooltip>
+                            Analyze the uploaded image for cultural relevance.
+                          </sp-tooltip>
+                        </sp-overlay>
+                      </sp-button>
+                      <sp-button
+                        id="cancelAnalyzeImage"
+                        variant="negative"
+                        style="display: none"
+                      >
+                        Cancel
+                      </sp-button>
+                    </sp-button-group>
+
+                    <!-- Disclaimer -->
+                    <div
+                      id="imageDisclaimer"
+                      class="ai-disclaimer disclaimer-box"
+                    >
+                      <sp-field-label size="s">
+                        ⚠️ AI-generated insights are advisory only. Consult
+                        cultural experts before decisions.
+                      </sp-field-label>
+                    </div>
+
+                    <!-- Result Box -->
+                    <div id="imageResultBox">
+                      <sp-progress-circle
+                        id="imageSpinner"
+                        label="Analyzing image for cultural appropriateness"
+                        indeterminate
+                      ></sp-progress-circle>
+                      <div id="imageResultContent"></div>
+                      <div id="imageError"></div>
+                    </div>
+
+                    <!-- Premium Upsell -->
+                    <div id="premiumUpsellImage">
+                      <sp-button
+                        id="notifyPremiumButtonImage"
+                        variant="primary"
+                      >
+                        I'm interested in Premium
+                      </sp-button>
+                      <sp-overlay
+                        trigger="notifyPremiumButtonImage@hover"
+                        placement="bottom"
+                      >
+                        <sp-tooltip>
+                          Click to show your interest in premium features.
+                        </sp-tooltip>
+                      </sp-overlay>
+                    </div>
+                  </div>
+                </sp-accordion-item>
+              </sp-accordion>
+              <overlay-trigger type="modal">
+                <sp-dialog-base underlay slot="click-content">
+                  <sp-alert-dialog
+                    role="alertdialog"
+                    aria-labelledby="reset-heading"
+                    aria-describedby="reset-message"
+                    variant="destructive"
+                  >
+                    <h2 id="reset-heading" slot="heading">Confirm Reset</h2>
+                    <p id="reset-message">
+                      Are you sure you want to clear all fields and remove the
+                      uploaded image?
+                    </p>
+                    <sp-button
+                      slot="button"
+                      variant="secondary"
+                      treatment="outline"
+                      id="cancel-reset"
+                    >
+                      Cancel
+                    </sp-button>
+                    <sp-button
+                      slot="button"
+                      variant="accent"
+                      treatment="fill"
+                      id="confirm-reset"
+                    >
+                      Yes, Reset All
+                    </sp-button>
+                  </sp-alert-dialog>
+                </sp-dialog-base>
+                <sp-button
+                  id="resetImage"
+                  slot="trigger"
+                  variant="secondary"
+                  disabled
+                >
+                  Reset All
+                  <sp-overlay trigger="resetImage@hover" placement="bottom">
+                    <sp-tooltip>
+                      Clear all fields and reset the analysis.
+                    </sp-tooltip>
+                  </sp-overlay>
+                </sp-button>
+              </overlay-trigger>
+            </div>
+          </sp-tab-panel>
+        </sp-tabs>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="addon-footer">
+        <div class="usage-limit-footer">
+          <sp-field-label size="s">
+            <span id="usageCount">--</span> /
+            <span id="usageLimit">20</span>
+            <span>used</span>
+          </sp-field-label>
+
+          <sp-action-button quiet icon-only id="helpTrigger">
+            <sp-icon-info slot="icon"></sp-icon-info>
+          </sp-action-button>
+
+          <sp-overlay trigger="helpTrigger@click" placement="top-start">
+            <sp-popover dialog style="padding: 12px; max-width: 220px">
+              <h3 class="spectrum-ContextualHelp-heading">
+                About the Free Tier
+              </h3>
+              <p class="spectrum-ContextualHelp-body">
+                Your free quota resets monthly. Upgrade options coming soon.
+              </p>
+            </sp-popover>
+          </sp-overlay>
+        </div>
+
+        <div
+          style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap"
+        >
+          <sp-link
+            size="s"
+            href="https://forms.gle/3ak5somxysYsE11w7"
+            target="_blank"
+            style="font-weight: bold"
+          >
+            Share Feedback
+          </sp-link>
+
+          <!-- <span style="color: #ccc">|</span> -->
+
+          <!-- Report -->
+          <sp-link
+            size="s"
+            href="https://github.com/vero-code/ethno-lens-ai/issues/new?title=AI+Feedback:+Inaccurate+Response&body=**1.+What+was+your+prompt/request?**%0A%0A%0A**2.+What+did+the+AI+respond?**%0A%0A%0A**3.+Why+was+this+response+inaccurate+or+inappropriate?**%0A%0A"
+            target="_blank"
+          >
+            Report inaccurate
+          </sp-link>
+        </div>
+
+        <sp-checkbox id="mockDataToggle" size="s">Mock Data</sp-checkbox>
+      </div>
+
+      <!-- Toast Notifications Region -->
+      <div role="region" aria-label="Toast Notifications" id="toastContainer">
+        <sp-toast id="chatAvailableToast" variant="info">
+          More questions? 👇
+          <sp-button
+            slot="action"
+            variant="overBackground"
+            id="scrollToChatButton"
+          >
+            Ask follow-up
+          </sp-button>
+        </sp-toast>
+      </div>
+    </sp-theme>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script type="module" src="ui/loadCountries.js"></script>
+    <script type="module" src="ui/loadBusinessTypes.js"></script>
+    <script type="module" src="ui/index.js"></script>
+  </body>
 </html>

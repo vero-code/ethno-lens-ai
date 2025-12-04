@@ -262,11 +262,11 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
       if (!userId) return showDesignError(designPanel, MESSAGES.USER_ID_ERROR);
 
       const description = await sandboxProxy.getDesignDescription();
-      console.log(
-        '%c 🔍 [DEBUG] Raw Description from Adobe:',
-        'background: #ffeb3b; color: #000',
-        description,
-      );
+      // console.log(
+      //   '%c 🔍 [DEBUG] Raw Description from Adobe:',
+      //   'background: #ffeb3b; color: #000',
+      //   description,
+      // );
 
       const isImage =
         description.toLowerCase().includes('image') ||
@@ -295,11 +295,11 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
 
       const prompt = `Analyze the provided visual design. The design includes ${description} and is intended for ${country}. The business type is "${businessType}". Identify any culturally insensitive or inappropriate elements and suggest changes to promote inclusive visual solutions that are suitable for a diverse international audience, with a focus on cultural appropriateness for ${country}. In the first sentence, give a short answer whether this element should be used in the selected country.`;
 
-      console.log(
-        '%c 🚀 [DEBUG] Sending Prompt to API:',
-        'background: #4caf50; color: #fff',
-        prompt,
-      );
+      // console.log(
+      //   '%c 🚀 [DEBUG] Sending Prompt to API:',
+      //   'background: #4caf50; color: #fff',
+      //   prompt,
+      // );
 
       let data;
       if (isMockMode()) {

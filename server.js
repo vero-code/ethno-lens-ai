@@ -86,7 +86,7 @@ app.get('/usage/:userId', async (req, res) => {
 // --- REQUEST HANDLERS ---
 app.post('/analyze', async (req, res) => {
   const { prompt, userId } = req.body;
-  console.log('📥 [DEBUG] Server received prompt:', prompt);
+  // console.log('📥 [DEBUG] Server received prompt:', prompt);
 
   if (!prompt) return res.status(400).json({ error: 'Prompt is required' });
   if (!userId) return res.status(400).json({ error: 'User ID is required' });
@@ -96,7 +96,7 @@ app.post('/analyze', async (req, res) => {
     if (!limit.allowed) return res.status(429).json({ error: limit.message });
 
     const fullPrompt = `${personaPrompt}\n\n${prompt}\n\nFinally, on a new line at the very end, provide a "Cultural Sensitivity Score" from 0 (very high risk) to 100 (very low risk) based on your analysis. The line must start with "SCORE:" followed by the number. For example: SCORE: 85`;
-    console.log('🤖 [DEBUG] Full Gemini Input:', fullPrompt);
+    // console.log('🤖 [DEBUG] Full Gemini Input:', fullPrompt);
 
     const result = await model.generateContent(fullPrompt);
     const text = await result.response.text();
