@@ -23,9 +23,9 @@ const MESSAGES = {
   SCAN_CANCELLED: 'Scan cancelled by user.',
   CHAT_CANCELLED: 'Chat cancelled by user.',
 
-  PREMIUM_LIMIT_REACHED: 'Limit reached. Premium coming soon.', // same as db/limits.js
-  PREMIUM_BUTTON_PROMPT: "I'm interested in Premium",
-  PREMIUM_BUTTON_THANKS: 'Thanks! Your interest has been noted.',
+  PREMIUM_LIMIT_REACHED: 'Daily limit reached (3/3). Limit resets in 24h.', // same as db/limits.js
+  PREMIUM_BUTTON_PROMPT: 'Unlock Unlimited Access',
+  PREMIUM_BUTTON_THANKS: "You're on the list! Early access coming soon.",
 };
 const OTHER_OPTION_VALUE = 'Other...';
 const LOADING_STEPS = [

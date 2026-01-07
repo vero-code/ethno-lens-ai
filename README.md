@@ -21,7 +21,7 @@ Built for global creators. Powered by Gemini. Designed for Adobe Express.
 
 - 🖼️ **Image analysis** — Upload images for cultural and ethical review.
 
-- 📊 **Usage Limits (Free Tier)** — Provides free analysis checks per month per user.
+- 📊 **Usage Limits (Free Tier)** — Provides free analysis checks per day per user.
 
 ### 🛠️ Design Analysis Tools
 
@@ -40,7 +40,7 @@ Built for global creators. Powered by Gemini. Designed for Adobe Express.
 - 🖼️ **Image Preview** — See uploaded images directly in the dropzone.
 - ⏳ **Loading Indicators** — Clear `sp-progress-circle` shows AI activity status.
 - 💡 **Info Tooltips** — Helpful hints on buttons and key features.
-- 📊 **Usage Limit Display** — Clearly shows remaining checks for the month.
+- 📊 **Usage Limit Display** — Clearly shows remaining checks for the day.
 - ⚠️ **Helpful Error Messages** — Alerts if something’s missing or wrong.
 - 📢 **Premium Interest Tracking** — Button to gauge user interest in future premium features.
 

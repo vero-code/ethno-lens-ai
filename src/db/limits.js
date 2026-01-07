@@ -1,10 +1,10 @@
 // src/db/limits.js
 
 const MESSAGES = {
-  PREMIUM_LIMIT_REACHED: 'Limit reached. Premium coming soon.', // also need to change in designPanel.js
+  PREMIUM_LIMIT_REACHED: 'Daily limit reached (3/3). Limit resets in 24h.', // // also need to change in designPanel.js
 };
 
-const FREE_TIER_LIMIT = 20;
+const FREE_TIER_LIMIT = 3;
 
 /**
  * STEP 1: Access Guard (Read-only)
@@ -22,10 +22,8 @@ export async function checkUserAccess(supabase, userId) {
     throw new Error(`Supabase query error: ${error.message}`);
   }
 
-  // User not found — first request
-  if (!user) {
-    return { allowed: true, isNewUser: true };
-  }
+  // New user
+  if (!user) return { allowed: true, isNewUser: true };
 
   // Existing user
   const today = new Date();
@@ -52,29 +50,25 @@ export async function checkUserAccess(supabase, userId) {
 export async function recordUserUsage(supabase, userId, limitCheckData) {
   const today = new Date();
 
+  // Same time tomorrow
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+
   // New user
   if (limitCheckData.isNewUser) {
-    const nextResetDate = new Date();
-    nextResetDate.setDate(today.getDate() + 30);
-
-    await supabase
-      .from('users')
-      .insert({
-        user_id_hash: userId,
-        check_count: 1,
-        reset_date: nextResetDate.toISOString(),
-      });
+    await supabase.from('users').insert({
+      user_id_hash: userId,
+      check_count: 1,
+      reset_date: tomorrow.toISOString(),
+    });
     return;
   }
 
-  // Reset required
+  // Set deadline for tomorrow
   if (limitCheckData.needsReset) {
-    const nextResetDate = new Date();
-    nextResetDate.setDate(today.getDate() + 30);
-
     await supabase
       .from('users')
-      .update({ check_count: 1, reset_date: nextResetDate.toISOString() })
+      .update({ check_count: 1, reset_date: tomorrow.toISOString() })
       .eq('user_id_hash', userId);
     return;
   }

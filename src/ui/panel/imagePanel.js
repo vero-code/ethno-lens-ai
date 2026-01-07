@@ -20,9 +20,9 @@ const MESSAGES = {
   USER_ID_ERROR: 'Could not identify user. Please try again.',
   IMAGE_CANCELLED: 'Image analysis cancelled by user.',
 
-  PREMIUM_LIMIT_REACHED: 'Limit reached. Premium coming soon.',
-  PREMIUM_BUTTON_PROMPT: "I'm interested in Premium",
-  PREMIUM_BUTTON_THANKS: 'Thanks! Your interest has been noted.',
+  PREMIUM_LIMIT_REACHED: 'Daily limit reached (3/3). Limit resets in 24h.', // same as db/limits.js
+  PREMIUM_BUTTON_PROMPT: 'Unlock Unlimited Access',
+  PREMIUM_BUTTON_THANKS: "You're on the list! Early access coming soon.",
 };
 const OTHER_OPTION_VALUE = 'Other...';
 const LOADING_STEPS = [
@@ -43,6 +43,7 @@ const setButtonsState = (imagePanel, disabled) => {
 
 const showImageError = (imagePanel, message) => {
   imagePanel.spinner.style.display = 'none';
+  imagePanel.resultContent.innerHTML = '';
   imagePanel.error.innerHTML = `<span class="error">${message}</span>`;
   imagePanel.error.style.display = 'block';
   setButtonsState(imagePanel, false);
