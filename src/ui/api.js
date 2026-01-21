@@ -8,7 +8,7 @@ class ApiError extends Error {
   }
 }
 
-const API_BASE_URL = 'https://ethno-lens-ai.onrender.com';
+const API_BASE_URL = 'https://ethnolens-backend-85066908329.us-central1.run.app';
 // const API_BASE_URL = 'https://localhost:3000';
 
 // --- helpers ---

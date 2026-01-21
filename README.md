@@ -2,13 +2,14 @@
 [![Adobe Express](https://img.shields.io/badge/platform-Adobe%20Express-purple.svg)](https://express.adobe.com/)
 [![JavaScript](https://img.shields.io/badge/language-JavaScript-F7DF1E.svg?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![Gemini](https://img.shields.io/badge/AI-Gemini-blueviolet.svg?logo=google)](https://deepmind.google/technologies/gemini/)
+[![Google Cloud Run](https://img.shields.io/badge/Hosting-Google%20Cloud%20Run-4285F4.svg?logo=google-cloud)](https://cloud.google.com/run)
 
 An AI-powered design add-on that scans your visuals and flags potential cultural, ethical, or symbolic pitfalls — before they become costly mistakes.
 
 Built for global creators. Powered by Gemini. Designed for Adobe Express.
 
 👉 This project was created for the ["Adobe Express Add-ons Hackathon"](https://devpost.com/software/ethnolens-ai).
- 
+ 
 ## 🤖 Core AI Capabilities
 
 - 🧠 **Cultural check with AI** — Get instant feedback on how design fits different cultures.
@@ -47,11 +48,12 @@ Built for global creators. Powered by Gemini. Designed for Adobe Express.
 ## Tools
 
 * **Frontend:** HTML, CSS, JavaScript, Adobe Express Add-on API, Spectrum Web Components
-* **Backend:** Node.js, Express.js
+* **Backend:** Node.js, Express.js (Containerized)
 * **AI Model:** Google Gemini API (Flash model)
 * **Database:** Supabase (for user limits)
-* **Hosting:** Render (for backend server)
-* **CI/CD:** GitHub Actions (manual deployment trigger)
+* **Hosting:** Google Cloud Run (Serverless)
+* **Containerization:** Docker
+* **CI/CD:** GitHub Actions (Deploy to Cloud Run workflow)
 * **Build Tool:** @adobe/create-ccweb-add-on
 
 ## ✅ Reliability & Quota Handling
@@ -111,9 +113,11 @@ _Your add-on is now hosted and can be sideloaded in Adobe Express._
 
 ## Deployment
 
-The backend server is configured for deployment on Render.
-* The `deploy-render.yml` workflow in `.github/workflows` allows for manual deployment triggering via GitHub Actions ("Actions" tab -> "Deploy to Render" -> "Run workflow").
-* Ensure necessary environment variables are set in the Render service settings.
+The backend is containerized using Docker and hosted on **Google Cloud Run** for high scalability and zero cold starts.
+
+* **Workflow:** The `deploy-cloudrun.yml` workflow handles the build and deployment process.
+* **Trigger:** Go to the "Actions" tab → Select "Deploy to Cloud Run" → Click "Run workflow".
+* **Configuration:** Environment variables (`GEMINI_API_KEY`, `SUPABASE_URL`, etc.) are managed securely via the Google Cloud Console (Cloud Run Service → Variables & Secrets).
 
 ## Support & Help
 
