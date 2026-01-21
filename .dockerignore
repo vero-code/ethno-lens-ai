@@ -1,0 +1,24 @@
+# --- Standard ---
+node_modules
+.git
+.github
+.idea
+.vscode
+.DS_Store
+
+# --- Secrets ---
+.env
+.env.example
+localhost-key.pem
+localhost.pem
+
+# --- Frontend ---
+src/ui
+dist
+dist.zip
+src/css
+test.html
+
+# --- Logs ---
+npm-debug.log
+*.log
