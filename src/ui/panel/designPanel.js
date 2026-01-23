@@ -24,8 +24,8 @@ const MESSAGES = {
   CHAT_CANCELLED: 'Chat cancelled by user.',
 
   PREMIUM_LIMIT_REACHED: 'Daily limit reached (3/3). Limit resets in 24h.', // same as db/limits.js
-  PREMIUM_BUTTON_PROMPT: 'Unlock Unlimited Access',
-  PREMIUM_BUTTON_THANKS: "You're on the list! Early access coming soon.",
+  PREMIUM_BUTTON_PROMPT: 'Join Waitlist for Unlimited',
+  PREMIUM_BUTTON_THANKS: "You're on the list! Access coming soon.",
 };
 const OTHER_OPTION_VALUE = 'Other...';
 const LOADING_STEPS = [

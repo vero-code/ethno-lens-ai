@@ -20,14 +20,21 @@ export function handleBusinessTypeChange(selectElement, containerElement) {
 
 // --- "Premium" button ---
 export async function handlePremiumClick(button, userId, logPremiumInterest, messages) {
+    if (button.disabled) return;
+
     if (!userId) {
         console.error("Cannot log premium click: User ID is unknown.");
         return;
     }
+
+    button.disabled = true;
+    button.textContent = messages.PREMIUM_BUTTON_THANKS || "Thanks! You're on the list.";
+
+    button.classList.add('is-clicked');
+
     try {
         await logPremiumInterest(userId);
-        button.disabled = true;
-        button.textContent = messages.PREMIUM_BUTTON_THANKS;
+        console.log("Premium interest logged successfully.");
     } catch (err) {
         console.error("Failed to log premium click:", err);
     }
@@ -47,6 +54,7 @@ export function showPremiumUpsell(panel, context, messages) {
     }
 
     upsellContainer.style.display = 'block';
-    button.disabled = false;
-    button.textContent = messages.PREMIUM_BUTTON_PROMPT;
+    if (!button.disabled) {
+        button.textContent = messages.PREMIUM_BUTTON_PROMPT;
+    }
 }
