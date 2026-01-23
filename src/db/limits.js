@@ -1,11 +1,5 @@
 // src/db/limits.js
 
-// const MESSAGES = {
-//   PREMIUM_LIMIT_REACHED: 'Daily limit reached (3/3). Limit resets in 24h.', // // also need to change in designPanel.js
-// };
-
-// const FREE_TIER_LIMIT = 3;
-
 const getFreeTierLimit = () => {
   const envLimit = parseInt(process.env.DAILY_LIMIT);
   return !isNaN(envLimit) ? envLimit : 3;
