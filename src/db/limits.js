@@ -1,16 +1,23 @@
 // src/db/limits.js
 
-const MESSAGES = {
-  PREMIUM_LIMIT_REACHED: 'Daily limit reached (3/3). Limit resets in 24h.', // // also need to change in designPanel.js
-};
+// const MESSAGES = {
+//   PREMIUM_LIMIT_REACHED: 'Daily limit reached (3/3). Limit resets in 24h.', // // also need to change in designPanel.js
+// };
 
-const FREE_TIER_LIMIT = 3;
+// const FREE_TIER_LIMIT = 3;
+
+const getFreeTierLimit = () => {
+  const envLimit = parseInt(process.env.DAILY_LIMIT);
+  return !isNaN(envLimit) ? envLimit : 3;
+};
 
 /**
  * STEP 1: Access Guard (Read-only)
  * Checks if the user is allowed to perform the request.
  */
 export async function checkUserAccess(supabase, userId) {
+  const currentLimit = getFreeTierLimit();
+
   // Find user by ID
   let { data: user, error } = await supabase
     .from('users')
@@ -34,9 +41,11 @@ export async function checkUserAccess(supabase, userId) {
     return { allowed: true, needsReset: true, user: user };
   }
 
-  if (user.check_count >= FREE_TIER_LIMIT) {
-    // Limit exceeded
-    return { allowed: false, message: MESSAGES.PREMIUM_LIMIT_REACHED };
+  if (user.check_count >= currentLimit) {
+    return { 
+        allowed: false, 
+        message: `Daily limit reached (${user.check_count}/${currentLimit}). Limit resets in 24h.` 
+    };
   }
 
   // Within limit
@@ -83,6 +92,8 @@ export async function recordUserUsage(supabase, userId, limitCheckData) {
 }
 
 export async function getUserUsage(supabase, userId) {
+  const currentLimit = getFreeTierLimit();
+
   let { data: user, error } = await supabase
     .from('users')
     .select('check_count, reset_date')
@@ -94,15 +105,15 @@ export async function getUserUsage(supabase, userId) {
   }
 
   if (!user) {
-    return { used: 0, limit: FREE_TIER_LIMIT };
+    return { used: 0, limit: currentLimit };
   }
 
   const today = new Date();
   const resetDate = new Date(user.reset_date);
 
   if (today > resetDate) {
-    return { used: 0, limit: FREE_TIER_LIMIT };
+    return { used: 0, limit: currentLimit };
   } else {
-    return { used: user.check_count, limit: FREE_TIER_LIMIT };
+    return { used: user.check_count, limit: currentLimit };
   }
 }
