@@ -177,10 +177,10 @@ export function initializeDesignPanel(sandboxProxy, isMockMode, supabase) {
     updateDesignPanelState(designPanel);
 
     if (!designPanel.accordionStep2.disabled) {
-      designPanel.accordionStep1.open = false;
+      // designPanel.accordionStep1.open = false;
       designPanel.accordionStep2.open = true;
     } else {
-      designPanel.accordionStep1.open = true;
+      // designPanel.accordionStep1.open = true;
       designPanel.accordionStep2.open = false;
     }
   };

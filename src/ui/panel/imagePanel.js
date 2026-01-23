@@ -190,7 +190,7 @@ export function initializeImagePanel(isMockMode) {
         updatePanelState(imagePanel, selectedFile);
 
         if (!imagePanel.accordionStep3.disabled) {
-          imagePanel.accordionStep2.open = false;
+          // imagePanel.accordionStep2.open = false;
           imagePanel.accordionStep3.open = true;
         }
       };
@@ -214,7 +214,7 @@ export function initializeImagePanel(isMockMode) {
     );
     updatePanelState(imagePanel, selectedFile);
     if (!imagePanel.accordionStep2.disabled) {
-      imagePanel.accordionStep1.open = false;
+      // imagePanel.accordionStep1.open = false;
       imagePanel.accordionStep2.open = true;
     } else {
       imagePanel.accordionStep1.open = true;
