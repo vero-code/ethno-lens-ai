@@ -39,6 +39,13 @@ const setButtonsState = (imagePanel, disabled) => {
   imagePanel.analyzeButton.disabled = disabled;
   imagePanel.countrySelect.disabled = disabled;
   imagePanel.businessTypeSelect.disabled = disabled;
+
+  // Block the image delete button during upload
+  if (imagePanel.clearImageButton) {
+    imagePanel.clearImageButton.disabled = disabled;
+    imagePanel.clearImageButton.style.pointerEvents = disabled ? 'none' : 'auto';
+    imagePanel.clearImageButton.style.opacity = disabled ? '0.5' : '1';
+  }
 };
 
 const showImageError = (imagePanel, message) => {
@@ -307,6 +314,9 @@ export function initializeImagePanel(isMockMode) {
 
     imagePanel.analyzeButton.style.display = 'none';
     imagePanel.cancelAnalyzeButton.style.display = 'inline-flex';
+
+    imagePanel.cancelAnalyzeButton.disabled = false;
+    
     imageAbortController = new AbortController();
 
     try {
